@@ -109,10 +109,11 @@ public class AccountController : Controller
             // Map the email to an RBAC role: seeded account roles take priority,
             // then the SuperAdmin allowlist, then the default role.
             var role = _firebaseSettings.ResolveRole(email);
+            var displayName = _firebaseSettings.ResolveDisplayName(email);
 
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, string.IsNullOrWhiteSpace(fullName) ? email.Split('@')[0] : fullName),
+                new Claim(ClaimTypes.Name, string.IsNullOrWhiteSpace(fullName) ? displayName ?? email.Split('@')[0] : fullName),
                 new Claim(ClaimTypes.Email, email),
                 new Claim(ClaimTypes.Role, role),
                 new Claim("FirebaseUid", decoded.Uid)

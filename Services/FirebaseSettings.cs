@@ -54,6 +54,22 @@ public class FirebaseSettings
 
         return DefaultRole;
     }
+
+    // Returns the display name for a seeded account (used as the user's friendly
+    // name on the profile page and navbar when the ID token has no "name" claim).
+    public string? ResolveDisplayName(string email)
+    {
+        foreach (var account in SeedAccounts)
+        {
+            if (!string.IsNullOrWhiteSpace(account.Email) &&
+                string.Equals(account.Email, email, StringComparison.OrdinalIgnoreCase) &&
+                !string.IsNullOrWhiteSpace(account.DisplayName))
+            {
+                return account.DisplayName;
+            }
+        }
+        return null;
+    }
 }
 
 public class SeedAccount

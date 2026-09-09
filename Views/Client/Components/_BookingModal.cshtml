@@ -9,26 +9,23 @@
             <button class="admin-modal-close" onclick="closeBookingModal()">&times;</button>
         </div>
         <form id="clientBookingForm">
+            @Html.AntiForgeryToken()
             <div class="admin-modal-body">
                 <div class="row">
                     <div class="col-md-6 form-group-admin">
                         <label>Full Name *</label>
-                        <input type="text" class="form-control" placeholder="e.g. Maria Santos" required />
+                        <input type="text" id="bookingFullName" name="fullName" class="form-control" placeholder="e.g. Maria Santos" required />
                     </div>
                     <div class="col-md-6 form-group-admin">
                         <label>Phone Number *</label>
-                        <input type="tel" class="form-control" placeholder="0917-xxx-xxxx" required />
+                        <input type="tel" id="bookingPhone" name="phone" class="form-control" placeholder="0917-xxx-xxxx" required />
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 form-group-admin">
-                        <label>Email Address *</label>
-                        <input type="email" class="form-control" placeholder="name@domain.com" required />
-                    </div>
-                    <div class="col-md-6 form-group-admin">
                         <label>Event Type</label>
-                        <select class="form-control">
+                        <select id="bookingEventType" name="eventType" class="form-control">
                             <option value="Wedding">Wedding Reception</option>
                             <option value="Corporate">Corporate Summit / Gala</option>
                             <option value="Birthday">Birthday Celebration</option>
@@ -36,22 +33,26 @@
                             <option value="Private Dining">Private Intimate Dinner</option>
                         </select>
                     </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Target Date</label>
+                        <input type="date" id="bookingDate" name="eventDate" class="form-control" required />
+                    </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 form-group-admin">
-                        <label>Target Date</label>
-                        <input type="date" class="form-control" value="2026-10-15" />
+                        <label>Estimated Guest Count</label>
+                        <input type="number" id="bookingPax" name="paxCount" class="form-control" placeholder="e.g. 150" min="20" required />
                     </div>
                     <div class="col-md-6 form-group-admin">
-                        <label>Estimated Guest Count</label>
-                        <input type="number" class="form-control" placeholder="e.g. 150" min="20" />
+                        <label>Venue</label>
+                        <input type="text" id="bookingVenue" name="venue" class="form-control" placeholder="e.g. Plaza Garden, Manila" />
                     </div>
                 </div>
 
                 <div class="form-group-admin">
                     <label>Preferred Package</label>
-                    <select id="bookingPackageSelect" class="form-control">
+                    <select id="bookingPackageSelect" name="packageSelect" class="form-control">
                         <option value="Classic Package - ₱450/pax">Classic Package - ₱450/pax</option>
                         <option value="Premium Package - ₱750/pax" selected>Premium Package - ₱750/pax (Recommended)</option>
                         <option value="Grand Package - ₱1,500/pax">Grand Executive Package - ₱1,500/pax</option>
@@ -60,8 +61,8 @@
                 </div>
 
                 <div class="form-group-admin mb-0">
-                    <label>Special Requests / Venue / Dietary Notes</label>
-                    <textarea class="form-control" rows="3" placeholder="Tell us about the venue, dietary preferences (halal, vegan, allergen-free), and themes..."></textarea>
+                    <label>Special Requests / Dietary Notes</label>
+                    <textarea id="bookingNotes" name="notes" class="form-control" rows="3" placeholder="Tell us about dietary preferences (halal, vegan, allergen-free), and themes..."></textarea>
                 </div>
             </div>
             <div class="admin-modal-footer">

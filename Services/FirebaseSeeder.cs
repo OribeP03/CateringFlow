@@ -35,13 +35,13 @@ public static class FirebaseSeeder
             }
             catch (FirebaseAuthException ex) when (ex.AuthErrorCode == AuthErrorCode.EmailAlreadyExists)
             {
-                log?.Invoke($"Seeded account {account.Email} already exists in Firebase Auth.");
+                // Already present from a previous run; existing password is kept.
             }
         }
 
-        if (created == 0)
+        if (created > 0)
         {
-            log?.Invoke("No new Firebase seed accounts were created.");
+            log?.Invoke($"Firebase: {created} new seed account(s) created.");
         }
     }
 }

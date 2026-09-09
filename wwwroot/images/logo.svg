@@ -107,14 +107,7 @@
           stroke="url(#goldStroke)" 
           stroke-width="3" />
 
-    <!-- 6. TYPOGRAPHY: "CateringFlow" -->
-    <text x="202" y="244" 
-          text-anchor="middle" 
-          font-family="'Playfair Display', 'Georgia', serif" 
-          font-size="34" 
-          font-weight="bold" 
-          font-style="normal" 
-          fill="#ffffff" 
-          letter-spacing="1">CateringFlow</text>
+    <!-- 6. EMBLEM ACCENT -->
+    <polygon points="202,233 205,239 212,239 206,244 208,251 202,246 196,251 198,244 192,239 199,239" fill="#ffffff" opacity="0.9" />
   </g>
 </svg>

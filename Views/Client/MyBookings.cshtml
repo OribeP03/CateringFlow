@@ -1,0 +1,119 @@
+@using cateringflow.Models
+@{
+    Layout = null;
+    ViewData["Title"] = "My Caterings - CateringFlow";
+    var bookings = (Model as List<EventModel>) ?? new List<EventModel>();
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/client.css" asp-append-version="true" />
+</head>
+<body>
+
+    @await Html.PartialAsync("~/Views/Client/Components/_Navbar.cshtml")
+
+    <section class="client-section py-5">
+        <div class="container">
+            <div class="profile-hero py-4">
+                <div class="profile-hero-inner">
+                    <span class="profile-logo-lg"><i class="bi bi-calendar-heart"></i></span>
+                    <div class="profile-hero-text">
+                        <h1 class="profile-title">My Caterings</h1>
+                        <p class="profile-subtitle mb-0">All the events you have booked with CateringFlow.</p>
+                    </div>
+                    <div class="profile-hero-actions ms-sm-auto mt-3 mt-sm-0">
+                        <button class="btn-luxury-gold" onclick="openBookingModal()">
+                            <i class="bi bi-calendar-check me-1"></i> New Booking
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            @if (bookings.Count == 0)
+            {
+                <div class="empty-state mt-5">
+                    <div class="empty-state-icon"><i class="bi bi-calendar-x"></i></div>
+                    <h4 class="empty-state-title">No caterings yet</h4>
+                    <p class="empty-state-text">Your booked events will appear here once you submit a booking request.</p>
+                    <button class="btn-luxury-gold" onclick="openBookingModal()">
+                        <i class="bi bi-plus-circle me-1"></i> Book Your First Event
+                    </button>
+                </div>
+            }
+            else
+            {
+                <div class="row g-4 mt-1">
+                    @foreach (var b in bookings)
+                    {
+                        var statusClass = (b.Status ?? "").ToLower() switch
+                        {
+                            "confirmed" => "bg-success",
+                            "completed" => "bg-secondary",
+                            "cancelled" => "bg-danger",
+                            _ => "bg-warning text-dark"
+                        };
+                        <div class="col-md-6 col-lg-4">
+                            <div class="booking-card">
+                                <div class="booking-card-top">
+                                    <div>
+                                        <h5 class="booking-card-title">@b.EventName</h5>
+                                        <span class="badge @statusClass">@b.Status</span>
+                                    </div>
+                                    <i class="bi bi-calendar-event booking-card-icon"></i>
+                                </div>
+                                <div class="booking-card-body">
+                                    <div class="booking-detail">
+                                        <i class="bi bi-bookmark"></i>
+                                        <span>@b.EventType</span>
+                                    </div>
+                                    <div class="booking-detail">
+                                        <i class="bi bi-calendar2"></i>
+                                        <span>@b.EventDate.ToString("MMMM d, yyyy")</span>
+                                    </div>
+                                    <div class="booking-detail">
+                                        <i class="bi bi-people"></i>
+                                        <span>@b.PaxCount guests</span>
+                                    </div>
+                                    <div class="booking-detail">
+                                        <i class="bi bi-box-seam"></i>
+                                        <span>@(b.Package?.PackageName ?? "Custom Menu")</span>
+                                    </div>
+                                    @if (!string.IsNullOrWhiteSpace(b.Venue))
+                                    {
+                                        <div class="booking-detail">
+                                            <i class="bi bi-geo-alt"></i>
+                                            <span>@b.Venue</span>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="booking-card-footer">
+                                    <span class="booking-amount">₱ @b.TotalAmount.ToString("N2")</span>
+                                    <a href="@Url.Content("~/Client/BookingDetails/" + b.Id)" class="booking-view-link">View Details <i class="bi bi-arrow-right ms-1"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </section>
+
+    @await Html.PartialAsync("~/Views/Client/Components/_BookingModal.cshtml")
+    @await Html.PartialAsync("~/Views/Client/Components/_Footer.cshtml")
+
+    <script>
+        window.__CATERINGFLOW_AUTH__ = 'true';
+    </script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/client.js" asp-append-version="true"></script>
+</body>
+</html>

@@ -1,35 +1,73 @@
 @* Views/Client/Components/_Navbar.cshtml *@
-<nav class="client-navbar">
+@{
+    var currentPath = Context.Request.Path.Value ?? "";
+    var isHome = string.IsNullOrEmpty(currentPath) || currentPath == "/" || currentPath.Equals("/Client", StringComparison.OrdinalIgnoreCase) || currentPath.Equals("/Client/Index", StringComparison.OrdinalIgnoreCase) || currentPath.Equals("/Home", StringComparison.OrdinalIgnoreCase) || currentPath.Equals("/Home/Index", StringComparison.OrdinalIgnoreCase);
+    var isBookings = currentPath.StartsWith("/Client/MyBookings", StringComparison.OrdinalIgnoreCase) || currentPath.StartsWith("/Client/BookingDetails", StringComparison.OrdinalIgnoreCase);
+    var isProfile = currentPath.StartsWith("/Client/Profile", StringComparison.OrdinalIgnoreCase);
+}
+<nav class="client-navbar" id="mainClientNavbar">
     <div class="container navbar-inner">
-        <a href="/" class="brand-logo">
+        <a href="/" class="brand-logo" id="navBrandLogo">
             <img src="/images/logo.svg" alt="CateringFlow" class="brand-logo-img" />
-            <span>Catering</span>Flow
+            <span class="brand-logo-text"><span class="brand-gold">Catering</span>Flow</span>
         </a>
 
-        <ul class="nav-links">
-            <li><a href="/">Home</a></li>
-            <li><a href="#packages">Packages</a></li>
-            <li><a href="#features">Features</a></li>
-            <li><a href="#process">How it Works</a></li>
-            <li><a href="#gallery">Culinary Gallery</a></li>
-            <li><a href="#testimonials">Reviews</a></li>
+        <ul class="nav-links" id="clientNavLinks">
+            <li><a href="/" class="@(isHome ? "active" : "")">Home</a></li>
+            <li><a href="/#packages">Packages</a></li>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <li><a href="/Client/MyBookings" class="@(isBookings ? "active" : "")">My Caterings</a></li>
+                <li><a href="/Client/Profile" class="@(isProfile ? "active" : "")">Profile</a></li>
+            }
         </ul>
 
         <div class="nav-actions">
             @if (User.Identity?.IsAuthenticated == true)
             {
-                <a href="/Account/Logout" class="btn-luxury-outline">
-                    <i class="bi bi-box-arrow-right"></i> Sign Out
-                </a>
+                var displayName = User.Identity.Name ?? "My Account";
+                var nameParts = displayName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                var initials = nameParts.Length >= 2
+                    ? $"{nameParts[0][0]}{nameParts[1][0]}".ToUpperInvariant()
+                    : displayName.Length >= 2 ? displayName[..2].ToUpperInvariant() : displayName.ToUpperInvariant();
+
+                <div class="nav-user-chip dropdown">
+                    <button class="nav-user-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="navUserDropdownBtn">
+                        <span class="nav-user-avatar">@initials</span>
+                        <span class="nav-user-name">Hi, @displayName.Split(' ')[0]</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end nav-user-menu" aria-labelledby="navUserDropdownBtn">
+                        <li><span class="dropdown-header">@displayName</span></li>
+                        <li>
+                            <a class="dropdown-item" href="/Client/Profile">
+                                <i class="bi bi-person-circle me-2"></i> My Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/Client/MyBookings">
+                                <i class="bi bi-calendar-heart me-2"></i> My Caterings
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item nav-user-signout" href="/Account/Logout">
+                                <i class="bi bi-box-arrow-right me-2"></i> Sign Out
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             }
             else
             {
-                <a href="/Account/Login" class="btn-luxury-outline">
+                <a href="/Account/Login" class="btn-luxury-outline" id="navSignInBtn">
                     <i class="bi bi-box-arrow-in-right"></i> Sign In
                 </a>
             }
-            <button class="btn-luxury-gold" onclick="openBookingModal()">
-                <i class="bi bi-calendar-check"></i> Book Now
+            <button class="btn-luxury-gold nav-book-btn" onclick="openBookingModal()" id="navBookNowBtn">
+                <i class="bi bi-calendar-check"></i> <span>Book Now</span>
+            </button>
+            <button class="nav-mobile-toggle d-md-none" type="button" aria-label="Toggle navigation menu" onclick="toggleMobileNav()" id="navMobileToggleBtn">
+                <i class="bi bi-list"></i>
             </button>
         </div>
     </div>

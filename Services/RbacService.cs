@@ -28,51 +28,50 @@ public class RbacService : IRbacService
         },
         [UserRoles.SalesCrm] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
+            // Customer Management — Manage; Customer CRM — Manage; Event Booking — Submit / Manage; Quotation & Billing — Quotations
             ["Dashboard"] = "View",
             ["Customers"] = "Manage",
             ["CRM"] = "Manage",
             ["Events"] = "Submit / Manage",
-            ["Quotations"] = "Quotations",
-            ["Notifications"] = "View"
+            ["Quotations"] = "Quotations"
         },
         [UserRoles.EventCoordinator] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
+            // Event Booking — Submit / Manage; Staff Assignment — Assign / View; Event Scheduling — Manage / View
             ["Dashboard"] = "View",
             ["Events"] = "Submit / Manage / View",
-            ["Staff"] = "Assign / View",
-            ["MenuPackages"] = "View",
-            ["Notifications"] = "View"
+            ["Staff"] = "Assign / View"
         },
         [UserRoles.InventoryStaff] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
+            // Ingredient Inventory — Manage; Supplier Management — Manage; Reports — View
             ["Dashboard"] = "View",
             ["Inventory"] = "Manage",
             ["Suppliers"] = "Manage",
-            ["Reports"] = "View",
-            ["Notifications"] = "View"
+            ["Reports"] = "View"
         },
         [UserRoles.KitchenManager] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
+            // Menu Package Management — Manage; Ingredient Inventory — Manage; Reports — View
             ["Dashboard"] = "View",
             ["MenuPackages"] = "Manage",
             ["Inventory"] = "Manage",
-            ["Reports"] = "View",
-            ["Notifications"] = "View"
+            ["Reports"] = "View"
         },
         [UserRoles.FinanceStaff] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
+            // Quotation & Billing — Manage; Reports — View / Generate
             ["Dashboard"] = "View",
             ["Quotations"] = "Manage",
             ["Invoices"] = "Manage",
             ["Payments"] = "Manage",
-            ["Reports"] = "View / Generate",
-            ["Notifications"] = "View"
+            ["Reports"] = "View / Generate"
         },
         [UserRoles.StaffCrew] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
+            // Staff Assignment — View Schedule / Tasks
             ["Dashboard"] = "View",
-            ["Staff"] = "View Schedule / Tasks",
-            ["Notifications"] = "View"
+            ["Staff"] = "View Schedule / Tasks"
         },
         [UserRoles.Customer] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {

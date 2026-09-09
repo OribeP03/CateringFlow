@@ -43,7 +43,7 @@ if (!string.IsNullOrWhiteSpace(firebaseSettings.ServiceAccountPath))
     {
         FirebaseApp.Create(new AppOptions
         {
-            Credential = GoogleCredential.FromFile(credentialPath),
+            Credential = CredentialFactory.FromFile<ServiceAccountCredential>(credentialPath).ToGoogleCredential(),
             ProjectId = string.IsNullOrWhiteSpace(firebaseSettings.ProjectId) ? null : firebaseSettings.ProjectId
         });
     }

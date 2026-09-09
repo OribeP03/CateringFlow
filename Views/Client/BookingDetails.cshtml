@@ -1,0 +1,137 @@
+@using cateringflow.Models
+@{
+    Layout = null;
+    ViewData["Title"] = "Booking Details - CateringFlow";
+    var item = Model as EventModel;
+    var statusClass = (item?.Status ?? "").ToLower() switch
+    {
+        "confirmed" => "bg-success",
+        "completed" => "bg-secondary",
+        "cancelled" => "bg-danger",
+        _ => "bg-warning text-dark"
+    };
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/client.css" asp-append-version="true" />
+</head>
+<body>
+
+    @await Html.PartialAsync("~/Views/Client/Components/_Navbar.cshtml")
+
+    <section class="client-section py-5">
+        <div class="container">
+            <div class="profile-hero py-4">
+                <div class="profile-hero-inner">
+                    <span class="profile-logo-lg"><i class="bi bi-card-checklist"></i></span>
+                    <div class="profile-hero-text">
+                        <h1 class="profile-title">@item?.EventName</h1>
+                        <p class="profile-subtitle mb-0">
+                            <span class="badge @statusClass">@item?.Status</span>
+                            Booked on @(item?.CreatedAt.ToString("MMMM d, yyyy") ?? "—")
+                        </p>
+                    </div>
+                    <div class="profile-hero-actions ms-sm-auto mt-3 mt-sm-0">
+                        <a href="/Client/MyBookings" class="btn-luxury-outline">
+                            <i class="bi bi-arrow-left me-1"></i> Back to My Caterings
+                        </a>
+                        <button class="btn-luxury-gold" onclick="openBookingModal()">
+                            <i class="bi bi-plus-circle me-1"></i> New Booking
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mt-1">
+                <div class="col-lg-7">
+                    <div class="client-card">
+                        <div class="client-card-header">
+                            <i class="bi bi-calendar-event me-2"></i> Booking Details
+                        </div>
+                        <div class="client-card-body">
+                            <div class="profile-row">
+                                <span class="profile-label">Event Type</span>
+                                <span class="profile-value">@item?.EventType</span>
+                            </div>
+                            <div class="profile-row">
+                                <span class="profile-label">Event Date</span>
+                                <span class="profile-value">@item?.EventDate.ToString("MMMM d, yyyy")</span>
+                            </div>
+                            <div class="profile-row">
+                                <span class="profile-label">Venue</span>
+                                <span class="profile-value">@(string.IsNullOrWhiteSpace(item?.Venue) ? "—" : item.Venue)</span>
+                            </div>
+                            <div class="profile-row">
+                                <span class="profile-label">Guests</span>
+                                <span class="profile-value">@item?.PaxCount pax</span>
+                            </div>
+                            <div class="profile-row">
+                                <span class="profile-label">Menu Package</span>
+                                <span class="profile-value">@(item?.Package?.PackageName ?? "Custom Menu")</span>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(item?.Notes))
+                            {
+                                <div class="profile-row">
+                                    <span class="profile-label">Special Notes</span>
+                                    <span class="profile-value">@item.Notes</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="client-card">
+                        <div class="client-card-header">
+                            <i class="bi bi-receipt me-2"></i> Booking Summary
+                        </div>
+                        <div class="client-card-body">
+                            <div class="journey-stat">
+                                <span class="journey-stat-number">₱ @item?.TotalAmount.ToString("N2")</span>
+                                <span class="journey-stat-label">Total Amount</span>
+                            </div>
+                            <hr class="my-4" />
+                            <div class="profile-row">
+                                <span class="profile-label">Package Rate</span>
+                                <span class="profile-value">@(item?.Package != null ? "₱ " + item.Package.PricePerPax.ToString("N2") + " / pax" : "—")</span>
+                            </div>
+                            <div class="profile-row">
+                                <span class="profile-label">Guests</span>
+                                <span class="profile-value">@item?.PaxCount</span>
+                            </div>
+                            <div class="profile-row">
+                                <span class="profile-label">Status</span>
+                                <span class="profile-value">
+                                    <span class="badge @statusClass">@item?.Status</span>
+                                </span>
+                            </div>
+                            <div class="profile-row">
+                                <span class="profile-label">Booked On</span>
+                                <span class="profile-value">@item?.CreatedAt.ToString("MMMM d, yyyy 'at' h:mm tt")</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @await Html.PartialAsync("~/Views/Client/Components/_BookingModal.cshtml")
+    @await Html.PartialAsync("~/Views/Client/Components/_Footer.cshtml")
+
+    <script>
+        window.__CATERINGFLOW_AUTH__ = 'true';
+    </script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/client.js" asp-append-version="true"></script>
+</body>
+</html>
