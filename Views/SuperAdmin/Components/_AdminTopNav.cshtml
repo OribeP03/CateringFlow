@@ -1,0 +1,46 @@
+@* Views/SuperAdmin/Components/_AdminTopNav.cshtml *@
+@using System.Security.Claims
+@{
+    var pageTitle = ViewData["Title"]?.ToString() ?? "Dashboard";
+    var isAuth = User.Identity?.IsAuthenticated == true;
+    var topName = isAuth && !string.IsNullOrWhiteSpace(User.Identity?.Name) ? User.Identity!.Name : "Super Admin";
+    var topEmail = isAuth ? User.FindFirstValue(ClaimTypes.Email) : null;
+    var topParts = topName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+    var topInitials = topParts.Length >= 2
+        ? $"{topParts[0][0]}{topParts[1][0]}".ToUpperInvariant()
+        : topName.Length >= 2 ? topName[..2].ToUpperInvariant() : topName.ToUpperInvariant();
+}
+
+<header class="admin-topbar">
+    <div class="topbar-left">
+        <div class="page-breadcrumb">
+            <i class="bi bi-layout-sidebar"></i>
+            <span>@pageTitle</span>
+        </div>
+
+        <div class="topbar-search">
+            <i class="bi bi-search"></i>
+            <input type="text" placeholder="Search..." />
+        </div>
+    </div>
+
+    <div class="topbar-right">
+        <button class="topbar-icon-btn" title="AI Assistant">
+            <i class="bi bi-stars text-primary"></i>
+        </button>
+
+        <button class="topbar-icon-btn" title="Notifications">
+            <i class="bi bi-bell"></i>
+            <span class="topbar-badge-dot"></span>
+        </button>
+
+        <div class="topbar-user-pill">
+            <div class="topbar-user-avatar">@topInitials</div>
+            <div class="topbar-user-name">@topName</div>
+            @if (!string.IsNullOrWhiteSpace(topEmail))
+            {
+                <div class="topbar-user-email">@topEmail</div>
+            }
+        </div>
+    </div>
+</header>

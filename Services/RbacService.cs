@@ -1,0 +1,118 @@
+// Services/RbacService.cs
+using cateringflow.Models;
+
+namespace cateringflow.Services;
+
+public class RbacService : IRbacService
+{
+    // Exact mapping requested by the user:
+    // Role -> (Page/Resource -> Permission Description)
+    private static readonly Dictionary<string, Dictionary<string, string>> RolePermissions = new()
+    {
+        [UserRoles.SuperAdmin] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Dashboard"] = "Manage",
+            ["Customers"] = "Manage",
+            ["Events"] = "Manage",
+            ["MenuPackages"] = "Manage",
+            ["Inventory"] = "Manage",
+            ["Suppliers"] = "Manage",
+            ["Staff"] = "Manage",
+            ["Quotations"] = "Manage",
+            ["Invoices"] = "Manage",
+            ["Payments"] = "Manage",
+            ["CRM"] = "Manage",
+            ["Reports"] = "View / Generate",
+            ["Notifications"] = "Manage",
+            ["Settings"] = "Manage"
+        },
+        [UserRoles.SalesCrm] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Dashboard"] = "View",
+            ["Customers"] = "Manage",
+            ["CRM"] = "Manage",
+            ["Events"] = "Submit / Manage",
+            ["Quotations"] = "Quotations",
+            ["Notifications"] = "View"
+        },
+        [UserRoles.EventCoordinator] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Dashboard"] = "View",
+            ["Events"] = "Submit / Manage / View",
+            ["Staff"] = "Assign / View",
+            ["MenuPackages"] = "View",
+            ["Notifications"] = "View"
+        },
+        [UserRoles.InventoryStaff] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Dashboard"] = "View",
+            ["Inventory"] = "Manage",
+            ["Suppliers"] = "Manage",
+            ["Reports"] = "View",
+            ["Notifications"] = "View"
+        },
+        [UserRoles.KitchenManager] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Dashboard"] = "View",
+            ["MenuPackages"] = "Manage",
+            ["Inventory"] = "Manage",
+            ["Reports"] = "View",
+            ["Notifications"] = "View"
+        },
+        [UserRoles.FinanceStaff] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Dashboard"] = "View",
+            ["Quotations"] = "Manage",
+            ["Invoices"] = "Manage",
+            ["Payments"] = "Manage",
+            ["Reports"] = "View / Generate",
+            ["Notifications"] = "View"
+        },
+        [UserRoles.StaffCrew] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Dashboard"] = "View",
+            ["Staff"] = "View Schedule / Tasks",
+            ["Notifications"] = "View"
+        },
+        [UserRoles.Customer] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Customers"] = "Profile",
+            ["CRM"] = "Interactions",
+            ["Events"] = "Submit / View Details"
+        }
+    };
+
+    public bool HasAccess(string role, string pageOrFeature, out string permissionLevel)
+    {
+        permissionLevel = "None";
+        if (string.IsNullOrEmpty(role))
+        {
+            role = UserRoles.SuperAdmin; // Default fallback for guest demo
+        }
+
+        if (RolePermissions.TryGetValue(role, out var pages))
+        {
+            if (pages.TryGetValue(pageOrFeature, out var perm))
+            {
+                permissionLevel = perm;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public bool CanAccessPage(string role, string page)
+    {
+        return HasAccess(role, page, out _);
+    }
+
+    public Dictionary<string, string> GetAllowedPages(string role)
+    {
+        if (string.IsNullOrEmpty(role)) role = UserRoles.SuperAdmin;
+        if (RolePermissions.TryGetValue(role, out var pages))
+        {
+            return pages;
+        }
+        return new Dictionary<string, string>();
+    }
+}

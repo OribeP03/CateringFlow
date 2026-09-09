@@ -1,0 +1,145 @@
+@* Views/SuperAdmin/Settings.cshtml *@
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Settings";
+    ViewData["ActivePage"] = "Settings";
+}
+
+<!-- Page Header Row -->
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Settings</h1>
+        <div class="page-header-sub">Manage your account and system preferences</div>
+    </div>
+</div>
+
+<!-- Settings Layout: Left Nav + Right Content Panel -->
+<div class="settings-layout-grid">
+    <!-- Left Navigation Card -->
+    <div class="settings-nav-card">
+        <a class="settings-nav-item active" onclick="switchSettingsTab('tabCompanyProfile', this)">
+            <i class="bi bi-bookmark-fill"></i>
+            <span>Company Profile</span>
+        </a>
+        <a class="settings-nav-item" onclick="switchSettingsTab('tabUsers', this)">
+            <i class="bi bi-people"></i>
+            <span>Users</span>
+        </a>
+        <a class="settings-nav-item" onclick="switchSettingsTab('tabRoles', this)">
+            <i class="bi bi-shield-check"></i>
+            <span>Roles & Permissions</span>
+        </a>
+        <a class="settings-nav-item" onclick="switchSettingsTab('tabNotifications', this)">
+            <i class="bi bi-bell"></i>
+            <span>Notifications</span>
+        </a>
+        <a class="settings-nav-item" onclick="switchSettingsTab('tabSystem', this)">
+            <i class="bi bi-gear"></i>
+            <span>System</span>
+        </a>
+    </div>
+
+    <!-- Right Content Panels -->
+    <div>
+        <!-- 1. Company Profile Component (Matching Screenshot 1) -->
+        @await Html.PartialAsync("~/Views/SuperAdmin/Components/_SettingsCompanyProfile.cshtml")
+
+        <!-- 2. Users Tab Panel -->
+        <div id="tabUsers" class="settings-content-panel" style="display: none;">
+            <h4 class="fw-bold mb-4">User Accounts Management</h4>
+            <p class="text-muted small">Manage internal personnel logins and assigned operational credentials.</p>
+            <div class="list-group">
+                <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                    <div>
+                        <div class="fw-bold">Admin Rivera</div>
+                        <small class="text-muted">admin@cateringflow.ph · Super Admin</small>
+                    </div>
+                    <span class="status-badge-active">Active</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                    <div>
+                        <div class="fw-bold">Carlo Aquino</div>
+                        <small class="text-muted">carlo@cateringflow.ph · Sales / CRM</small>
+                    </div>
+                    <span class="status-badge-active">Active</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                    <div>
+                        <div class="fw-bold">Grace Villanueva</div>
+                        <small class="text-muted">grace@cateringflow.ph · Kitchen Head</small>
+                    </div>
+                    <span class="status-badge-active">Active</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Roles & Permissions Tab Panel -->
+        <div id="tabRoles" class="settings-content-panel" style="display: none;">
+            <h4 class="fw-bold mb-4">Role-Based Access Control (RBAC)</h4>
+            <p class="text-muted small">8 defined roles enforced through ASP.NET Core Middleware pipeline.</p>
+            <div class="table-responsive">
+                <table class="table table-bordered table-sm small">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Role</th>
+                            <th>Page Access Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Super Admin</strong></td><td>Full System & Financial Oversight (Manage)</td></tr>
+                        <tr><td><strong>Sales / CRM Staff</strong></td><td>Customers, Leads, Bookings, Quotations</td></tr>
+                        <tr><td><strong>Event Coordinator</strong></td><td>Events, Staff Assignments, Scheduling</td></tr>
+                        <tr><td><strong>Inventory Staff</strong></td><td>Ingredient Stock, Supplier Reorders, Stock Reports</td></tr>
+                        <tr><td><strong>Kitchen Manager</strong></td><td>Menu Packages, Ingredient Stock, Prep Reports</td></tr>
+                        <tr><td><strong>Finance Staff</strong></td><td>Quotations, Invoices, Payments, Billing Audits</td></tr>
+                        <tr><td><strong>Staff / Crew</strong></td><td>Shift Rosters & Assigned Event Tasks</td></tr>
+                        <tr><td><strong>Customer</strong></td><td>Personal Profile, Event Submissions, Inquiries</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 4. Notifications Preferences Tab Panel -->
+        <div id="tabNotifications" class="settings-content-panel" style="display: none;">
+            <h4 class="fw-bold mb-4">Notification Preferences</h4>
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" id="notifBookings" checked>
+                <label class="form-check-label" for="notifBookings">Email alerts on new booking submissions</label>
+            </div>
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" id="notifStock" checked>
+                <label class="form-check-label" for="notifStock">Real-time alerts for low kitchen inventory</label>
+            </div>
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" id="notifOverdue" checked>
+                <label class="form-check-label" for="notifOverdue">Instant warnings for overdue invoices</label>
+            </div>
+        </div>
+
+        <!-- 5. System Tab Panel -->
+        <div id="tabSystem" class="settings-content-panel" style="display: none;">
+            <h4 class="fw-bold mb-4">System Information & Security</h4>
+            <ul class="list-unstyled small text-muted">
+                <li class="mb-2"><strong>Framework:</strong> ASP.NET Core (.NET 10)</li>
+                <li class="mb-2"><strong>Architecture:</strong> Razor Views + Middleware Hardening</li>
+                <li class="mb-2"><strong>Security:</strong> HTTP Security Headers + Rate Limiter + Cookie RBAC</li>
+                <li class="mb-2"><strong>Database Version:</strong> 2.4.0-Production</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function switchSettingsTab(tabId, el) {
+            document.querySelectorAll('.settings-nav-item').forEach(btn => btn.classList.remove('active'));
+            el.classList.add('active');
+
+            const panels = ['tabCompanyProfile', 'tabUsers', 'tabRoles', 'tabNotifications', 'tabSystem'];
+            panels.forEach(id => {
+                const panel = document.getElementById(id);
+                if (panel) panel.style.display = (id === tabId) ? 'block' : 'none';
+            });
+        }
+    </script>
+}

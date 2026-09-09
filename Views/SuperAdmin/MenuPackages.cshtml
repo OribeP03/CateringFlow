@@ -1,0 +1,68 @@
+@* Views/SuperAdmin/MenuPackages.cshtml *@
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Menu & Packages";
+    ViewData["ActivePage"] = "MenuPackages";
+}
+
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Menu & Packages</h1>
+        <div class="page-header-sub">Manage package pricing, course recipes, and tasting templates.</div>
+    </div>
+    <div>
+        <button class="admin-btn-primary" onclick="alert('Create new package modal');">
+            <i class="bi bi-plus-lg"></i> + Add Package
+        </button>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Classic Package Card -->
+    <div class="col-md-4">
+        <div class="widget-card h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">Classic Package</h5>
+                <span class="status-pill upcoming">Active</span>
+            </div>
+            <div class="fs-4 fw-bold text-primary mb-2">₱450 <span class="fs-6 text-muted font-normal">/ pax</span></div>
+            <p class="small text-muted mb-3">4 Courses · Standard Buffet Setup · 4 Hours Service</p>
+            <div class="border-top pt-3 d-flex justify-content-between">
+                <button class="btn btn-sm btn-outline-secondary">Edit Courses</button>
+                <button class="btn btn-sm btn-outline-primary">View Recipes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Premium Package Card -->
+    <div class="col-md-4">
+        <div class="widget-card h-100" style="border: 2px solid #b87333;">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">Premium Package</h5>
+                <span class="status-pill" style="background:#faede0; color:#b87333;">★ Most Popular</span>
+            </div>
+            <div class="fs-4 fw-bold text-primary mb-2">₱750 <span class="fs-6 text-muted font-normal">/ pax</span></div>
+            <p class="small text-muted mb-3">6 Courses · Themed Setup · Sparkling Toast · 5 Hours Service</p>
+            <div class="border-top pt-3 d-flex justify-content-between">
+                <button class="btn btn-sm btn-outline-secondary">Edit Courses</button>
+                <button class="btn btn-sm btn-outline-primary">View Recipes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grand Package Card -->
+    <div class="col-md-4">
+        <div class="widget-card h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">Grand Package</h5>
+                <span class="status-pill upcoming">VIP Executive</span>
+            </div>
+            <div class="fs-4 fw-bold text-primary mb-2">₱1,500 <span class="fs-6 text-muted font-normal">/ pax</span></div>
+            <p class="small text-muted mb-3">8 Courses · Carving Station · Open Bar · Butler Service</p>
+            <div class="border-top pt-3 d-flex justify-content-between">
+                <button class="btn btn-sm btn-outline-secondary">Edit Courses</button>
+                <button class="btn btn-sm btn-outline-primary">View Recipes</button>
+            </div>
+        </div>
+    </div>
+</div>

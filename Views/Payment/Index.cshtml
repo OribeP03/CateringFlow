@@ -1,0 +1,72 @@
+@model IEnumerable<PaymentModel>
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Payments";
+    ViewData["ActivePage"] = "Payments";
+}
+
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Payments</h1>
+        <div class="page-header-sub">All recorded payment transactions</div>
+    </div>
+    <div>
+        <a asp-action="Create" class="admin-btn-primary">
+            <i class="bi bi-plus-lg"></i> + Record Payment
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success d-flex align-items-center gap-2"><i class="bi bi-check-circle-fill"></i> @TempData["Success"]</div>
+}
+
+<!-- 3 KPI Cards -->
+<div class="kpi-cards-grid" style="grid-template-columns: repeat(3, 1fr);">
+    <div class="kpi-card">
+        <div class="kpi-title mb-1">Total Collected</div>
+        <div class="kpi-value">₱@((ViewData["TotalCollected"] as decimal?) ?? 0m).ToString("N0")</div>
+        <div class="kpi-change positive"><i class="bi bi-arrow-up-short"></i> from @Model.Count() transactions</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-title mb-1">This Month</div>
+        <div class="kpi-value">₱@((ViewData["ThisMonth"] as decimal?) ?? 0m).ToString("N0")</div>
+        <div class="text-muted small">@Model.Count(p => p.PaymentDate.Month == DateTime.Now.Month && p.PaymentDate.Year == DateTime.Now.Year) payments</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-title mb-1">Most Used Method</div>
+        <div class="kpi-value" style="font-size: 1.5rem;">@ViewData["MostUsedMethod"]</div>
+        <div class="text-muted small">@ViewData["MostUsedMethodCount"] transactions</div>
+    </div>
+</div>
+
+<div class="table-container-card mt-4">
+    <table class="admin-data-table">
+        <thead>
+            <tr><th>Invoice</th><th>Customer</th><th>Date</th><th>Method</th><th>Ref #</th><th>Amount</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr><td colspan="7" class="text-center text-muted py-4">No payments recorded.</td></tr>
+            }
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td class="fw-semibold text-primary">@p.InvoiceNumber</td>
+                    <td>@(p.Customer?.FullName ?? "—")</td>
+                    <td>@p.PaymentDate.ToString("MMM dd, yyyy")</td>
+                    <td><span class="status-pill upcoming">@p.PaymentMethod</span></td>
+                    <td>@(p.ReferenceNumber ?? "—")</td>
+                    <td class="fw-semibold">₱@p.Amount.ToString("N2")</td>
+                    <td>
+                        <form asp-action="Delete" asp-route-id="@p.Id" method="post" onsubmit="return confirm('Delete this payment? Invoice balance will be adjusted.');" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,84 @@
+@model CRMLeadModel
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Edit Lead";
+    ViewData["ActivePage"] = "CRM";
+}
+
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Edit Lead</h1>
+        <div class="page-header-sub">@Model.LeadName</div>
+    </div>
+</div>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="widget-card" style="max-width: 760px;">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="LeadName" class="form-label">Lead Name</label>
+                <input asp-for="LeadName" class="form-control" />
+                <span asp-validation-for="LeadName" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Company" class="form-label">Company</label>
+                <input asp-for="Company" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Email" class="form-label">Email</label>
+                <input asp-for="Email" class="form-control" type="email" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Phone" class="form-label">Phone</label>
+                <input asp-for="Phone" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="EstimatedValue" class="form-label">Estimated Value</label>
+                <input asp-for="EstimatedValue" class="form-control" type="number" step="0.01" min="0" />
+                <span asp-validation-for="EstimatedValue" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Stage" class="form-label">Pipeline Stage</label>
+                <select asp-for="Stage" class="form-select">
+                    <option>New</option>
+                    <option>Contacted</option>
+                    <option>Proposal</option>
+                    <option>Negotiation</option>
+                    <option>Won</option>
+                    <option>Lost</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="CustomerId" class="form-label">Link to Customer</label>
+                <select asp-for="CustomerId" class="form-select">
+                    <option value="">-- Unlinked Lead --</option>
+                    @if (ViewData["Customers"] is List<CustomerModel> customers)
+                    {
+                        foreach (var c in customers)
+                        {
+                            <option value="@c.Id">@c.FullName</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="AssignedTo" class="form-label">Assigned To</label>
+                <input asp-for="AssignedTo" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="LastContact" class="form-label">Last Contact</label>
+                <input asp-for="LastContact" class="form-control" type="date" />
+            </div>
+            <div class="col-md-12">
+                <label asp-for="Notes" class="form-label">Notes</label>
+                <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="col-md-12 d-flex gap-2">
+                <button type="submit" class="admin-btn-primary"><i class="bi bi-check-lg"></i> Save Changes</button>
+                <a asp-action="Index" class="admin-btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </div>
+</form>

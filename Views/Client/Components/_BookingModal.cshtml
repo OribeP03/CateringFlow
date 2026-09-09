@@ -1,0 +1,101 @@
+@* Views/Client/Components/_BookingModal.cshtml *@
+<div id="bookingModal" class="admin-modal-backdrop">
+    <div class="admin-modal-dialog">
+        <div class="admin-modal-header">
+            <div>
+                <h5 class="admin-modal-title mb-1">Book Your Catering Experience</h5>
+                <p class="text-muted small mb-0">Fill out event details for a customized tasting proposal.</p>
+            </div>
+            <button class="admin-modal-close" onclick="closeBookingModal()">&times;</button>
+        </div>
+        <form id="clientBookingForm">
+            <div class="admin-modal-body">
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Full Name *</label>
+                        <input type="text" class="form-control" placeholder="e.g. Maria Santos" required />
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Phone Number *</label>
+                        <input type="tel" class="form-control" placeholder="0917-xxx-xxxx" required />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Email Address *</label>
+                        <input type="email" class="form-control" placeholder="name@domain.com" required />
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Event Type</label>
+                        <select class="form-control">
+                            <option value="Wedding">Wedding Reception</option>
+                            <option value="Corporate">Corporate Summit / Gala</option>
+                            <option value="Birthday">Birthday Celebration</option>
+                            <option value="Anniversary">Anniversary</option>
+                            <option value="Private Dining">Private Intimate Dinner</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Target Date</label>
+                        <input type="date" class="form-control" value="2026-10-15" />
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Estimated Guest Count</label>
+                        <input type="number" class="form-control" placeholder="e.g. 150" min="20" />
+                    </div>
+                </div>
+
+                <div class="form-group-admin">
+                    <label>Preferred Package</label>
+                    <select id="bookingPackageSelect" class="form-control">
+                        <option value="Classic Package - ₱450/pax">Classic Package - ₱450/pax</option>
+                        <option value="Premium Package - ₱750/pax" selected>Premium Package - ₱750/pax (Recommended)</option>
+                        <option value="Grand Package - ₱1,500/pax">Grand Executive Package - ₱1,500/pax</option>
+                        <option value="Custom Tasting Menu">Custom Bespoke Menu</option>
+                    </select>
+                </div>
+
+                <div class="form-group-admin mb-0">
+                    <label>Special Requests / Venue / Dietary Notes</label>
+                    <textarea class="form-control" rows="3" placeholder="Tell us about the venue, dietary preferences (halal, vegan, allergen-free), and themes..."></textarea>
+                </div>
+            </div>
+            <div class="admin-modal-footer">
+                <button type="button" class="admin-btn-secondary" onclick="closeBookingModal()">Cancel</button>
+                <button type="submit" class="admin-btn-primary">
+                    <i class="bi bi-send-fill me-1"></i> Submit Booking Request
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@* Sign-in required prompt (shown when a signed-out visitor tries to book) *@
+<div id="signInPromptModal" class="admin-modal-backdrop">
+    <div class="admin-modal-dialog signin-prompt-dialog">
+        <div class="admin-modal-header">
+            <div>
+                <h5 class="admin-modal-title mb-1">Sign in required</h5>
+                <p class="text-muted small mb-0">Bookings are only available to signed-in users.</p>
+            </div>
+            <button class="admin-modal-close" onclick="closeSignInPrompt()">&times;</button>
+        </div>
+        <div class="admin-modal-body">
+            <div class="signin-prompt-icon"><i class="bi bi-person-lock"></i></div>
+            <p class="signin-prompt-text">
+                You need to <strong>sign in first</strong> before you can book a catering.
+                Sign in to your account or create one to submit your booking request.
+            </p>
+        </div>
+        <div class="admin-modal-footer justify-content-center gap-2">
+            <a href="/Account/Login" class="admin-btn-primary">
+                <i class="bi bi-box-arrow-in-right me-1"></i> Sign In / Create Account
+            </a>
+            <button type="button" class="admin-btn-secondary" onclick="closeSignInPrompt()">Cancel</button>
+        </div>
+    </div>
+</div>

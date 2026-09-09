@@ -1,0 +1,28 @@
+@* Views/SuperAdmin/CRM.cshtml *@
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "CRM & Leads";
+    ViewData["ActivePage"] = "CRM";
+}
+
+<!-- Page Header Row -->
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">CRM & Leads</h1>
+        <div class="page-header-sub">Pipeline · 8 leads · ₱2,255,000 total value</div>
+    </div>
+    <div>
+        <button class="admin-btn-primary" onclick="openAdminModal('addLeadModal')">
+            <i class="bi bi-plus-lg"></i> + Add Lead
+        </button>
+    </div>
+</div>
+
+<!-- CRM KPI Metrics Component -->
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_CrmKpiCards.cshtml")
+
+<!-- CRM Kanban Board Component -->
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_CrmKanbanBoard.cshtml")
+
+<!-- Add Lead Modal Component -->
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_AddLeadModal.cshtml")

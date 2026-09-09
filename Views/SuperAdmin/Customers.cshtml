@@ -1,0 +1,48 @@
+@* Views/SuperAdmin/Customers.cshtml *@
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Customers";
+    ViewData["ActivePage"] = "Customers";
+}
+
+<!-- Page Header Row -->
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Customers</h1>
+        <div class="page-header-sub">8 total customers</div>
+    </div>
+    <div>
+        <button class="admin-btn-primary" onclick="openAdminModal('addCustomerModal')">
+            <i class="bi bi-plus-lg"></i> + Add Customer
+        </button>
+    </div>
+</div>
+
+<!-- Filter Toolbar -->
+<div class="filter-toolbar">
+    <div class="filter-search-wrap">
+        <i class="bi bi-search"></i>
+        <input id="tableLiveSearch" type="text" placeholder="Search customers..." />
+    </div>
+
+    <div class="filter-selects-group">
+        <select id="tableTypeFilter" class="filter-select">
+            <option value="All">All Types</option>
+            <option value="Individual">Individual</option>
+            <option value="Corporate">Corporate</option>
+            <option value="Government">Government</option>
+        </select>
+
+        <select id="tableStatusFilter" class="filter-select">
+            <option value="All">All Statuses</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+        </select>
+    </div>
+</div>
+
+<!-- Customers Table Component -->
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_CustomersTable.cshtml")
+
+<!-- Add Customer Modal Component -->
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_AddCustomerModal.cshtml")

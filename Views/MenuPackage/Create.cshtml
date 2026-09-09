@@ -1,0 +1,54 @@
+@model MenuPackageModel
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Add Package";
+    ViewData["ActivePage"] = "MenuPackages";
+}
+
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Add Package</h1>
+        <div class="page-header-sub">Create a new menu package</div>
+    </div>
+</div>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="widget-card" style="max-width: 700px;">
+        <div class="row g-3">
+            <div class="col-md-12">
+                <label asp-for="PackageName" class="form-label">Package Name</label>
+                <input asp-for="PackageName" class="form-control" />
+                <span asp-validation-for="PackageName" class="text-danger small"></span>
+            </div>
+            <div class="col-md-12">
+                <label asp-for="Description" class="form-label">Description</label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="PricePerPax" class="form-label">Price Per Pax</label>
+                <input asp-for="PricePerPax" class="form-control" type="number" step="0.01" />
+                <span asp-validation-for="PricePerPax" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="CourseCount" class="form-label">Course Count</label>
+                <input asp-for="CourseCount" class="form-control" type="number" min="1" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="ServiceHours" class="form-label">Service Hours</label>
+                <input asp-for="ServiceHours" class="form-control" type="number" min="1" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Status" class="form-label">Status</label>
+                <select asp-for="Status" class="form-select">
+                    <option>Active</option>
+                    <option>Inactive</option>
+                </select>
+            </div>
+            <div class="col-md-12 d-flex gap-2">
+                <button type="submit" class="admin-btn-primary"><i class="bi bi-check-lg"></i> Save Package</button>
+                <a asp-action="Index" class="admin-btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </div>
+</form>

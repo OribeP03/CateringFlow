@@ -1,0 +1,55 @@
+@* Views/SuperAdmin/Components/_AddSupplierModal.cshtml *@
+<div id="addSupplierModal" class="admin-modal-backdrop">
+    <div class="admin-modal-dialog">
+        <div class="admin-modal-header">
+            <div>
+                <h5 class="admin-modal-title mb-1">Register New Supplier</h5>
+                <p class="text-muted small mb-0">Record vendor info for kitchen ingredient orders and contracts.</p>
+            </div>
+            <button class="admin-modal-close" onclick="closeAdminModal('addSupplierModal')">&times;</button>
+        </div>
+        <form onsubmit="event.preventDefault(); alert('Supplier registered successfully!'); closeAdminModal('addSupplierModal');">
+            <div class="admin-modal-body">
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Company / Vendor Name *</label>
+                        <input type="text" class="form-control" placeholder="e.g. Pacific Dairy Imports" required />
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Category *</label>
+                        <select class="form-control">
+                            <option value="Meats & Poultry">Meats & Poultry</option>
+                            <option value="Seafood">Seafood</option>
+                            <option value="Fresh Produce">Fresh Produce</option>
+                            <option value="Dairy & Bakery">Dairy & Bakery</option>
+                            <option value="Beverages & Wine">Beverages & Wine</option>
+                            <option value="Hardware & Linens">Hardware & Linens</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Contact Person *</label>
+                        <input type="text" class="form-control" placeholder="e.g. Eduardo Santos" required />
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Phone Number *</label>
+                        <input type="tel" class="form-control" placeholder="0917-xxx-xxxx" required />
+                    </div>
+                </div>
+
+                <div class="form-group-admin mb-0">
+                    <label>Email Address *</label>
+                    <input type="email" class="form-control" placeholder="orders@vendor.ph" required />
+                </div>
+            </div>
+            <div class="admin-modal-footer">
+                <button type="button" class="admin-btn-secondary" onclick="closeAdminModal('addSupplierModal')">Cancel</button>
+                <button type="submit" class="admin-btn-primary">
+                    <i class="bi bi-truck me-1"></i> Register Supplier
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

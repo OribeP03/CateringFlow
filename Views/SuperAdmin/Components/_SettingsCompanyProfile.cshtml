@@ -1,0 +1,59 @@
+@* Views/SuperAdmin/Components/_SettingsCompanyProfile.cshtml *@
+<div id="tabCompanyProfile" class="settings-content-panel">
+    <h4 class="fw-bold mb-4">Company Profile</h4>
+
+    <!-- Brand Identity Box -->
+    <div class="company-brand-banner">
+        <div class="d-flex align-items-center gap-3">
+            <div class="brand-avatar-box">CF</div>
+            <div>
+                <h5 class="fw-bold mb-1">CateringFlow PH</h5>
+                <p class="text-muted small mb-0">admin@cateringflow.ph</p>
+            </div>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2" onclick="alert('Logo upload modal');">
+            <i class="bi bi-upload"></i> Upload Logo
+        </button>
+    </div>
+
+    <!-- Company Details Form -->
+    <form onsubmit="event.preventDefault(); alert('Company profile settings saved successfully!');">
+        <div class="row g-3 mb-3">
+            <div class="col-md-6 form-group-admin">
+                <label>Company Name</label>
+                <input type="text" class="form-control" value="CateringFlow PH" required />
+            </div>
+            <div class="col-md-6 form-group-admin">
+                <label>Email</label>
+                <input type="email" class="form-control" value="admin@cateringflow.ph" required />
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6 form-group-admin">
+                <label>Phone</label>
+                <input type="text" class="form-control" value="02-8234-5678" />
+            </div>
+            <div class="col-md-6 form-group-admin">
+                <label>Website</label>
+                <input type="text" class="form-control" value="www.cateringflow.ph" />
+            </div>
+        </div>
+
+        <div class="form-group-admin mb-3">
+            <label>TIN</label>
+            <input type="text" class="form-control" value="123-456-789-000" />
+        </div>
+
+        <div class="form-group-admin mb-4">
+            <label>Address</label>
+            <input type="text" class="form-control" value="123 Catering Street, Makati City, Metro Manila" />
+        </div>
+
+        <div class="d-flex justify-content-end">
+            <button type="submit" class="admin-btn-primary">
+                <i class="bi bi-floppy-fill me-1"></i> Save Changes
+            </button>
+        </div>
+    </form>
+</div>

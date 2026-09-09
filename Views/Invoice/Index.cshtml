@@ -1,0 +1,106 @@
+@model IEnumerable<InvoiceModel>
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Invoices";
+    ViewData["ActivePage"] = "Invoices";
+}
+
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Invoices</h1>
+        <div class="page-header-sub">@Model.Count() total invoices</div>
+    </div>
+    <div>
+        <a asp-action="Create" class="admin-btn-primary">
+            <i class="bi bi-plus-lg"></i> + Create Invoice
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success d-flex align-items-center gap-2"><i class="bi bi-check-circle-fill"></i> @TempData["Success"]</div>
+}
+
+<!-- Invoice Status KPI Cards -->
+<div class="kpi-cards-grid">
+    <div class="kpi-card">
+        <div class="kpi-value" style="font-size: 1.8rem;">@Model.Count()</div>
+        <div class="kpi-title">Total</div>
+    </div>
+    <div class="kpi-card" style="background: #ecfdf5; border-color: #a7f3d0;">
+        <div class="kpi-value text-success" style="font-size: 1.8rem;">@Model.Count(i => i.Status == "Paid")</div>
+        <div class="kpi-title text-success">Paid</div>
+    </div>
+    <div class="kpi-card" style="background: #fefce8; border-color: #fef08a;">
+        <div class="kpi-value" style="font-size: 1.8rem; color: #ca8a04;">@Model.Count(i => i.Status == "Partial")</div>
+        <div class="kpi-title" style="color: #ca8a04;">Partial</div>
+    </div>
+    <div class="kpi-card" style="background: #eff6ff; border-color: #bfdbfe;">
+        <div class="kpi-value text-primary" style="font-size: 1.8rem;">@Model.Count(i => i.Status == "Unpaid")</div>
+        <div class="kpi-title text-primary">Unpaid</div>
+    </div>
+    <div class="kpi-card" style="background: #fef2f2; border-color: #fecaca;">
+        <div class="kpi-value text-danger" style="font-size: 1.8rem;">@Model.Count(i => i.Status == "Overdue")</div>
+        <div class="kpi-title text-danger">Overdue</div>
+    </div>
+</div>
+
+@if (Model.Any(i => i.Status == "Overdue"))
+{
+    <div class="admin-alert-banner">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>@Model.Count(i => i.Status == "Overdue") overdue invoice(s) require immediate follow-up.</span>
+    </div>
+}
+
+<form method="get" class="filter-toolbar">
+    <div class="filter-search-wrap">
+        <i class="bi bi-search"></i>
+        <input name="search" type="text" placeholder="Search invoices..." value="@ViewData["Search"]" />
+    </div>
+    <div class="filter-selects-group">
+        <select name="status" class="filter-select">
+            <option value="All">All Statuses</option>
+            <option value="Paid" selected="@(ViewData["StatusFilter"]?.ToString() == "Paid")">Paid</option>
+            <option value="Partial" selected="@(ViewData["StatusFilter"]?.ToString() == "Partial")">Partial</option>
+            <option value="Unpaid" selected="@(ViewData["StatusFilter"]?.ToString() == "Unpaid")">Unpaid</option>
+            <option value="Overdue" selected="@(ViewData["StatusFilter"]?.ToString() == "Overdue")">Overdue</option>
+        </select>
+        <button type="submit" class="admin-btn-secondary">Filter</button>
+        <a asp-action="Index" class="admin-btn-secondary">Reset</a>
+    </div>
+</form>
+
+<div class="table-container-card">
+    <table class="admin-data-table">
+        <thead>
+            <tr><th>Number</th><th>Customer</th><th>Issue Date</th><th>Due Date</th><th>Total</th><th>Paid</th><th>Balance</th><th>Status</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr><td colspan="9" class="text-center text-muted py-4">No invoices found.</td></tr>
+            }
+            @foreach (var i in Model)
+            {
+                <tr>
+                    <td class="fw-semibold text-primary">@i.InvoiceNumber</td>
+                    <td>@i.CustomerName</td>
+                    <td>@i.IssueDate.ToString("MMM dd, yyyy")</td>
+                    <td>@i.DueDate.ToString("MMM dd, yyyy")</td>
+                    <td>₱@i.TotalAmount.ToString("N2")</td>
+                    <td>₱@i.AmountPaid.ToString("N2")</td>
+                    <td>₱@i.Balance.ToString("N2")</td>
+                    <td><span class="status-pill @(i.Status == "Paid" ? "completed" : i.Status == "Partial" ? "active" : i.Status == "Overdue" ? "rejected" : "upcoming")">@i.Status</span></td>
+                    <td class="d-flex gap-1">
+                        <a asp-action="Details" asp-route-id="@i.Id" class="btn btn-sm btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+                        <form asp-action="Delete" asp-route-id="@i.Id" method="post" onsubmit="return confirm('Delete invoice @i.InvoiceNumber?');" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

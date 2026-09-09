@@ -1,0 +1,83 @@
+@* Views/SuperAdmin/Components/_SuppliersTable.cshtml *@
+<div class="table-container-card">
+    <table class="admin-data-table">
+        <thead>
+            <tr>
+                <th>Supplier Code</th>
+                <th>Company Name</th>
+                <th>Category</th>
+                <th>Contact Person</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Rating</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="fw-semibold text-primary">SUP-001</td>
+                <td class="fw-semibold">Monterey Meats PH</td>
+                <td><span class="type-pill">Meats & Poultry</span></td>
+                <td>Ramon Valderrama</td>
+                <td>0917-111-2233</td>
+                <td>orders@monterey.ph</td>
+                <td><span class="text-warning">★★★★★</span> (4.9)</td>
+                <td><span class="status-badge-active">Active</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('SUP-001')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">SUP-002</td>
+                <td class="fw-semibold">Navotas Fresh Catch Inc.</td>
+                <td><span class="type-pill">Seafood</span></td>
+                <td>Lucia Fernandez</td>
+                <td>0918-222-3344</td>
+                <td>sales@navotascatch.com</td>
+                <td><span class="text-warning">★★★★☆</span> (4.7)</td>
+                <td><span class="status-badge-active">Active</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('SUP-002')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">SUP-003</td>
+                <td class="fw-semibold">Baguio Highland Greens</td>
+                <td><span class="type-pill">Fresh Produce</span></td>
+                <td>Mateo Bagatsing</td>
+                <td>0919-333-4455</td>
+                <td>greens@baguiogrowers.ph</td>
+                <td><span class="text-warning">★★★★★</span> (5.0)</td>
+                <td><span class="status-badge-active">Active</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('SUP-003')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">SUP-004</td>
+                <td class="fw-semibold">Grand Wine & Spirits Ltd.</td>
+                <td><span class="type-pill">Beverages & Wine</span></td>
+                <td>Dominique Chen</td>
+                <td>0920-444-5566</td>
+                <td>vip@grandwines.com</td>
+                <td><span class="text-warning">★★★★☆</span> (4.8)</td>
+                <td><span class="status-badge-active">Active</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('SUP-004')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

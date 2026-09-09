@@ -1,0 +1,36 @@
+@* Views/Client/Components/_Navbar.cshtml *@
+<nav class="client-navbar">
+    <div class="container navbar-inner">
+        <a href="/" class="brand-logo">
+            <img src="/images/logo.svg" alt="CateringFlow" class="brand-logo-img" />
+            <span>Catering</span>Flow
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="#packages">Packages</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#process">How it Works</a></li>
+            <li><a href="#gallery">Culinary Gallery</a></li>
+            <li><a href="#testimonials">Reviews</a></li>
+        </ul>
+
+        <div class="nav-actions">
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <a href="/Account/Logout" class="btn-luxury-outline">
+                    <i class="bi bi-box-arrow-right"></i> Sign Out
+                </a>
+            }
+            else
+            {
+                <a href="/Account/Login" class="btn-luxury-outline">
+                    <i class="bi bi-box-arrow-in-right"></i> Sign In
+                </a>
+            }
+            <button class="btn-luxury-gold" onclick="openBookingModal()">
+                <i class="bi bi-calendar-check"></i> Book Now
+            </button>
+        </div>
+    </div>
+</nav>

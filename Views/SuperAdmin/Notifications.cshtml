@@ -1,0 +1,60 @@
+@* Views/SuperAdmin/Notifications.cshtml *@
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Notifications";
+    ViewData["ActivePage"] = "Notifications";
+}
+
+<!-- Page Header Row -->
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Notifications</h1>
+        <div class="page-header-sub">3 unread</div>
+    </div>
+    <div>
+        <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2" onclick="markAllNotificationsRead()">
+            <i class="bi bi-check2"></i> Mark all as read
+        </button>
+    </div>
+</div>
+
+<!-- Tabs Row: All (8) vs Unread (3) -->
+<div class="notifications-tabs-row">
+    <button id="tabAllNotifs" class="notif-tab-pill active" onclick="filterNotifications('all', this)">All (8)</button>
+    <button id="tabUnreadNotifs" class="notif-tab-pill" onclick="filterNotifications('unread', this)">Unread (3)</button>
+</div>
+
+<!-- Notifications List Component -->
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_NotificationsList.cshtml")
+
+@section Scripts {
+    <script>
+        function filterNotifications(type, el) {
+            document.querySelectorAll('.notif-tab-pill').forEach(btn => btn.classList.remove('active'));
+            el.classList.add('active');
+
+            const cards = document.querySelectorAll('.notification-row-card');
+            cards.forEach(card => {
+                if (type === 'unread') {
+                    if (card.classList.contains('unread-notif')) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                } else {
+                    card.style.display = 'flex';
+                }
+            });
+        }
+
+        function markAllNotificationsRead() {
+            document.querySelectorAll('.notif-dot-unread').forEach(dot => dot.style.display = 'none');
+            document.querySelectorAll('.unread-notif').forEach(el => el.classList.remove('unread-notif'));
+            const sub = document.querySelector('.page-header-sub');
+            if (sub) sub.innerText = '0 unread';
+            const unreadTab = document.getElementById('tabUnreadNotifs');
+            if (unreadTab) unreadTab.innerText = 'Unread (0)';
+            alert('All notifications marked as read.');
+        }
+    </script>
+}

@@ -1,0 +1,63 @@
+@model IEnumerable<CRMLeadModel>
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "CRM & Leads";
+    ViewData["ActivePage"] = "CRM";
+}
+
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">CRM & Leads</h1>
+        <div class="page-header-sub">Pipeline · @Model.Count() leads · ₱@((ViewData["TotalValue"] as decimal?) ?? 0m).ToString("N0") total value</div>
+    </div>
+    <div>
+        <a asp-action="Create" class="admin-btn-primary">
+            <i class="bi bi-plus-lg"></i> + Add Lead
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success d-flex align-items-center gap-2"><i class="bi bi-check-circle-fill"></i> @TempData["Success"]</div>
+}
+
+<!-- Pipeline by Stage -->
+<div class="kpi-cards-grid">
+    <div class="kpi-card"><div class="kpi-value" style="font-size: 1.8rem;">@Model.Count(l => l.Stage == "New")</div><div class="kpi-title">New</div></div>
+    <div class="kpi-card"><div class="kpi-value" style="font-size: 1.8rem;">@Model.Count(l => l.Stage == "Contacted")</div><div class="kpi-title">Contacted</div></div>
+    <div class="kpi-card"><div class="kpi-value" style="font-size: 1.8rem;">@Model.Count(l => l.Stage == "Proposal")</div><div class="kpi-title">Proposal</div></div>
+    <div class="kpi-card"><div class="kpi-value" style="font-size: 1.8rem;">@Model.Count(l => l.Stage == "Negotiation")</div><div class="kpi-title">Negotiation</div></div>
+    <div class="kpi-card" style="background: #ecfdf5; border-color: #a7f3d0;"><div class="kpi-value text-success" style="font-size: 1.8rem;">@Model.Count(l => l.Stage == "Won")</div><div class="kpi-title text-success">Won</div></div>
+    <div class="kpi-card" style="background: #fef2f2; border-color: #fecaca;"><div class="kpi-value text-danger" style="font-size: 1.8rem;">@Model.Count(l => l.Stage == "Lost" || l.Stage == "Locked/Lost")</div><div class="kpi-title text-danger">Lost</div></div>
+</div>
+
+<div class="table-container-card">
+    <table class="admin-data-table">
+        <thead>
+            <tr><th>Lead</th><th>Company</th><th>Contact</th><th>Value</th><th>Stage</th><th>Assigned To</th><th>Last Contact</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr><td colspan="8" class="text-center text-muted py-4">No leads found.</td></tr>
+            }
+            @foreach (var l in Model)
+            {
+                <tr>
+                    <td class="fw-semibold">@l.LeadName</td>
+                    <td>@(l.Company ?? "—")</td>
+                    <td class="small">@(l.Email ?? "—")<br />@(l.Phone ?? "")</td>
+                    <td class="fw-semibold">₱@l.EstimatedValue.ToString("N0")</td>
+                    <td><span class="status-pill @(l.Stage == "Won" ? "completed" : l.Stage == "Lost" || l.Stage == "Locked/Lost" ? "rejected" : l.Stage == "Negotiation" ? "active" : "upcoming")">@l.Stage</span></td>
+                    <td>@(l.AssignedTo ?? "—")</td>
+                    <td>@(l.LastContact?.ToString("MMM dd, yyyy") ?? "—")</td>
+                    <td class="d-flex gap-1">
+                        <a asp-action="Details" asp-route-id="@l.Id" class="btn btn-sm btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+                        <a asp-action="Edit" asp-route-id="@l.Id" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

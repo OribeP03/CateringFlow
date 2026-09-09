@@ -1,0 +1,57 @@
+@model CRMLeadModel
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Lead Details";
+    ViewData["ActivePage"] = "CRM";
+}
+
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">@Model.LeadName</h1>
+        <div class="page-header-sub">@Model.Stage · ₱@Model.EstimatedValue.ToString("N0")</div>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="admin-btn-secondary"><i class="bi bi-pencil"></i> Edit</a>
+        <a asp-action="Index" class="admin-btn-secondary"><i class="bi bi-arrow-left"></i> Back</a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success d-flex align-items-center gap-2"><i class="bi bi-check-circle-fill"></i> @TempData["Success"]</div>
+}
+
+<!-- Stage Update -->
+<div class="widget-card mb-4">
+    <h6 class="fw-bold mb-2">Update Pipeline Stage</h6>
+    <form asp-action="UpdateStage" method="post" class="d-flex gap-2 align-items-center flex-wrap">
+        <input type="hidden" name="id" value="@Model.Id" />
+        <select name="stage" class="form-select" style="max-width: 200px;">
+            <option selected="@(Model.Stage == "New")">New</option>
+            <option selected="@(Model.Stage == "Contacted")">Contacted</option>
+            <option selected="@(Model.Stage == "Proposal")">Proposal</option>
+            <option selected="@(Model.Stage == "Negotiation")">Negotiation</option>
+            <option selected="@(Model.Stage == "Won")">Won</option>
+            <option selected="@(Model.Stage == "Lost")">Lost</option>
+        </select>
+        <button type="submit" class="admin-btn-primary"><i class="bi bi-check-lg"></i> Update Stage</button>
+        <span class="text-muted small">Marking a lead as Won creates a Customer automatically.</span>
+    </form>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="widget-card">
+            <h5 class="fw-bold mb-3">Lead Information</h5>
+            <div class="mb-2"><i class="bi bi-building me-2"></i><strong>Company:</strong> @(Model.Company ?? "—")</div>
+            <div class="mb-2"><i class="bi bi-envelope me-2"></i><strong>Email:</strong> @(Model.Email ?? "—")</div>
+            <div class="mb-2"><i class="bi bi-telephone me-2"></i><strong>Phone:</strong> @(Model.Phone ?? "—")</div>
+            <div class="mb-2"><i class="bi bi-person-badge me-2"></i><strong>Assigned To:</strong> @(Model.AssignedTo ?? "—")</div>
+            <div class="mb-2"><i class="bi bi-person-lines-fill me-2"></i><strong>Linked Customer:</strong> @Model.CustomerName</div>
+            <div class="mb-2"><i class="bi bi-calendar me-2"></i><strong>Last Contact:</strong> @(Model.LastContact?.ToString("MMMM dd, yyyy") ?? "—")</div>
+            <hr />
+            <div class="small text-muted mb-1"><strong>Notes:</strong></div>
+            <div class="small">@(Model.Notes ?? "No notes.")</div>
+        </div>
+    </div>
+</div>

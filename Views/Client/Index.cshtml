@@ -1,0 +1,70 @@
+@{
+    Layout = null;
+    ViewData["Title"] = "CateringFlow - Extraordinary Food & Flawless Catering Management";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 & Bootstrap Icons -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    
+    <!-- Client CSS -->
+    <link rel="stylesheet" href="~/css/client.css" asp-append-version="true" />
+</head>
+<body>
+
+    <!-- 1. Navbar Component -->
+    @await Html.PartialAsync("~/Views/Client/Components/_Navbar.cshtml")
+
+    <!-- 2. Hero Component -->
+    @await Html.PartialAsync("~/Views/Client/Components/_Hero.cshtml")
+
+    <!-- 3. Event Types Stats Bar -->
+    @await Html.PartialAsync("~/Views/Client/Components/_StatsBar.cshtml")
+
+    <!-- 4. Built for Catering Professionals Features Component -->
+    @await Html.PartialAsync("~/Views/Client/Components/_BuiltForPros.cshtml")
+
+    <!-- 5. Ambience Quote Banner Component -->
+    @await Html.PartialAsync("~/Views/Client/Components/_QuoteBanner.cshtml")
+
+    <!-- 6. Process Steps Component -->
+    @await Html.PartialAsync("~/Views/Client/Components/_ProcessSteps.cshtml")
+
+    <!-- 7. Gallery Showcase Component -->
+    @await Html.PartialAsync("~/Views/Client/Components/_GalleryShowcase.cshtml")
+
+    <!-- 8. Packages & Pricing Component -->
+    @await Html.PartialAsync("~/Views/Client/Components/_PackageCards.cshtml")
+
+    <!-- 9. Testimonials Component -->
+    @await Html.PartialAsync("~/Views/Client/Components/_Testimonials.cshtml")
+
+    <!-- 10. Call to Action Banner Component -->
+    @await Html.PartialAsync("~/Views/Client/Components/_CtaBanner.cshtml")
+
+    <!-- 11. Footer Component -->
+    @await Html.PartialAsync("~/Views/Client/Components/_Footer.cshtml")
+
+    <!-- 12. Interactive Booking Modal (hidden overlay) -->
+    @await Html.PartialAsync("~/Views/Client/Components/_BookingModal.cshtml")
+
+    <!-- Scripts -->
+    <script>
+        window.__CATERINGFLOW_AUTH__ = '@(User.Identity?.IsAuthenticated == true ? "true" : "false")';
+    </script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/client.js" asp-append-version="true"></script>
+</body>
+</html>

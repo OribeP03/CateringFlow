@@ -1,0 +1,187 @@
+@* Views/SuperAdmin/Components/_StaffTable.cshtml *@
+<div class="table-container-card">
+    <table class="admin-data-table">
+        <thead>
+            <tr>
+                <th>Staff ID</th>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Availability</th>
+                <th>Employment</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="fw-semibold text-primary">STF-001</td>
+                <td>
+                    <div class="customer-name-cell">
+                        <div class="avatar-initials-pill">CA</div>
+                        <span class="fw-semibold">Carlo Aquino</span>
+                    </div>
+                </td>
+                <td>Sales Manager</td>
+                <td>0917-777-8888</td>
+                <td>carlo@cateringflow.ph</td>
+                <td><span class="status-pill available">Available</span></td>
+                <td><span class="emp-pill full-time">Full-time</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('STF-001')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">STF-002</td>
+                <td>
+                    <div class="customer-name-cell">
+                        <div class="avatar-initials-pill">DT</div>
+                        <span class="fw-semibold">Diana Torres</span>
+                    </div>
+                </td>
+                <td>CRM Specialist</td>
+                <td>0918-888-9999</td>
+                <td>diana@cateringflow.ph</td>
+                <td><span class="status-pill busy">Busy</span></td>
+                <td><span class="emp-pill full-time">Full-time</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('STF-002')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">STF-003</td>
+                <td>
+                    <div class="customer-name-cell">
+                        <div class="avatar-initials-pill">MR</div>
+                        <span class="fw-semibold">Michael Ramos</span>
+                    </div>
+                </td>
+                <td>Event Coordinator</td>
+                <td>0919-999-0000</td>
+                <td>michael@cateringflow.ph</td>
+                <td><span class="status-pill available">Available</span></td>
+                <td><span class="emp-pill full-time">Full-time</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('STF-003')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">STF-004</td>
+                <td>
+                    <div class="customer-name-cell">
+                        <div class="avatar-initials-pill">GV</div>
+                        <span class="fw-semibold">Grace Villanueva</span>
+                    </div>
+                </td>
+                <td>Head Chef</td>
+                <td>0920-000-1111</td>
+                <td>grace@cateringflow.ph</td>
+                <td><span class="status-pill available">Available</span></td>
+                <td><span class="emp-pill full-time">Full-time</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('STF-004')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">STF-005</td>
+                <td>
+                    <div class="customer-name-cell">
+                        <div class="avatar-initials-pill">RF</div>
+                        <span class="fw-semibold">Rico Fernandez</span>
+                    </div>
+                </td>
+                <td>Sous Chef</td>
+                <td>0921-111-2222</td>
+                <td>rico@cateringflow.ph</td>
+                <td><span class="status-pill on-leave">On Leave</span></td>
+                <td><span class="emp-pill full-time">Full-time</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('STF-005')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">STF-006</td>
+                <td>
+                    <div class="customer-name-cell">
+                        <div class="avatar-initials-pill">JP</div>
+                        <span class="fw-semibold">Jenny Pascual</span>
+                    </div>
+                </td>
+                <td>Waitstaff Lead</td>
+                <td>0922-222-3333</td>
+                <td>jenny@cateringflow.ph</td>
+                <td><span class="status-pill available">Available</span></td>
+                <td><span class="emp-pill part-time">Part-time</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('STF-006')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">STF-007</td>
+                <td>
+                    <div class="customer-name-cell">
+                        <div class="avatar-initials-pill">NB</div>
+                        <span class="fw-semibold">Nico Barrera</span>
+                    </div>
+                </td>
+                <td>Bartender</td>
+                <td>0923-333-4444</td>
+                <td>nico@cateringflow.ph</td>
+                <td><span class="status-pill available">Available</span></td>
+                <td><span class="emp-pill contractual">Contractual</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('STF-007')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">STF-008</td>
+                <td>
+                    <div class="customer-name-cell">
+                        <div class="avatar-initials-pill">LC</div>
+                        <span class="fw-semibold">Luz Castillo</span>
+                    </div>
+                </td>
+                <td>Finance Officer</td>
+                <td>0924-444-5555</td>
+                <td>luz@cateringflow.ph</td>
+                <td><span class="status-pill available">Available</span></td>
+                <td><span class="emp-pill full-time">Full-time</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('STF-008')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="table-pagination-footer">
+        <div>8 staff members</div>
+        <div class="pagination-controls">
+            <button class="page-btn" disabled>Previous</button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn" disabled>Next</button>
+        </div>
+    </div>
+</div>

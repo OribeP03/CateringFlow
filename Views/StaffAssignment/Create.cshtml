@@ -1,0 +1,68 @@
+@model StaffAssignmentModel
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Assign Staff";
+    ViewData["ActivePage"] = "Staff";
+}
+
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Assign Staff to Event</h1>
+        <div class="page-header-sub">Staff availability will automatically be set to Busy after assignment</div>
+    </div>
+</div>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="widget-card" style="max-width: 650px;">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label for="StaffId" class="form-label">Staff Member (available only)</label>
+                <select name="StaffId" id="StaffId" class="form-select" required>
+                    <option value="">-- Select Staff --</option>
+                    @if (ViewData["Staff"] is List<StaffModel> staff)
+                    {
+                        foreach (var s in staff)
+                        {
+                            <option value="@s.Id">@s.FullName — @s.Position</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="EventId" class="form-label">Event</label>
+                <select name="EventId" id="EventId" class="form-select" required>
+                    <option value="">-- Select Event --</option>
+                    @if (ViewData["Events"] is List<EventModel> events)
+                    {
+                        foreach (var e in events)
+                        {
+                            <option value="@e.Id">@e.EventName — @e.EventDate.ToString("MMM dd, yyyy")</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="RoleAtEvent" class="form-label">Role at Event</label>
+                <select name="RoleAtEvent" id="RoleAtEvent" class="form-select">
+                    <option>Server</option>
+                    <option>Head Chef</option>
+                    <option>Sous Chef</option>
+                    <option>Pastry Chef</option>
+                    <option>Bartender</option>
+                    <option>Event Coordinator</option>
+                    <option>Kitchen Porter</option>
+                    <option>Event Server</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="Notes" class="form-label">Notes</label>
+                <input name="Notes" id="Notes" class="form-control" />
+            </div>
+            <div class="col-md-12 d-flex gap-2">
+                <button type="submit" class="admin-btn-primary"><i class="bi bi-check-lg"></i> Assign Staff</button>
+                <a asp-action="Index" class="admin-btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </div>
+</form>

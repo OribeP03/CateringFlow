@@ -1,0 +1,85 @@
+@model InventoryModel
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Add Stock Item";
+    ViewData["ActivePage"] = "Inventory";
+}
+
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Add Stock Item</h1>
+        <div class="page-header-sub">Track a new inventory item</div>
+    </div>
+</div>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="widget-card" style="max-width: 760px;">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label asp-for="ItemCode" class="form-label">Item Code</label>
+                <input asp-for="ItemCode" class="form-control" value="@ViewData["SuggestedCode"]" />
+                <span asp-validation-for="ItemCode" class="text-danger small"></span>
+            </div>
+            <div class="col-md-8">
+                <label asp-for="ItemName" class="form-label">Item Name</label>
+                <input asp-for="ItemName" class="form-control" />
+                <span asp-validation-for="ItemName" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Category" class="form-label">Category</label>
+                <select asp-for="Category" class="form-select">
+                    <option>Meats & Poultry</option>
+                    <option>Seafood</option>
+                    <option>Produce</option>
+                    <option>Grains</option>
+                    <option>Beverages</option>
+                    <option>Equipment</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="SupplierId" class="form-label">Supplier</label>
+                <select asp-for="SupplierId" class="form-select">
+                    <option value="">-- Select Supplier --</option>
+                    @if (ViewData["Suppliers"] is List<SupplierModel> suppliers)
+                    {
+                        foreach (var s in suppliers)
+                        {
+                            <option value="@s.Id">@s.SupplierName</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="CurrentStock" class="form-label">Current Stock</label>
+                <input asp-for="CurrentStock" class="form-control" type="number" step="0.01" min="0" />
+                <span asp-validation-for="CurrentStock" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="MinReorderLevel" class="form-label">Min Reorder Level</label>
+                <input asp-for="MinReorderLevel" class="form-control" type="number" step="0.01" min="0" />
+                <span asp-validation-for="MinReorderLevel" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Unit" class="form-label">Unit</label>
+                <select asp-for="Unit" class="form-select">
+                    <option>kg</option>
+                    <option>g</option>
+                    <option>L</option>
+                    <option>sacks</option>
+                    <option>pcs</option>
+                    <option>bottles</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="UnitCost" class="form-label">Unit Cost</label>
+                <input asp-for="UnitCost" class="form-control" type="number" step="0.01" min="0" />
+                <span asp-validation-for="UnitCost" class="text-danger small"></span>
+            </div>
+            <div class="col-md-12 d-flex gap-2">
+                <button type="submit" class="admin-btn-primary"><i class="bi bi-check-lg"></i> Save Item</button>
+                <a asp-action="Index" class="admin-btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </div>
+</form>

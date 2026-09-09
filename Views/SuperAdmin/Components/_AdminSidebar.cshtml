@@ -1,0 +1,214 @@
+@* Views/SuperAdmin/Components/_AdminSidebar.cshtml *@
+@using System.Security.Claims
+@using cateringflow.Models
+@using cateringflow.Services
+@inject IRbacService RbacService
+
+@{
+    var activePage = ViewData["ActivePage"]?.ToString() ?? "Dashboard";
+    var currentRole = Context.Items["CurrentRole"]?.ToString() ?? 
+                      Context.Request.Cookies["CateringFlow_Role"] ?? 
+                      UserRoles.SuperAdmin;
+    
+    var allowedPages = RbacService.GetAllowedPages(currentRole);
+
+    var isAuthenticated = User.Identity?.IsAuthenticated == true;
+    var signedInName = isAuthenticated ? User.Identity?.Name : null;
+    var signedInEmail = isAuthenticated ? User.FindFirstValue(ClaimTypes.Email) : null;
+
+    string userName = !string.IsNullOrWhiteSpace(signedInName) ? signedInName : currentRole switch
+    {
+        UserRoles.SuperAdmin => "Admin Rivera",
+        UserRoles.SalesCrm => "Carlo Aquino",
+        UserRoles.EventCoordinator => "Michael Ramos",
+        UserRoles.InventoryStaff => "Mateo Bagatsing",
+        UserRoles.KitchenManager => "Grace Villanueva",
+        UserRoles.FinanceStaff => "Luz Castillo",
+        UserRoles.StaffCrew => "Jenny Pascual",
+        UserRoles.Customer => "Maria Santos",
+        _ => "CateringFlow User"
+    };
+
+    var nameParts = userName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+    string userInitials = nameParts.Length >= 2
+        ? $"{nameParts[0][0]}{nameParts[1][0]}".ToUpperInvariant()
+        : userName.Length >= 2 ? userName[..2].ToUpperInvariant() : userName.ToUpperInvariant();
+}
+
+<aside class="admin-sidebar">
+    <!-- Brand Header -->
+    <div class="sidebar-header">
+        <div class="sidebar-logo-img-wrap">
+            <img src="/images/logo.svg" alt="CateringFlow" class="sidebar-logo-img" />
+        </div>
+        <div>
+            <div class="sidebar-brand-name">CateringFlow</div>
+            <div class="sidebar-brand-tag">ERP + CRM</div>
+        </div>
+    </div>
+
+    <!-- Navigation List -->
+    <div class="sidebar-nav-container">
+        <ul class="sidebar-nav-list">
+            @if (allowedPages.ContainsKey("Dashboard"))
+            {
+                <li class="sidebar-nav-item @(activePage == "Dashboard" ? "active" : "")">
+                    <a href="/SuperAdmin/Dashboard">
+                        <i class="bi bi-grid-1x2-fill"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+            }
+
+            @if (allowedPages.ContainsKey("Customers"))
+            {
+                <li class="sidebar-nav-item @(activePage == "Customers" ? "active" : "")">
+                    <a href="/SuperAdmin/Customers">
+                        <i class="bi bi-people"></i>
+                        <span>Customers</span>
+                    </a>
+                </li>
+            }
+
+            @if (allowedPages.ContainsKey("CRM"))
+            {
+                <li class="sidebar-nav-item @(activePage == "CRM" ? "active" : "")">
+                    <a href="/SuperAdmin/CRM">
+                        <i class="bi bi-funnel"></i>
+                        <span>CRM & Leads</span>
+                    </a>
+                </li>
+            }
+
+            @if (allowedPages.ContainsKey("Events"))
+            {
+                <li class="sidebar-nav-item @(activePage == "Events" ? "active" : "")">
+                    <a href="/SuperAdmin/Events">
+                        <i class="bi bi-calendar-event"></i>
+                        <span>Events</span>
+                    </a>
+                </li>
+            }
+
+            @if (allowedPages.ContainsKey("MenuPackages"))
+            {
+                <li class="sidebar-nav-item @(activePage == "MenuPackages" ? "active" : "")">
+                    <a href="/SuperAdmin/MenuPackages">
+                        <i class="bi bi-journal-bookmark"></i>
+                        <span>Menu & Packages</span>
+                    </a>
+                </li>
+            }
+
+            @if (allowedPages.ContainsKey("Inventory"))
+            {
+                <li class="sidebar-nav-item @(activePage == "Inventory" ? "active" : "")">
+                    <a href="/SuperAdmin/Inventory">
+                        <i class="bi bi-box-seam"></i>
+                        <span>Inventory</span>
+                    </a>
+                </li>
+            }
+
+            @if (allowedPages.ContainsKey("Suppliers"))
+            {
+                <li class="sidebar-nav-item @(activePage == "Suppliers" ? "active" : "")">
+                    <a href="/SuperAdmin/Suppliers">
+                        <i class="bi bi-truck"></i>
+                        <span>Suppliers</span>
+                    </a>
+                </li>
+            }
+
+            @if (allowedPages.ContainsKey("Staff"))
+            {
+                <li class="sidebar-nav-item @(activePage == "Staff" ? "active" : "")">
+                    <a href="/SuperAdmin/Staff">
+                        <i class="bi bi-person-badge"></i>
+                        <span>Staff</span>
+                    </a>
+                </li>
+            }
+
+            @if (allowedPages.ContainsKey("Quotations"))
+            {
+                <li class="sidebar-nav-item @(activePage == "Quotations" ? "active" : "")">
+                    <a href="/SuperAdmin/Quotations">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <span>Quotations</span>
+                    </a>
+                </li>
+            }
+
+            @if (allowedPages.ContainsKey("Invoices"))
+            {
+                <li class="sidebar-nav-item @(activePage == "Invoices" ? "active" : "")">
+                    <a href="/SuperAdmin/Invoices">
+                        <i class="bi bi-receipt"></i>
+                        <span>Invoices</span>
+                    </a>
+                </li>
+            }
+
+            @if (allowedPages.ContainsKey("Payments"))
+            {
+                <li class="sidebar-nav-item @(activePage == "Payments" ? "active" : "")">
+                    <a href="/SuperAdmin/Payments">
+                        <i class="bi bi-credit-card"></i>
+                        <span>Payments</span>
+                    </a>
+                </li>
+            }
+
+            @if (allowedPages.ContainsKey("Reports"))
+            {
+                <li class="sidebar-nav-item @(activePage == "Reports" ? "active" : "")">
+                    <a href="/SuperAdmin/Reports">
+                        <i class="bi bi-bar-chart-line"></i>
+                        <span>Reports</span>
+                    </a>
+                </li>
+            }
+
+            @if (allowedPages.ContainsKey("Notifications"))
+            {
+                <li class="sidebar-nav-item @(activePage == "Notifications" ? "active" : "")">
+                    <a href="/SuperAdmin/Notifications">
+                        <i class="bi bi-bell"></i>
+                        <span>Notifications</span>
+                    </a>
+                </li>
+            }
+
+            @if (allowedPages.ContainsKey("Settings"))
+            {
+                <li class="sidebar-nav-item @(activePage == "Settings" ? "active" : "")">
+                    <a href="/SuperAdmin/Settings">
+                        <i class="bi bi-gear"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+
+    <!-- Sidebar Footer with Profile -->
+    <div class="sidebar-footer">
+        <div class="sidebar-user-chip">
+            <div class="sidebar-user-info">
+                <div class="user-avatar-badge">@userInitials</div>
+                <div class="user-text-info">
+                    <div class="user-name">@userName</div>
+                    <div class="user-role">@currentRole</div>
+                    @if (!string.IsNullOrWhiteSpace(signedInEmail))
+                    {
+                        <div class="user-email">@signedInEmail</div>
+                    }
+                </div>
+            </div>
+            <a href="/Account/Logout" title="Sign Out & Return Home" class="sidebar-logout-btn">
+                <i class="bi bi-box-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</aside>

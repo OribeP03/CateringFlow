@@ -1,0 +1,61 @@
+@* Views/SuperAdmin/Components/_AddCustomerModal.cshtml *@
+<div id="addCustomerModal" class="admin-modal-backdrop">
+    <div class="admin-modal-dialog">
+        <div class="admin-modal-header">
+            <div>
+                <h5 class="admin-modal-title mb-1">Add New Customer Account</h5>
+                <p class="text-muted small mb-0">Create a client record for catering billing and history.</p>
+            </div>
+            <button class="admin-modal-close" onclick="closeAdminModal('addCustomerModal')">&times;</button>
+        </div>
+        <form onsubmit="event.preventDefault(); alert('Customer created successfully!'); closeAdminModal('addCustomerModal');">
+            <div class="admin-modal-body">
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Customer Name *</label>
+                        <input type="text" class="form-control" placeholder="e.g. Gabriel Lopez" required />
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Company / Affiliation</label>
+                        <input type="text" class="form-control" placeholder="e.g. Lopez Holdings" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Email Address *</label>
+                        <input type="email" class="form-control" placeholder="glopez@domain.com" required />
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Phone Number *</label>
+                        <input type="tel" class="form-control" placeholder="0917-xxx-xxxx" required />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Account Type</label>
+                        <select class="form-control">
+                            <option value="Individual">Individual</option>
+                            <option value="Corporate" selected>Corporate</option>
+                            <option value="Government">Government</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Initial Status</label>
+                        <select class="form-control">
+                            <option value="Active" selected>Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-modal-footer">
+                <button type="button" class="admin-btn-secondary" onclick="closeAdminModal('addCustomerModal')">Cancel</button>
+                <button type="submit" class="admin-btn-primary">
+                    <i class="bi bi-person-plus-fill me-1"></i> Save Customer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

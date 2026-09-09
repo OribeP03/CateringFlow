@@ -1,0 +1,85 @@
+@model EventModel
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Edit Event";
+    ViewData["ActivePage"] = "Events";
+}
+
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Edit Event</h1>
+        <div class="page-header-sub">@Model.EventName</div>
+    </div>
+</div>
+
+<form asp-action="Edit" asp-controller="Event" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="widget-card" style="max-width: 760px;">
+        <div class="row g-3">
+            <div class="col-md-12">
+                <label asp-for="EventName" class="form-label">Event Name</label>
+                <input asp-for="EventName" class="form-control" />
+                <span asp-validation-for="EventName" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="CustomerId" class="form-label">Customer</label>
+                <select asp-for="CustomerId" asp-items="@(new SelectList(ViewData["Customers"] as List<CustomerModel>, "Id", "FullName"))" class="form-select"></select>
+                <span asp-validation-for="CustomerId" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="EventDate" class="form-label">Event Date</label>
+                <input asp-for="EventDate" class="form-control" type="date" />
+                <span asp-validation-for="EventDate" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="EventType" class="form-label">Event Type</label>
+                <select asp-for="EventType" class="form-select">
+                    <option>Wedding</option>
+                    <option>Corporate</option>
+                    <option>Birthday</option>
+                    <option>Anniversary</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Venue" class="form-label">Venue</label>
+                <input asp-for="Venue" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="PaxCount" class="form-label">No. of Pax</label>
+                <input asp-for="PaxCount" class="form-control" type="number" min="1" />
+                <span asp-validation-for="PaxCount" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="PackageId" class="form-label">Menu Package</label>
+                <select asp-for="PackageId" class="form-select">
+                    <option value="">-- No Package --</option>
+                    @if (ViewData["Packages"] is List<MenuPackageModel> packages)
+                    {
+                        foreach (var p in packages)
+                        {
+                            <option value="@p.Id">@p.PackageName</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Status" class="form-label">Status</label>
+                <select asp-for="Status" class="form-select">
+                    <option>Upcoming</option>
+                    <option>In Progress</option>
+                    <option>Completed</option>
+                    <option>Cancelled</option>
+                </select>
+            </div>
+            <div class="col-md-12">
+                <label asp-for="Notes" class="form-label">Notes</label>
+                <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="col-md-12 d-flex gap-2">
+                <button type="submit" class="admin-btn-primary"><i class="bi bi-check-lg"></i> Save Changes</button>
+                <a asp-action="Index" class="admin-btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </div>
+</form>

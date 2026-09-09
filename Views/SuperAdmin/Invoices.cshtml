@@ -1,0 +1,64 @@
+@* Views/SuperAdmin/Invoices.cshtml *@
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Invoices";
+    ViewData["ActivePage"] = "Invoices";
+}
+
+<!-- Page Header Row -->
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Invoices</h1>
+        <div class="page-header-sub">6 total invoices</div>
+    </div>
+    <div>
+        <button class="admin-btn-primary" onclick="openAdminModal('createInvoiceModal')">
+            <i class="bi bi-plus-lg"></i> + Create Invoice
+        </button>
+    </div>
+</div>
+
+<!-- 5 Invoice Status KPI Cards -->
+<div class="kpi-cards-grid">
+    <!-- Total -->
+    <div class="kpi-card">
+        <div class="kpi-value" style="font-size: 1.8rem;">6</div>
+        <div class="kpi-title">Total</div>
+    </div>
+
+    <!-- Paid -->
+    <div class="kpi-card" style="background: #ecfdf5; border-color: #a7f3d0;">
+        <div class="kpi-value text-success" style="font-size: 1.8rem;">3</div>
+        <div class="kpi-title text-success">Paid</div>
+    </div>
+
+    <!-- Partial -->
+    <div class="kpi-card" style="background: #fefce8; border-color: #fef08a;">
+        <div class="kpi-value" style="font-size: 1.8rem; color: #ca8a04;">1</div>
+        <div class="kpi-title" style="color: #ca8a04;">Partial</div>
+    </div>
+
+    <!-- Unpaid -->
+    <div class="kpi-card" style="background: #eff6ff; border-color: #bfdbfe;">
+        <div class="kpi-value text-primary" style="font-size: 1.8rem;">1</div>
+        <div class="kpi-title text-primary">Unpaid</div>
+    </div>
+
+    <!-- Overdue -->
+    <div class="kpi-card" style="background: #fef2f2; border-color: #fecaca;">
+        <div class="kpi-value text-danger" style="font-size: 1.8rem;">1</div>
+        <div class="kpi-title text-danger">Overdue</div>
+    </div>
+</div>
+
+<!-- Overdue Warning Alert Banner -->
+<div class="admin-alert-banner">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    <span>1 overdue invoice(s) require immediate follow-up.</span>
+</div>
+
+<!-- Invoices Table Component -->
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_InvoicesTable.cshtml")
+
+<!-- Create Invoice Modal Component -->
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_CreateInvoiceModal.cshtml")

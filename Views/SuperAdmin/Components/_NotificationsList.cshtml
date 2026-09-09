@@ -1,0 +1,157 @@
+@* Views/SuperAdmin/Components/_NotificationsList.cshtml *@
+<div class="notifications-stack">
+    <!-- 1. New Booking (Unread) -->
+    <div class="notification-row-card unread-notif">
+        <div class="d-flex align-items-center gap-3">
+            <div class="notif-icon-box booking">
+                <i class="bi bi-calendar-event"></i>
+            </div>
+            <div>
+                <div class="notif-category-title">
+                    <span>New Booking</span>
+                    <span class="notif-dot-unread"></span>
+                </div>
+                <div class="notif-main-text">New booking confirmed: Ana Reyes – Reyes-Cruz Wedding (Oct 5, 2025)</div>
+                <div class="notif-timestamp">2 hours ago</div>
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-sm btn-link text-muted" title="Mark as read"><i class="bi bi-check2"></i></button>
+        </div>
+    </div>
+
+    <!-- 2. Quotation Approved (Unread) -->
+    <div class="notification-row-card unread-notif">
+        <div class="d-flex align-items-center gap-3">
+            <div class="notif-icon-box quote">
+                <i class="bi bi-file-earmark-check"></i>
+            </div>
+            <div>
+                <div class="notif-category-title">
+                    <span>Quotation Approved</span>
+                    <span class="notif-dot-unread"></span>
+                </div>
+                <div class="notif-main-text">Quotation QT-2025-001 approved by Maria Santos</div>
+                <div class="notif-timestamp">5 hours ago</div>
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-sm btn-link text-muted" title="Mark as read"><i class="bi bi-check2"></i></button>
+        </div>
+    </div>
+
+    <!-- 3. Payment Received (Unread) -->
+    <div class="notification-row-card unread-notif">
+        <div class="d-flex align-items-center gap-3">
+            <div class="notif-icon-box payment">
+                <i class="bi bi-credit-card"></i>
+            </div>
+            <div>
+                <div class="notif-category-title">
+                    <span>Payment Received</span>
+                    <span class="notif-dot-unread"></span>
+                </div>
+                <div class="notif-main-text">Payment received from TechCorp Philippines – ₱360,000</div>
+                <div class="notif-timestamp">1 day ago</div>
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-sm btn-link text-muted" title="Mark as read"><i class="bi bi-check2"></i></button>
+        </div>
+    </div>
+
+    <!-- 4. Invoice Overdue -->
+    <div class="notification-row-card">
+        <div class="d-flex align-items-center gap-3">
+            <div class="notif-icon-box overdue">
+                <i class="bi bi-exclamation-triangle"></i>
+            </div>
+            <div>
+                <div class="notif-category-title">
+                    <span>Invoice Overdue</span>
+                </div>
+                <div class="notif-main-text">Invoice INV-2025-004 for City Government of Manila is now overdue</div>
+                <div class="notif-timestamp">2 days ago</div>
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-sm btn-link text-muted" title="Mark as read"><i class="bi bi-check2"></i></button>
+        </div>
+    </div>
+
+    <!-- 5. Low Inventory -->
+    <div class="notification-row-card">
+        <div class="d-flex align-items-center gap-3">
+            <div class="notif-icon-box inventory">
+                <i class="bi bi-box-seam"></i>
+            </div>
+            <div>
+                <div class="notif-category-title">
+                    <span>Low Inventory</span>
+                </div>
+                <div class="notif-main-text">Pork Belly stock is below reorder level (12kg remaining)</div>
+                <div class="notif-timestamp">2 days ago</div>
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-sm btn-link text-muted" title="Mark as read"><i class="bi bi-check2"></i></button>
+        </div>
+    </div>
+
+    <!-- 6. Ingredient Expiring -->
+    <div class="notification-row-card">
+        <div class="d-flex align-items-center gap-3">
+            <div class="notif-icon-box inventory">
+                <i class="bi bi-box-seam"></i>
+            </div>
+            <div>
+                <div class="notif-category-title">
+                    <span>Ingredient Expiring</span>
+                </div>
+                <div class="notif-main-text">Fresh Shrimp expires in 2 days – take action now</div>
+                <div class="notif-timestamp">3 days ago</div>
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-sm btn-link text-muted" title="Mark as read"><i class="bi bi-check2"></i></button>
+        </div>
+    </div>
+
+    <!-- 7. Staff Assignment -->
+    <div class="notification-row-card">
+        <div class="d-flex align-items-center gap-3">
+            <div class="notif-icon-box staff">
+                <i class="bi bi-person"></i>
+            </div>
+            <div>
+                <div class="notif-category-title">
+                    <span>Staff Assignment</span>
+                </div>
+                <div class="notif-main-text">Michael Ramos assigned to Santos Wedding Reception</div>
+                <div class="notif-timestamp">4 days ago</div>
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-sm btn-link text-muted" title="Mark as read"><i class="bi bi-check2"></i></button>
+        </div>
+    </div>
+
+    <!-- 8. New Lead -->
+    <div class="notification-row-card">
+        <div class="d-flex align-items-center gap-3">
+            <div class="notif-icon-box lead">
+                <i class="bi bi-bell"></i>
+            </div>
+            <div>
+                <div class="notif-category-title">
+                    <span>New Lead</span>
+                </div>
+                <div class="notif-main-text">New lead added: Globe Telecom – Corporate Event</div>
+                <div class="notif-timestamp">5 days ago</div>
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-sm btn-link text-muted" title="Mark as read"><i class="bi bi-check2"></i></button>
+        </div>
+    </div>
+</div>

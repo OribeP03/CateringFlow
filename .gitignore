@@ -1,0 +1,51 @@
+# Firebase service account (PRIVATE KEY - never commit!)
+firebase-adminsdk.json
+*.firebase-adminsdk*.json
+*-service-account.json
+*.private_key.json
+
+# Build results
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]uild/
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio / Rider / VS Code
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# Test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# Logs
+*.log
+Logs/
+logs/
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Secrets / env overrides
+*.local.json
+appsettings.Local.json
+appsettings.Development.json
+
+# Coverage / temp
+*.coverage
+*.coveragexml
+coverlet/coverage*.json
+coverage*.info

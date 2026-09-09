@@ -1,0 +1,112 @@
+@* Views/SuperAdmin/Components/_ReportsHub.cshtml *@
+<div class="reports-hub-grid">
+    <!-- 1. Sales Reports -->
+    <div class="report-category-card">
+        <div class="report-card-header sales">
+            <i class="bi bi-graph-up-arrow"></i>
+            <span>Sales Reports</span>
+        </div>
+        <div class="report-items-list">
+            <a href="#" class="report-item-link" onclick="alert('Generating Revenue Report PDF...'); return false;">
+                <div class="report-item-title">Revenue Report</div>
+                <div class="report-item-desc">Monthly and yearly revenue breakdown</div>
+            </a>
+            <a href="#" class="report-item-link" onclick="alert('Generating Booking Report PDF...'); return false;">
+                <div class="report-item-title">Booking Report</div>
+                <div class="report-item-desc">All bookings with status and amounts</div>
+            </a>
+            <a href="#" class="report-item-link" onclick="alert('Generating Customer Report PDF...'); return false;">
+                <div class="report-item-title">Customer Report</div>
+                <div class="report-item-desc">Customer acquisition and activity</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- 2. Finance Reports -->
+    <div class="report-category-card">
+        <div class="report-card-header finance">
+            <i class="bi bi-wallet2"></i>
+            <span>Finance Reports</span>
+        </div>
+        <div class="report-items-list">
+            <a href="#" class="report-item-link" onclick="alert('Generating Payment Report PDF...'); return false;">
+                <div class="report-item-title">Payment Report</div>
+                <div class="report-item-desc">All payment transactions</div>
+            </a>
+            <a href="#" class="report-item-link" onclick="alert('Generating Invoice Report PDF...'); return false;">
+                <div class="report-item-title">Invoice Report</div>
+                <div class="report-item-desc">Invoice status and aging</div>
+            </a>
+            <a href="#" class="report-item-link" onclick="alert('Generating Outstanding Balance Report PDF...'); return false;">
+                <div class="report-item-title">Outstanding Balance</div>
+                <div class="report-item-desc">Unpaid and overdue balances</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- 3. Inventory Reports -->
+    <div class="report-category-card">
+        <div class="report-card-header inventory">
+            <i class="bi bi-box-seam"></i>
+            <span>Inventory Reports</span>
+        </div>
+        <div class="report-items-list">
+            <a href="#" class="report-item-link" onclick="alert('Generating Stock Level Report...'); return false;">
+                <div class="report-item-title">Stock Report</div>
+                <div class="report-item-desc">Current stock levels</div>
+            </a>
+            <a href="#" class="report-item-link" onclick="alert('Generating Stock Movement Report...'); return false;">
+                <div class="report-item-title">Stock Movement</div>
+                <div class="report-item-desc">In/out movements history</div>
+            </a>
+            <a href="#" class="report-item-link" onclick="alert('Generating Low Stock Report...'); return false;">
+                <div class="report-item-title">Low Stock Report</div>
+                <div class="report-item-desc">Items below reorder level</div>
+            </a>
+            <a href="#" class="report-item-link" onclick="alert('Generating Expiring Ingredients Report...'); return false;">
+                <div class="report-item-title">Expiring Ingredients</div>
+                <div class="report-item-desc">Items expiring soon</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- 4. Event Reports -->
+    <div class="report-category-card">
+        <div class="report-card-header event">
+            <i class="bi bi-calendar2-range"></i>
+            <span>Event Reports</span>
+        </div>
+        <div class="report-items-list">
+            <a href="#" class="report-item-link" onclick="alert('Generating Upcoming Events Report...'); return false;">
+                <div class="report-item-title">Upcoming Events</div>
+                <div class="report-item-desc">All scheduled events</div>
+            </a>
+            <a href="#" class="report-item-link" onclick="alert('Generating Completed Events Report...'); return false;">
+                <div class="report-item-title">Completed Events</div>
+                <div class="report-item-desc">Past events summary</div>
+            </a>
+            <a href="#" class="report-item-link" onclick="alert('Generating Cancelled Events Analysis...'); return false;">
+                <div class="report-item-title">Cancelled Events</div>
+                <div class="report-item-desc">Cancelled bookings analysis</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- 5. Staff Reports -->
+    <div class="report-category-card">
+        <div class="report-card-header staff">
+            <i class="bi bi-person-lines-fill"></i>
+            <span>Staff Reports</span>
+        </div>
+        <div class="report-items-list">
+            <a href="#" class="report-item-link" onclick="alert('Generating Staff Schedule Report...'); return false;">
+                <div class="report-item-title">Staff Schedule</div>
+                <div class="report-item-desc">Staff assignments by period</div>
+            </a>
+            <a href="#" class="report-item-link" onclick="alert('Generating Staff Assignments Mapping...'); return false;">
+                <div class="report-item-title">Staff Assignments</div>
+                <div class="report-item-desc">Event-to-staff mapping</div>
+            </a>
+        </div>
+    </div>
+</div>

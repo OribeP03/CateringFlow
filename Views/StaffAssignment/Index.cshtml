@@ -1,0 +1,70 @@
+@model IEnumerable<StaffAssignmentModel>
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Staff Assignments";
+    ViewData["ActivePage"] = "Staff";
+}
+
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Staff Assignments</h1>
+        <div class="page-header-sub">@Model.Count() total assignments</div>
+    </div>
+    <div>
+        <a asp-action="Create" class="admin-btn-primary">
+            <i class="bi bi-plus-lg"></i> + Assign Staff
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success d-flex align-items-center gap-2"><i class="bi bi-check-circle-fill"></i> @TempData["Success"]</div>
+}
+
+<div class="filter-toolbar">
+    <div class="fw-bold fs-6">Assignment Records</div>
+    <form method="get" class="d-flex gap-2 align-items-center">
+        <select name="eventId" class="filter-select" onchange="this.form.submit()">
+            <option value="">All Events</option>
+            @if (ViewData["Events"] is List<EventModel> events)
+            {
+                foreach (var e in events)
+                {
+                    <option value="@e.Id" selected="@(ViewData["EventFilter"]?.ToString() == e.Id.ToString())">@e.EventName</option>
+                }
+            }
+        </select>
+        <noscript><button type="submit" class="admin-btn-secondary">Filter</button></noscript>
+    </form>
+</div>
+
+<div class="table-container-card">
+    <table class="admin-data-table">
+        <thead>
+            <tr><th>Staff</th><th>Position</th><th>Event</th><th>Role at Event</th><th>Event Date</th><th>Assigned At</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr><td colspan="7" class="text-center text-muted py-4">No assignments found.</td></tr>
+            }
+            @foreach (var a in Model)
+            {
+                <tr>
+                    <td class="fw-semibold">@a.StaffName</td>
+                    <td>@a.Staff?.Position</td>
+                    <td>@a.Event?.EventName</td>
+                    <td><span class="status-pill upcoming">@a.RoleAtEvent</span></td>
+                    <td>@a.Event?.EventDate.ToString("MMM dd, yyyy")</td>
+                    <td>@a.AssignedAt.ToString("MMM dd, yyyy")</td>
+                    <td>
+                        <form asp-action="Delete" asp-route-id="@a.Id" method="post" onsubmit="return confirm('Remove assignment for @a.StaffName? Staff availability will reset to Available.');" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Remove"><i class="bi bi-x-lg"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,97 @@
+@model IEnumerable<QuotationModel>
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Quotations";
+    ViewData["ActivePage"] = "Quotations";
+}
+
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Quotations</h1>
+        <div class="page-header-sub">@Model.Count() total quotations</div>
+    </div>
+    <div>
+        <a asp-action="Create" class="admin-btn-primary">
+            <i class="bi bi-plus-lg"></i> + Create Quotation
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success d-flex align-items-center gap-2"><i class="bi bi-check-circle-fill"></i> @TempData["Success"]</div>
+}
+
+<!-- Quotation Status KPI Cards -->
+<div class="kpi-cards-grid">
+    <div class="kpi-card">
+        <div class="kpi-value" style="font-size: 1.8rem;">@Model.Count()</div>
+        <div class="kpi-title">Total</div>
+    </div>
+    <div class="kpi-card" style="background: #f8fafc;">
+        <div class="kpi-value text-secondary" style="font-size: 1.8rem;">@Model.Count(q => q.Status == "Draft")</div>
+        <div class="kpi-title text-secondary">Draft</div>
+    </div>
+    <div class="kpi-card" style="background: #eff6ff; border-color: #bfdbfe;">
+        <div class="kpi-value text-primary" style="font-size: 1.8rem;">@Model.Count(q => q.Status == "Sent")</div>
+        <div class="kpi-title text-primary">Sent</div>
+    </div>
+    <div class="kpi-card" style="background: #ecfdf5; border-color: #a7f3d0;">
+        <div class="kpi-value text-success" style="font-size: 1.8rem;">@Model.Count(q => q.Status == "Approved")</div>
+        <div class="kpi-title text-success">Approved</div>
+    </div>
+    <div class="kpi-card" style="background: #fef2f2; border-color: #fecaca;">
+        <div class="kpi-value text-danger" style="font-size: 1.8rem;">@Model.Count(q => q.Status == "Rejected")</div>
+        <div class="kpi-title text-danger">Rejected</div>
+    </div>
+</div>
+
+<form method="get" class="filter-toolbar">
+    <div class="filter-search-wrap">
+        <i class="bi bi-search"></i>
+        <input name="search" type="text" placeholder="Search quotations..." value="@ViewData["Search"]" />
+    </div>
+    <div class="filter-selects-group">
+        <select name="status" class="filter-select">
+            <option value="All">All Statuses</option>
+            <option value="Approved" selected="@(ViewData["StatusFilter"]?.ToString() == "Approved")">Approved</option>
+            <option value="Sent" selected="@(ViewData["StatusFilter"]?.ToString() == "Sent")">Sent</option>
+            <option value="Draft" selected="@(ViewData["StatusFilter"]?.ToString() == "Draft")">Draft</option>
+            <option value="Rejected" selected="@(ViewData["StatusFilter"]?.ToString() == "Rejected")">Rejected</option>
+        </select>
+        <button type="submit" class="admin-btn-secondary">Filter</button>
+        <a asp-action="Index" class="admin-btn-secondary">Reset</a>
+    </div>
+</form>
+
+<div class="table-container-card">
+    <table class="admin-data-table">
+        <thead>
+            <tr><th>Number</th><th>Customer</th><th>Pax</th><th>Total</th><th>Status</th><th>Valid Until</th><th>Created</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr><td colspan="8" class="text-center text-muted py-4">No quotations found.</td></tr>
+            }
+            @foreach (var q in Model)
+            {
+                <tr>
+                    <td class="fw-semibold text-primary">@q.QuotationNumber</td>
+                    <td>@q.CustomerName</td>
+                    <td>@q.PaxCount</td>
+                    <td>₱@q.TotalAmount.ToString("N2")</td>
+                    <td><span class="status-pill @(q.Status == "Approved" ? "completed" : q.Status == "Rejected" ? "rejected" : q.Status == "Sent" ? "active" : "expiring")">@q.Status</span></td>
+                    <td>@(q.ValidUntil?.ToString("MMM dd, yyyy") ?? "—")</td>
+                    <td>@q.CreatedAt.ToString("MMM dd, yyyy")</td>
+                    <td class="d-flex gap-1">
+                        <a asp-action="Details" asp-route-id="@q.Id" class="btn btn-sm btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+                        <form asp-action="Delete" asp-route-id="@q.Id" method="post" onsubmit="return confirm('Delete quotation @q.QuotationNumber?');" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

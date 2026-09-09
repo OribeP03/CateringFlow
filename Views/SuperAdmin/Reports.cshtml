@@ -1,0 +1,57 @@
+@* Views/SuperAdmin/Reports.cshtml *@
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Reports";
+    ViewData["ActivePage"] = "Reports";
+}
+
+<!-- Page Header Row -->
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Reports</h1>
+        <div class="page-header-sub">Generate and export business reports</div>
+    </div>
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+        <div class="d-flex align-items-center gap-2 bg-white px-3 py-1 rounded border">
+            <input type="text" class="border-0 small text-center" style="width: 85px; outline:none;" value="01/01/2025" />
+            <i class="bi bi-calendar3 text-muted small"></i>
+            <span class="text-muted small">to</span>
+            <input type="text" class="border-0 small text-center" style="width: 85px; outline:none;" value="09/30/2025" />
+            <i class="bi bi-calendar3 text-muted small"></i>
+        </div>
+
+        <button class="admin-btn-secondary" onclick="alert('Exporting PDF Report package...');">
+            <i class="bi bi-download"></i> Export PDF
+        </button>
+
+        <button class="admin-btn-secondary" onclick="alert('Exporting Excel Workbook (.xlsx)...');">
+            <i class="bi bi-file-earmark-spreadsheet"></i> Export Excel
+        </button>
+    </div>
+</div>
+
+<!-- 2 Top Analytics Charts -->
+<div class="dashboard-charts-row mb-4">
+    <!-- Revenue Overview -->
+    <div class="chart-card">
+        <div class="chart-header">
+            <div class="chart-title">Revenue Overview (Jan-Sep 2025)</div>
+        </div>
+        <div class="chart-canvas-wrap">
+            <canvas id="reportRevenueOverviewChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Events by Type -->
+    <div class="chart-card">
+        <div class="chart-header">
+            <div class="chart-title">Events by Type</div>
+        </div>
+        <div class="chart-canvas-wrap">
+            <canvas id="reportEventsByTypeChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Reports Hub Component -->
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_ReportsHub.cshtml")

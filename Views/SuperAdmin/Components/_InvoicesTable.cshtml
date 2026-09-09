@@ -1,0 +1,97 @@
+@* Views/SuperAdmin/Components/_InvoicesTable.cshtml *@
+<div class="table-container-card">
+    <table class="admin-data-table">
+        <thead>
+            <tr>
+                <th>Invoice No.</th>
+                <th>Customer</th>
+                <th>Event</th>
+                <th>Amount</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="fw-semibold text-primary">INV-2025-001</td>
+                <td class="fw-semibold">Maria Santos</td>
+                <td>Santos Wedding Reception</td>
+                <td class="fw-bold">₱187,500</td>
+                <td>2025-09-01</td>
+                <td><span class="status-pill partial">Partial</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Print / Receipt"><i class="bi bi-printer"></i></button>
+                    <button class="action-icon-btn" title="Download PDF"><i class="bi bi-download"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">INV-2025-002</td>
+                <td class="fw-semibold">TechCorp Philippines</td>
+                <td>TechCorp Annual Gala</td>
+                <td class="fw-bold">₱360,000</td>
+                <td>2025-08-20</td>
+                <td><span class="status-pill paid">Paid</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Download PDF"><i class="bi bi-download"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">INV-2025-003</td>
+                <td class="fw-semibold">Juan dela Cruz</td>
+                <td>dela Cruz Birthday</td>
+                <td class="fw-bold">₱48,000</td>
+                <td>2025-08-05</td>
+                <td><span class="status-pill paid">Paid</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Download PDF"><i class="bi bi-download"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">INV-2025-004</td>
+                <td class="fw-semibold">City Government of Manila</td>
+                <td>Manila City Foundation Day</td>
+                <td class="fw-bold">₱960,000</td>
+                <td>2025-07-24</td>
+                <td><span class="status-pill overdue">Overdue</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Send Follow-up"><i class="bi bi-envelope-exclamation"></i></button>
+                    <button class="action-icon-btn" title="Download PDF"><i class="bi bi-download"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">INV-2025-005</td>
+                <td class="fw-semibold">Ana Reyes</td>
+                <td>Reyes-Cruz Wedding</td>
+                <td class="fw-bold">₱135,000</td>
+                <td>2025-09-30</td>
+                <td><span class="status-pill unpaid">Unpaid</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Download PDF"><i class="bi bi-download"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">INV-2025-006</td>
+                <td class="fw-semibold">BPO Global Services</td>
+                <td>BPO Team Building</td>
+                <td class="fw-bold">₱90,000</td>
+                <td>2025-08-15</td>
+                <td><span class="status-pill paid">Paid</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Download PDF"><i class="bi bi-download"></i></button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

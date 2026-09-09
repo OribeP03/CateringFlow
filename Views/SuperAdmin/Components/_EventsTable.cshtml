@@ -1,0 +1,174 @@
+@* Views/SuperAdmin/Components/_EventsTable.cshtml *@
+<div id="eventsTableContainer" class="table-container-card">
+    <table class="admin-data-table">
+        <thead>
+            <tr>
+                <th>Event ID</th>
+                <th>Event Name</th>
+                <th>Customer</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th>Venue</th>
+                <th>Guests</th>
+                <th>Package</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="fw-semibold text-primary">EVT-001</td>
+                <td class="fw-semibold">Santos Wedding Reception</td>
+                <td>Maria Santos</td>
+                <td><span class="type-pill">Wedding</span></td>
+                <td>2025-09-15</td>
+                <td>Manila Hotel Ballroom</td>
+                <td>250</td>
+                <td>Premium Package</td>
+                <td class="fw-bold">₱187,500</td>
+                <td><span class="status-pill upcoming">Upcoming</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('EVT-001')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">EVT-002</td>
+                <td class="fw-semibold">TechCorp Annual Gala</td>
+                <td>TechCorp Philippines</td>
+                <td><span class="type-pill">Corporate</span></td>
+                <td>2025-08-30</td>
+                <td>Shangri-La BGC</td>
+                <td>400</td>
+                <td>Executive Package</td>
+                <td class="fw-bold">₱360,000</td>
+                <td><span class="status-pill upcoming">Upcoming</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('EVT-002')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">EVT-003</td>
+                <td class="fw-semibold">dela Cruz Birthday Celebration</td>
+                <td>Juan dela Cruz</td>
+                <td><span class="type-pill">Birthday</span></td>
+                <td>2025-08-10</td>
+                <td>Taguig Function Hall</td>
+                <td>80</td>
+                <td>Classic Package</td>
+                <td class="fw-bold">₱48,000</td>
+                <td><span class="status-pill completed">Completed</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('EVT-003')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">EVT-004</td>
+                <td class="fw-semibold">Manila City Foundation Banquet</td>
+                <td>City Government of Manila</td>
+                <td><span class="type-pill">Corporate</span></td>
+                <td>2025-06-24</td>
+                <td>Rizal Park Pavilion</td>
+                <td>1,200</td>
+                <td>Grand Package</td>
+                <td class="fw-bold">₱960,000</td>
+                <td><span class="status-pill completed">Completed</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('EVT-004')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">EVT-005</td>
+                <td class="fw-semibold">Reyes-Cruz Wedding</td>
+                <td>Ana Reyes</td>
+                <td><span class="type-pill">Wedding</span></td>
+                <td>2025-10-05</td>
+                <td>Fernwood Gardens</td>
+                <td>180</td>
+                <td>Premium Package</td>
+                <td class="fw-bold">₱135,000</td>
+                <td><span class="status-pill upcoming">Upcoming</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('EVT-005')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">EVT-006</td>
+                <td class="fw-semibold">BPO Global Team Building Banquet</td>
+                <td>BPO Global Services</td>
+                <td><span class="type-pill">Corporate</span></td>
+                <td>2025-07-20</td>
+                <td>Tagaytay Ridge</td>
+                <td>150</td>
+                <td>Classic Package</td>
+                <td class="fw-bold">₱90,000</td>
+                <td><span class="status-pill completed">Completed</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('EVT-006')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">EVT-007</td>
+                <td class="fw-semibold">Mendoza Anniversary</td>
+                <td>Roberto Mendoza</td>
+                <td><span class="type-pill">Anniversary</span></td>
+                <td>2025-09-28</td>
+                <td>Solaire Resort</td>
+                <td>120</td>
+                <td>Deluxe Package</td>
+                <td class="fw-bold">₱108,000</td>
+                <td><span class="status-pill upcoming">Upcoming</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('EVT-007')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">EVT-008</td>
+                <td class="fw-semibold">SM Prime Dealer Conference</td>
+                <td>SM Prime Holdings</td>
+                <td><span class="type-pill">Corporate</span></td>
+                <td>2025-11-15</td>
+                <td>SMX Convention Center</td>
+                <td>800</td>
+                <td>Grand Package</td>
+                <td class="fw-bold">₱640,000</td>
+                <td><span class="status-pill upcoming">Upcoming</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('EVT-008')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="table-pagination-footer">
+        <div>Showing 8 of 8 events</div>
+        <div class="pagination-controls">
+            <button class="page-btn" disabled>Previous</button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn" disabled>Next</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,75 @@
+@* Views/SuperAdmin/Quotations.cshtml *@
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Quotations";
+    ViewData["ActivePage"] = "Quotations";
+}
+
+<!-- Page Header Row -->
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Quotations</h1>
+        <div class="page-header-sub">6 total quotations</div>
+    </div>
+    <div>
+        <button class="admin-btn-primary" onclick="openAdminModal('createQuotationModal')">
+            <i class="bi bi-plus-lg"></i> + Create Quotation
+        </button>
+    </div>
+</div>
+
+<!-- 5 Quotation Status KPI Cards -->
+<div class="kpi-cards-grid">
+    <!-- Total -->
+    <div class="kpi-card">
+        <div class="kpi-value" style="font-size: 1.8rem;">6</div>
+        <div class="kpi-title">Total</div>
+    </div>
+
+    <!-- Draft -->
+    <div class="kpi-card" style="background: #f8fafc;">
+        <div class="kpi-value text-secondary" style="font-size: 1.8rem;">1</div>
+        <div class="kpi-title text-secondary">Draft</div>
+    </div>
+
+    <!-- Sent -->
+    <div class="kpi-card" style="background: #eff6ff; border-color: #bfdbfe;">
+        <div class="kpi-value text-primary" style="font-size: 1.8rem;">2</div>
+        <div class="kpi-title text-primary">Sent</div>
+    </div>
+
+    <!-- Approved -->
+    <div class="kpi-card" style="background: #ecfdf5; border-color: #a7f3d0;">
+        <div class="kpi-value text-success" style="font-size: 1.8rem;">2</div>
+        <div class="kpi-title text-success">Approved</div>
+    </div>
+
+    <!-- Rejected -->
+    <div class="kpi-card" style="background: #fef2f2; border-color: #fecaca;">
+        <div class="kpi-value text-danger" style="font-size: 1.8rem;">1</div>
+        <div class="kpi-title text-danger">Rejected</div>
+    </div>
+</div>
+
+<!-- Search & Filter Toolbar -->
+<div class="filter-toolbar">
+    <div class="filter-search-wrap">
+        <i class="bi bi-search"></i>
+        <input id="tableLiveSearch" type="text" placeholder="Search quotations..." />
+    </div>
+    <div class="filter-selects-group">
+        <select id="tableStatusFilter" class="filter-select">
+            <option value="All">All Statuses</option>
+            <option value="Approved">Approved</option>
+            <option value="Sent">Sent</option>
+            <option value="Draft">Draft</option>
+            <option value="Rejected">Rejected</option>
+        </select>
+    </div>
+</div>
+
+<!-- Quotations Table Component -->
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_QuotationsTable.cshtml")
+
+<!-- Create Quotation Modal Component -->
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_CreateQuotationModal.cshtml")

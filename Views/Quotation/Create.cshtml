@@ -1,0 +1,88 @@
+@model QuotationModel
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Create Quotation";
+    ViewData["ActivePage"] = "Quotations";
+}
+
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Create Quotation</h1>
+        <div class="page-header-sub">Generate a quotation for a customer</div>
+    </div>
+</div>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="widget-card" style="max-width: 760px;">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="QuotationNumber" class="form-label">Quotation Number</label>
+                <input asp-for="QuotationNumber" class="form-control" value="@ViewData["SuggestedNumber"]" />
+                <span asp-validation-for="QuotationNumber" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="CustomerId" class="form-label">Customer</label>
+                <select asp-for="CustomerId" asp-items="@(new SelectList(ViewData["Customers"] as List<CustomerModel>, "Id", "FullName"))" class="form-select">
+                    <option value="">-- Select Customer --</option>
+                </select>
+                <span asp-validation-for="CustomerId" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="EventId" class="form-label">Related Event (optional)</label>
+                <select asp-for="EventId" class="form-select">
+                    <option value="">-- No Event --</option>
+                    @if (ViewData["Events"] is List<EventModel> events)
+                    {
+                        foreach (var e in events)
+                        {
+                            <option value="@e.Id">@e.EventName — @e.EventDate.ToString("MMM dd, yyyy")</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="EventDate" class="form-label">Event Date</label>
+                <input asp-for="EventDate" class="form-control" type="date" />
+                <span asp-validation-for="EventDate" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="PaxCount" class="form-label">No. of Pax</label>
+                <input asp-for="PaxCount" class="form-control" type="number" min="1" />
+                <span asp-validation-for="PaxCount" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="PackageId" class="form-label">Package (pricing auto-computed)</label>
+                <select asp-for="PackageId" class="form-select">
+                    <option value="">-- No Package --</option>
+                    @if (ViewData["Packages"] is List<MenuPackageModel> packages)
+                    {
+                        foreach (var p in packages)
+                        {
+                            <option value="@p.Id">@p.PackageName — ₱@p.PricePerPax.ToString("N0")/pax</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Status" class="form-label">Status</label>
+                <select asp-for="Status" class="form-select">
+                    <option>Draft</option>
+                    <option>Sent</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="ValidUntil" class="form-label">Valid Until</label>
+                <input asp-for="ValidUntil" class="form-control" type="date" />
+            </div>
+            <div class="col-md-12">
+                <label asp-for="Notes" class="form-label">Notes</label>
+                <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="col-md-12 d-flex gap-2">
+                <button type="submit" class="admin-btn-primary"><i class="bi bi-check-lg"></i> Create Quotation</button>
+                <a asp-action="Index" class="admin-btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </div>
+</form>

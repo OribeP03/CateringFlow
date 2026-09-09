@@ -1,0 +1,82 @@
+@* Views/SuperAdmin/Staff.cshtml *@
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Staff Management";
+    ViewData["ActivePage"] = "Staff";
+}
+
+<!-- Page Header Row -->
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Staff Management</h1>
+        <div class="page-header-sub">8 team members</div>
+    </div>
+    <div>
+        <button class="admin-btn-primary" onclick="openAdminModal('addStaffModal')">
+            <i class="bi bi-plus-lg"></i> + Add Staff
+        </button>
+    </div>
+</div>
+
+<!-- 4 Staff Status KPI Cards -->
+<div class="kpi-cards-grid four-cols">
+    <!-- Available -->
+    <div class="kpi-card" style="background: #f0fdf4; border-color: #bbf7d0;">
+        <div class="d-flex align-items-baseline gap-2 mb-1">
+            <div class="kpi-value text-success" style="font-size: 2rem;">6</div>
+        </div>
+        <div class="fw-semibold text-success small">Available</div>
+    </div>
+
+    <!-- Busy -->
+    <div class="kpi-card" style="background: #fffbeb; border-color: #fde68a;">
+        <div class="d-flex align-items-baseline gap-2 mb-1">
+            <div class="kpi-value" style="font-size: 2rem; color: #d97706;">1</div>
+        </div>
+        <div class="fw-semibold small" style="color: #d97706;">Busy</div>
+    </div>
+
+    <!-- On Leave -->
+    <div class="kpi-card" style="background: #fdf4ff; border-color: #f5d0fe;">
+        <div class="d-flex align-items-baseline gap-2 mb-1">
+            <div class="kpi-value" style="font-size: 2rem; color: #a855f7;">1</div>
+        </div>
+        <div class="fw-semibold small" style="color: #a855f7;">On Leave</div>
+    </div>
+
+    <!-- Full-time -->
+    <div class="kpi-card" style="background: #fffdf5; border-color: #fef08a;">
+        <div class="d-flex align-items-baseline gap-2 mb-1">
+            <div class="kpi-value" style="font-size: 2rem; color: #ca8a04;">6</div>
+        </div>
+        <div class="fw-semibold small" style="color: #ca8a04;">Full-time</div>
+    </div>
+</div>
+
+<!-- Search Toolbar -->
+<div class="filter-toolbar">
+    <div class="filter-search-wrap">
+        <i class="bi bi-search"></i>
+        <input id="tableLiveSearch" type="text" placeholder="Search staff..." />
+    </div>
+    <div class="filter-selects-group">
+        <select id="tableStatusFilter" class="filter-select">
+            <option value="All">All Availability</option>
+            <option value="Available">Available</option>
+            <option value="Busy">Busy</option>
+            <option value="On Leave">On Leave</option>
+        </select>
+        <select id="tableTypeFilter" class="filter-select">
+            <option value="All">All Employment</option>
+            <option value="Full-time">Full-time</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Contractual">Contractual</option>
+        </select>
+    </div>
+</div>
+
+<!-- Staff Table Component -->
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_StaffTable.cshtml")
+
+<!-- Add Staff Modal Component -->
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_AddStaffModal.cshtml")

@@ -1,0 +1,42 @@
+@* Views/SuperAdmin/Suppliers.cshtml *@
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Suppliers";
+    ViewData["ActivePage"] = "Suppliers";
+}
+
+<!-- Page Header Row -->
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Supplier Management</h1>
+        <div class="page-header-sub">4 verified food and banquet equipment vendors</div>
+    </div>
+    <div>
+        <button class="admin-btn-primary" onclick="openAdminModal('addSupplierModal')">
+            <i class="bi bi-plus-lg"></i> + Add Supplier
+        </button>
+    </div>
+</div>
+
+<!-- Search & Filter Toolbar -->
+<div class="filter-toolbar">
+    <div class="filter-search-wrap">
+        <i class="bi bi-search"></i>
+        <input id="tableLiveSearch" type="text" placeholder="Search suppliers..." />
+    </div>
+    <div class="filter-selects-group">
+        <select id="tableTypeFilter" class="filter-select">
+            <option value="All">All Categories</option>
+            <option value="Meats">Meats & Poultry</option>
+            <option value="Seafood">Seafood</option>
+            <option value="Produce">Produce</option>
+            <option value="Beverages">Beverages</option>
+        </select>
+    </div>
+</div>
+
+<!-- Suppliers Table Component -->
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_SuppliersTable.cshtml")
+
+<!-- Add Supplier Modal Component -->
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_AddSupplierModal.cshtml")

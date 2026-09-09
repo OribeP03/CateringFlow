@@ -1,0 +1,47 @@
+@* Views/SuperAdmin/_SuperAdminLayout.cshtml *@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CateringFlow ERP + CRM</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 & Icons -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <!-- Chart.js for analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <!-- SuperAdmin CSS -->
+    <link rel="stylesheet" href="~/css/superadmin.css" asp-append-version="true" />
+</head>
+<body class="admin-body">
+    <div class="admin-shell">
+        <!-- Sidebar -->
+        @await Html.PartialAsync("~/Views/SuperAdmin/Components/_AdminSidebar.cshtml")
+
+        <!-- Main Workspace -->
+        <main class="admin-workspace">
+            <!-- Top Navigation -->
+            @await Html.PartialAsync("~/Views/SuperAdmin/Components/_AdminTopNav.cshtml")
+
+            <!-- Content Viewport -->
+            <div class="admin-content">
+                @RenderBody()
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/superadmin.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

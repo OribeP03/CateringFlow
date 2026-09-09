@@ -1,0 +1,63 @@
+@model CustomerModel
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Edit Customer";
+    ViewData["ActivePage"] = "Customers";
+}
+
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Edit Customer</h1>
+        <div class="page-header-sub">@Model.FullName</div>
+    </div>
+</div>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="widget-card" style="max-width: 700px;">
+        <div class="row g-3">
+            <div class="col-md-12">
+                <label asp-for="FullName" class="form-label">Full Name</label>
+                <input asp-for="FullName" class="form-control" />
+                <span asp-validation-for="FullName" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Email" class="form-label">Email</label>
+                <input asp-for="Email" class="form-control" type="email" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Phone" class="form-label">Phone</label>
+                <input asp-for="Phone" class="form-control" />
+            </div>
+            <div class="col-md-12">
+                <label asp-for="Address" class="form-label">Address</label>
+                <input asp-for="Address" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Type" class="form-label">Customer Type</label>
+                <select asp-for="Type" class="form-select">
+                    <option>Individual</option>
+                    <option>Corporate</option>
+                    <option>Government</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Status" class="form-label">Status</label>
+                <select asp-for="Status" class="form-select">
+                    <option>Active</option>
+                    <option>Inactive</option>
+                </select>
+            </div>
+            <div class="col-md-12">
+                <label asp-for="Notes" class="form-label">Notes</label>
+                <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="col-md-12 d-flex gap-2">
+                <button type="submit" class="admin-btn-primary"><i class="bi bi-check-lg"></i> Save Changes</button>
+                <a asp-action="Index" class="admin-btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </div>
+</form>

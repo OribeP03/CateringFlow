@@ -1,0 +1,80 @@
+@model IEnumerable<InventoryModel>
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Inventory & Stock";
+    ViewData["ActivePage"] = "Inventory";
+}
+
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Kitchen Inventory & Stock</h1>
+        <div class="page-header-sub">@Model.Count() tracked items</div>
+    </div>
+    <div>
+        <a asp-action="Create" class="admin-btn-primary">
+            <i class="bi bi-plus-lg"></i> + Add Item
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success d-flex align-items-center gap-2"><i class="bi bi-check-circle-fill"></i> @TempData["Success"]</div>
+}
+
+<form method="get" class="filter-toolbar">
+    <div class="filter-search-wrap">
+        <i class="bi bi-search"></i>
+        <input name="search" type="text" placeholder="Search items..." value="@ViewData["Search"]" />
+    </div>
+    <div class="filter-selects-group">
+        <select name="category" class="filter-select">
+            <option value="All">All Categories</option>
+            <option value="Meats & Poultry" selected="@(ViewData["CategoryFilter"]?.ToString() == "Meats & Poultry")">Meats & Poultry</option>
+            <option value="Seafood" selected="@(ViewData["CategoryFilter"]?.ToString() == "Seafood")">Seafood</option>
+            <option value="Produce" selected="@(ViewData["CategoryFilter"]?.ToString() == "Produce")">Produce</option>
+            <option value="Grains" selected="@(ViewData["CategoryFilter"]?.ToString() == "Grains")">Grains</option>
+        </select>
+        <select name="stockStatus" class="filter-select">
+            <option value="All">All Stock Status</option>
+            <option value="Adequate" selected="@(ViewData["StockStatusFilter"]?.ToString() == "Adequate")">Adequate</option>
+            <option value="Low Stock" selected="@(ViewData["StockStatusFilter"]?.ToString() == "Low Stock")">Low Stock</option>
+            <option value="Out of Stock" selected="@(ViewData["StockStatusFilter"]?.ToString() == "Out of Stock")">Out of Stock</option>
+        </select>
+        <button type="submit" class="admin-btn-secondary">Filter</button>
+        <a asp-action="Index" class="admin-btn-secondary">Reset</a>
+    </div>
+</form>
+
+<div class="table-container-card">
+    <table class="admin-data-table">
+        <thead>
+            <tr><th>Item Code</th><th>Item Name</th><th>Category</th><th>Current Stock</th><th>Min Reorder</th><th>Unit Cost</th><th>Supplier</th><th>Status</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr><td colspan="9" class="text-center text-muted py-4">No inventory items found.</td></tr>
+            }
+            @foreach (var i in Model)
+            {
+                <tr>
+                    <td class="fw-semibold text-primary">@i.ItemCode</td>
+                    <td class="fw-semibold">@i.ItemName</td>
+                    <td>@i.Category</td>
+                    <td>@i.CurrentStock @i.Unit</td>
+                    <td>@i.MinReorderLevel @i.Unit</td>
+                    <td>₱@i.UnitCost.ToString("N0")</td>
+                    <td>@i.SupplierName</td>
+                    <td><span class="status-pill @(i.StockStatus == "Adequate" ? "completed" : i.StockStatus == "Low Stock" ? "low-stock" : "out-of-stock")">@i.StockStatus</span></td>
+                    <td class="d-flex gap-1">
+                        <a asp-action="Edit" asp-route-id="@i.Id" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
+                        <form asp-action="Delete" asp-route-id="@i.Id" method="post" onsubmit="return confirm('Delete item @i.ItemName?');" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

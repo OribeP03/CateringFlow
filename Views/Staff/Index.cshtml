@@ -1,0 +1,107 @@
+@model IEnumerable<StaffModel>
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Staff Management";
+    ViewData["ActivePage"] = "Staff";
+}
+
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Staff Management</h1>
+        <div class="page-header-sub">@Model.Count() team members</div>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-controller="StaffAssignment" asp-action="Index" class="admin-btn-secondary"><i class="bi bi-people"></i> Assignments</a>
+        <a asp-action="Create" class="admin-btn-primary">
+            <i class="bi bi-plus-lg"></i> + Add Staff
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success d-flex align-items-center gap-2"><i class="bi bi-check-circle-fill"></i> @TempData["Success"]</div>
+}
+
+<!-- 4 Staff Status KPI Cards -->
+<div class="kpi-cards-grid four-cols">
+    <div class="kpi-card" style="background: #f0fdf4; border-color: #bbf7d0;">
+        <div class="d-flex align-items-baseline gap-2 mb-1">
+            <div class="kpi-value text-success" style="font-size: 2rem;">@Model.Count(s => s.Availability == "Available")</div>
+        </div>
+        <div class="fw-semibold text-success small">Available</div>
+    </div>
+    <div class="kpi-card" style="background: #fffbeb; border-color: #fde68a;">
+        <div class="d-flex align-items-baseline gap-2 mb-1">
+            <div class="kpi-value" style="font-size: 2rem; color: #d97706;">@Model.Count(s => s.Availability == "Busy")</div>
+        </div>
+        <div class="fw-semibold small" style="color: #d97706;">Busy</div>
+    </div>
+    <div class="kpi-card" style="background: #fdf4ff; border-color: #f5d0fe;">
+        <div class="d-flex align-items-baseline gap-2 mb-1">
+            <div class="kpi-value" style="font-size: 2rem; color: #a855f7;">@Model.Count(s => s.Availability == "On Leave")</div>
+        </div>
+        <div class="fw-semibold small" style="color: #a855f7;">On Leave</div>
+    </div>
+    <div class="kpi-card" style="background: #fffdf5; border-color: #fef08a;">
+        <div class="d-flex align-items-baseline gap-2 mb-1">
+            <div class="kpi-value" style="font-size: 2rem; color: #ca8a04;">@Model.Count(s => s.EmploymentType == "Full-time")</div>
+        </div>
+        <div class="fw-semibold small" style="color: #ca8a04;">Full-time</div>
+    </div>
+</div>
+
+<form method="get" class="filter-toolbar">
+    <div class="filter-search-wrap">
+        <i class="bi bi-search"></i>
+        <input name="search" type="text" placeholder="Search staff..." value="@ViewData["Search"]" />
+    </div>
+    <div class="filter-selects-group">
+        <select name="availability" class="filter-select">
+            <option value="All">All Availability</option>
+            <option value="Available" selected="@(ViewData["AvailabilityFilter"]?.ToString() == "Available")">Available</option>
+            <option value="Busy" selected="@(ViewData["AvailabilityFilter"]?.ToString() == "Busy")">Busy</option>
+            <option value="On Leave" selected="@(ViewData["AvailabilityFilter"]?.ToString() == "On Leave")">On Leave</option>
+        </select>
+        <select name="employmentType" class="filter-select">
+            <option value="All">All Employment</option>
+            <option value="Full-time" selected="@(ViewData["EmploymentFilter"]?.ToString() == "Full-time")">Full-time</option>
+            <option value="Part-time" selected="@(ViewData["EmploymentFilter"]?.ToString() == "Part-time")">Part-time</option>
+            <option value="Contractual" selected="@(ViewData["EmploymentFilter"]?.ToString() == "Contractual")">Contractual</option>
+        </select>
+        <button type="submit" class="admin-btn-secondary">Filter</button>
+        <a asp-action="Index" class="admin-btn-secondary">Reset</a>
+    </div>
+</form>
+
+<div class="table-container-card">
+    <table class="admin-data-table">
+        <thead>
+            <tr><th>Name</th><th>Position</th><th>Email</th><th>Availability</th><th>Employment</th><th>Events</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr><td colspan="7" class="text-center text-muted py-4">No staff found.</td></tr>
+            }
+            @foreach (var s in Model)
+            {
+                <tr>
+                    <td class="fw-semibold">@s.FullName</td>
+                    <td>@s.Position</td>
+                    <td>@s.Email</td>
+                    <td><span class="status-pill @(s.Availability == "Available" ? "completed" : s.Availability == "Busy" ? "active" : "expiring")">@s.Availability</span></td>
+                    <td>@s.EmploymentType</td>
+                    <td>@(s.Assignments?.Count ?? 0)</td>
+                    <td class="d-flex gap-1">
+                        <a asp-action="Details" asp-route-id="@s.Id" class="btn btn-sm btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+                        <a asp-action="Edit" asp-route-id="@s.Id" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
+                        <form asp-action="Delete" asp-route-id="@s.Id" method="post" onsubmit="return confirm('Delete staff @s.FullName?');" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

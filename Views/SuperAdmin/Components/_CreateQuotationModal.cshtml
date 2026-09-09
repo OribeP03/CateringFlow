@@ -1,0 +1,58 @@
+@* Views/SuperAdmin/Components/_CreateQuotationModal.cshtml *@
+<div id="createQuotationModal" class="admin-modal-backdrop">
+    <div class="admin-modal-dialog">
+        <div class="admin-modal-header">
+            <div>
+                <h5 class="admin-modal-title mb-1">Create Catering Quotation</h5>
+                <p class="text-muted small mb-0">Prepare a cost proposal for client menu and venue requests.</p>
+            </div>
+            <button class="admin-modal-close" onclick="closeAdminModal('createQuotationModal')">&times;</button>
+        </div>
+        <form onsubmit="event.preventDefault(); alert('Quotation QT-2025-007 successfully generated!'); closeAdminModal('createQuotationModal');">
+            <div class="admin-modal-body">
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Customer *</label>
+                        <input type="text" class="form-control" placeholder="e.g. Maria Santos" required />
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Event Name *</label>
+                        <input type="text" class="form-control" placeholder="e.g. Santos Wedding Reception" required />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Quotation Date</label>
+                        <input type="date" class="form-control" value="2025-08-15" />
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Valid Until</label>
+                        <input type="date" class="form-control" value="2025-09-15" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Total Amount (₱) *</label>
+                        <input type="text" class="form-control" value="₱187,500" required />
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Initial Status</label>
+                        <select class="form-control">
+                            <option value="Draft" selected>Draft</option>
+                            <option value="Sent">Sent</option>
+                            <option value="Approved">Approved</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-modal-footer">
+                <button type="button" class="admin-btn-secondary" onclick="closeAdminModal('createQuotationModal')">Cancel</button>
+                <button type="submit" class="admin-btn-primary">
+                    <i class="bi bi-file-earmark-plus me-1"></i> Generate Quotation
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

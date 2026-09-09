@@ -1,0 +1,56 @@
+@model SettingsModel
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Settings";
+    ViewData["ActivePage"] = "Settings";
+}
+
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Company Settings</h1>
+        <div class="page-header-sub">Manage your company profile and system preferences</div>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success d-flex align-items-center gap-2"><i class="bi bi-check-circle-fill"></i> @TempData["Success"]</div>
+}
+
+<form asp-action="Index" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="widget-card" style="max-width: 760px;">
+        <h5 class="fw-bold mb-3">Company Profile</h5>
+        <div class="row g-3">
+            <div class="col-md-8">
+                <label asp-for="CompanyName" class="form-label">Company Name</label>
+                <input asp-for="CompanyName" class="form-control" />
+                <span asp-validation-for="CompanyName" class="text-danger small"></span>
+            </div>
+            <div class="col-md-12">
+                <label asp-for="Tagline" class="form-label">Tagline</label>
+                <input asp-for="Tagline" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="CompanyEmail" class="form-label">Company Email</label>
+                <input asp-for="CompanyEmail" class="form-control" type="email" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="CompanyPhone" class="form-label">Company Phone</label>
+                <input asp-for="CompanyPhone" class="form-control" />
+            </div>
+            <div class="col-md-12">
+                <label asp-for="CompanyAddress" class="form-label">Company Address</label>
+                <input asp-for="CompanyAddress" class="form-control" />
+            </div>
+            <div class="col-md-12">
+                <label class="form-label">Last Updated</label>
+                <input class="form-control" value="@Model.UpdatedAt.ToString("MMMM dd, yyyy h:mm tt")" readonly disabled />
+            </div>
+            <div class="col-md-12 d-flex gap-2">
+                <button type="submit" class="admin-btn-primary"><i class="bi bi-check-lg"></i> Save Changes</button>
+            </div>
+        </div>
+    </div>
+</form>

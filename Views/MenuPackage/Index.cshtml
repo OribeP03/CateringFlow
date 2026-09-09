@@ -1,0 +1,55 @@
+@model IEnumerable<MenuPackageModel>
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Menu & Packages";
+    ViewData["ActivePage"] = "MenuPackages";
+}
+
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Menu & Packages</h1>
+        <div class="page-header-sub">@Model.Count() packages</div>
+    </div>
+    <div>
+        <a asp-action="Create" class="admin-btn-primary">
+            <i class="bi bi-plus-lg"></i> + Add Package
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success d-flex align-items-center gap-2"><i class="bi bi-check-circle-fill"></i> @TempData["Success"]</div>
+}
+
+<div class="table-container-card">
+    <table class="admin-data-table">
+        <thead>
+            <tr><th>Package</th><th>Description</th><th>Price / Pax</th><th>Courses</th><th>Service Hours</th><th>Status</th><th>Booked Events</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr><td colspan="8" class="text-center text-muted py-4">No packages found.</td></tr>
+            }
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td class="fw-semibold text-primary">@p.PackageName</td>
+                    <td>@(p.Description ?? "—")</td>
+                    <td>₱@p.PricePerPax.ToString("N0")</td>
+                    <td>@p.CourseCount courses</td>
+                    <td>@p.ServiceHours hrs</td>
+                    <td><span class="status-pill @(p.Status == "Active" ? "completed" : "rejected")">@p.Status</span></td>
+                    <td>@(p.Events?.Count ?? 0)</td>
+                    <td class="d-flex gap-1">
+                        <a asp-action="Edit" asp-route-id="@p.Id" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
+                        <form asp-action="Delete" asp-route-id="@p.Id" method="post" onsubmit="return confirm('Delete package @p.PackageName?');" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

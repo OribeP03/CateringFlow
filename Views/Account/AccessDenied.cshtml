@@ -1,0 +1,209 @@
+@{
+    Layout = null;
+    ViewData["Title"] = "Access Restricted - CateringFlow";
+    var attemptedPage = ViewData["AttemptedPage"]?.ToString() ?? "This Resource";
+    var currentRole = ViewData["CurrentRole"]?.ToString() ?? "Unknown";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap & Icons -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: #f5f1eb;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+            padding: 24px;
+        }
+
+        .denied-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 48px 44px;
+            max-width: 520px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+            border: 1px solid #ebe5dc;
+        }
+
+        .icon-shield {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            color: #dc2626;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.4rem;
+            margin: 0 auto 24px auto;
+            box-shadow: 0 4px 16px rgba(220, 38, 38, 0.12);
+        }
+
+        .denied-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #1a1410;
+            margin-bottom: 8px;
+        }
+
+        .denied-subtitle {
+            font-size: 0.92rem;
+            color: #786c5e;
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+
+        .denied-subtitle strong {
+            color: #1a1410;
+        }
+
+        .info-box {
+            background: #faf8f5;
+            border: 1px solid #ebe5dc;
+            border-radius: 12px;
+            padding: 16px 20px;
+            text-align: left;
+            font-size: 0.84rem;
+            color: #5c5248;
+            margin-bottom: 28px;
+            line-height: 1.6;
+        }
+
+        .info-box .info-label {
+            font-weight: 700;
+            color: #1a1410;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+        }
+
+        .info-box .info-label i {
+            color: #b87333;
+        }
+
+        .btn-group-denied {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-back-dashboard {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 13px 24px;
+            border-radius: 12px;
+            background: #1a130e;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(26, 19, 14, 0.2);
+        }
+
+        .btn-back-dashboard:hover {
+            background: #2d2017;
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(26, 19, 14, 0.3);
+        }
+
+        .btn-go-login {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px 24px;
+            border-radius: 12px;
+            background: #ffffff;
+            border: 1px solid #ddd5ca;
+            color: #4a4138;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-go-login:hover {
+            background: #faf7f2;
+            border-color: #c5bab0;
+            color: #1a130e;
+        }
+
+        .footer-note {
+            margin-top: 28px;
+            font-size: 0.76rem;
+            color: #a89e93;
+        }
+
+        @@media (max-width: 500px) {
+            .denied-card { padding: 32px 24px; }
+            .denied-title { font-size: 1.35rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="denied-card">
+        <!-- Shield Icon -->
+        <div class="icon-shield">
+            <i class="bi bi-shield-lock-fill"></i>
+        </div>
+
+        <!-- Heading -->
+        <h1 class="denied-title">Access Restricted</h1>
+        <p class="denied-subtitle">
+            Your current role (<strong>@currentRole</strong>) does not have permission to access <strong>@attemptedPage</strong>.
+        </p>
+
+        <!-- Info Box -->
+        <div class="info-box">
+            <div class="info-label">
+                <i class="bi bi-info-circle-fill"></i> Why am I seeing this?
+            </div>
+            CateringFlow uses Role-Based Access Control (RBAC) to protect sensitive data. Each role is assigned specific modules. Contact your administrator if you believe this is an error.
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="btn-group-denied">
+            <a href="/SuperAdmin/Dashboard" class="btn-back-dashboard">
+                <i class="bi bi-arrow-left"></i> Return to Dashboard
+            </a>
+            <a href="/Account/Login" class="btn-go-login">
+                <i class="bi bi-box-arrow-in-right"></i> Sign in with a different account
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer-note">
+            CateringFlow ERP + CRM · Secured by RBAC Middleware
+        </div>
+    </div>
+</body>
+</html>

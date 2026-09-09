@@ -1,0 +1,101 @@
+@* Views/Client/Components/_PackageCards.cshtml *@
+<section id="packages" class="section-padding packages-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-tag">Curated Menus</span>
+            <h2 class="section-heading mb-2">Choose your perfect package</h2>
+            <p class="section-lead mx-auto">
+                Transparent pricing, premium ingredients, and customizable courses tailored to your guest count.
+            </p>
+        </div>
+
+        <div class="packages-grid">
+            <!-- Classic Package -->
+            <div class="package-card">
+                <div class="package-img-header">
+                    <img src="/images/salmon_dish.jpg" alt="Classic Package" />
+                </div>
+                <div class="package-body">
+                    <h3 class="package-title">Classic Package</h3>
+                    <div class="package-subtitle">Ideal for birthdays & intimate gatherings</div>
+                    
+                    <div class="package-price-wrap">
+                        <span class="package-price">₱450</span>
+                        <span class="package-period">/ guest</span>
+                    </div>
+
+                    <ul class="package-features-list">
+                        <li><i class="bi bi-check2-circle"></i> 4 Gourmet Courses (Appetizer, 2 Mains, Rice)</li>
+                        <li><i class="bi bi-check2-circle"></i> 1 Refreshing Drink & Dessert</li>
+                        <li><i class="bi bi-check2-circle"></i> Standard Elegant Buffet Setup</li>
+                        <li><i class="bi bi-check2-circle"></i> Uniformed Banquet Waitstaff (4 Hours)</li>
+                        <li><i class="bi bi-check2-circle"></i> Standard Chinaware, Flatware & Glassware</li>
+                    </ul>
+
+                    <button class="btn-luxury-outline text-dark border-secondary w-100 mt-auto" onclick="openBookingModal('Classic Package - ₱450/pax')">
+                        Customize & Book
+                    </button>
+                </div>
+            </div>
+
+            <!-- Premium Package (Featured) -->
+            <div class="package-card featured">
+                <div class="package-img-header">
+                    <img src="/images/hero_spread.jpg" alt="Premium Package" />
+                    <div class="package-popular-tag">Most Popular</div>
+                </div>
+                <div class="package-body">
+                    <h3 class="package-title">Premium Package</h3>
+                    <div class="package-subtitle">Perfect for weddings & executive galas</div>
+                    
+                    <div class="package-price-wrap">
+                        <span class="package-price text-gold">₱750</span>
+                        <span class="package-period">/ guest</span>
+                    </div>
+
+                    <ul class="package-features-list">
+                        <li><i class="bi bi-check2-circle"></i> 6 Master Chef Courses (Appetizer, Soup, 3 Mains, Rice)</li>
+                        <li><i class="bi bi-check2-circle"></i> Live Artisan Dessert & Pastry Station</li>
+                        <li><i class="bi bi-check2-circle"></i> Complimentary Sparkling Wine Toasting</li>
+                        <li><i class="bi bi-check2-circle"></i> Premium Themed Tablescapes & Floral Centerpieces</li>
+                        <li><i class="bi bi-check2-circle"></i> Dedicated Banquet Captain & Waiters (5 Hours)</li>
+                        <li><i class="bi bi-check2-circle"></i> VIP Head Table Presidential Service</li>
+                    </ul>
+
+                    <button class="btn-luxury-gold w-100 mt-auto" onclick="openBookingModal('Premium Package - ₱750/pax')">
+                        Book This Package
+                    </button>
+                </div>
+            </div>
+
+            <!-- Grand Executive Package -->
+            <div class="package-card">
+                <div class="package-img-header">
+                    <img src="/images/event_banner.jpg" alt="Grand Executive Package" />
+                </div>
+                <div class="package-body">
+                    <h3 class="package-title">Grand Package</h3>
+                    <div class="package-subtitle">Luxury banquets & corporate summits</div>
+                    
+                    <div class="package-price-wrap">
+                        <span class="package-price">₱1,500</span>
+                        <span class="package-period">/ guest</span>
+                    </div>
+
+                    <ul class="package-features-list">
+                        <li><i class="bi bi-check2-circle"></i> 8 Bespoke Fine-Dining Plated or Buffet Courses</li>
+                        <li><i class="bi bi-check2-circle"></i> Live Prime Rib Carving Station & Seafood Bar</li>
+                        <li><i class="bi bi-check2-circle"></i> Unlimited Premium Craft Cocktails & Mocktails</li>
+                        <li><i class="bi bi-check2-circle"></i> Luxury Crystal Glassware & 24K Gold Accent Cutlery</li>
+                        <li><i class="bi bi-check2-circle"></i> Dedicated Event Manager & Butler Service</li>
+                        <li><i class="bi bi-check2-circle"></i> Full Event Styling & Ambient Lighting Sync</li>
+                    </ul>
+
+                    <button class="btn-luxury-outline text-dark border-secondary w-100 mt-auto" onclick="openBookingModal('Grand Package - ₱1,500/pax')">
+                        Contact Concierge
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,71 @@
+@* Views/SuperAdmin/Components/_PaymentsTable.cshtml *@
+<div class="table-container-card">
+    <table class="admin-data-table">
+        <thead>
+            <tr>
+                <th>Payment ID</th>
+                <th>Invoice No.</th>
+                <th>Customer</th>
+                <th>Payment Date</th>
+                <th>Amount</th>
+                <th>Method</th>
+                <th>Reference No.</th>
+                <th>Recorded By</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="fw-semibold text-primary">PAY-001</td>
+                <td>INV-2025-002</td>
+                <td class="fw-semibold">TechCorp Philippines</td>
+                <td>2025-08-18</td>
+                <td class="fw-bold text-success">₱360,000</td>
+                <td><i class="bi bi-bank me-1 text-secondary"></i> Bank Transfer</td>
+                <td class="text-muted small">BT-20250818-001</td>
+                <td>Luz Castillo</td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">PAY-002</td>
+                <td>INV-2025-003</td>
+                <td class="fw-semibold">Juan dela Cruz</td>
+                <td>2025-08-10</td>
+                <td class="fw-bold text-success">₱48,000</td>
+                <td><i class="bi bi-phone me-1 text-primary"></i> GCash</td>
+                <td class="text-muted small">GC-20250810-234</td>
+                <td>Luz Castillo</td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">PAY-003</td>
+                <td>INV-2025-001</td>
+                <td class="fw-semibold">Maria Santos</td>
+                <td>2025-08-01</td>
+                <td class="fw-bold text-success">₱93,750</td>
+                <td><i class="bi bi-bank me-1 text-secondary"></i> Bank Transfer</td>
+                <td class="text-muted small">BT-20250801-005</td>
+                <td>Luz Castillo</td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">PAY-004</td>
+                <td>INV-2025-006</td>
+                <td class="fw-semibold">BPO Global Services</td>
+                <td>2025-08-14</td>
+                <td class="fw-bold text-success">₱90,000</td>
+                <td><i class="bi bi-credit-card me-1 text-info"></i> Card</td>
+                <td class="text-muted small">CC-20250814-789</td>
+                <td>Luz Castillo</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="table-pagination-footer">
+        <div>4 payment records</div>
+        <div class="pagination-controls">
+            <button class="page-btn" disabled>Previous</button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn" disabled>Next</button>
+        </div>
+    </div>
+</div>

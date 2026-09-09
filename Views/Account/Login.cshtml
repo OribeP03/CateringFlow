@@ -1,0 +1,609 @@
+@using System.Text.Json
+@using cateringflow.Services
+@{
+    Layout = null;
+    ViewData["Title"] = "Sign In - CateringFlow";
+    var fbSettings = ViewData["FirebaseSettings"] as FirebaseSettings;
+    string? firebaseJson = null;
+    if (fbSettings != null && !string.IsNullOrWhiteSpace(fbSettings.WebApiKey))
+    {
+        firebaseJson = JsonSerializer.Serialize(new
+        {
+            apiKey = fbSettings.WebApiKey,
+            authDomain = fbSettings.AuthDomain,
+            projectId = fbSettings.ProjectId,
+            storageBucket = fbSettings.StorageBucket,
+            messagingSenderId = fbSettings.MessagingSenderId,
+            appId = fbSettings.AppId,
+            measurementId = fbSettings.MeasurementId
+        });
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap & Icons -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <style>
+        :root {
+            --login-dark-btn: #1a130e;
+            --login-dark-btn-hover: #2d2017;
+            --login-gold: #c88d3e;
+            --login-amber: #e5a952;
+            --font-sans: 'Inter', sans-serif;
+            --font-serif: 'Playfair Display', Georgia, serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: #ffffff;
+            color: #1e1915;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .login-split-layout {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Left Side */
+        .login-left-pane {
+            width: 44%;
+            min-width: 420px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 40px 60px;
+            overflow-y: auto;
+        }
+
+        .back-home-link {
+            color: #6e6459;
+            font-size: 0.88rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.2s;
+        }
+
+        .back-home-link:hover {
+            color: #1a130e;
+        }
+
+        .login-form-container {
+            max-width: 380px;
+            width: 100%;
+            margin: auto 0;
+        }
+
+        .login-brand-icon {
+            margin-bottom: 24px;
+        }
+
+        .login-logo-img {
+            height: 52px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .login-title {
+            font-family: var(--font-serif);
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #1a1410;
+            margin-bottom: 6px;
+            letter-spacing: -0.02em;
+        }
+
+        .login-subtitle {
+            font-size: 0.92rem;
+            color: #7d7266;
+            margin-bottom: 24px;
+        }
+
+        .form-group-custom label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #4a4138;
+            margin-bottom: 8px;
+        }
+
+        .form-control-custom {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid #e5ded5;
+            background-color: #faf8f5;
+            font-size: 0.9rem;
+            color: #1f1a16;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .form-control-custom:focus {
+            background-color: #ffffff;
+            border-color: #b87333;
+            box-shadow: 0 0 0 3px rgba(184, 115, 51, 0.12);
+        }
+
+        .password-wrap {
+            position: relative;
+        }
+
+        .btn-password-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #9c9083;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-password-toggle:hover {
+            color: #1a130e;
+        }
+
+        .forgot-pass-link {
+            font-size: 0.82rem;
+            color: #b87333;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .forgot-pass-link:hover {
+            text-decoration: underline;
+        }
+
+        .btn-signin-submit {
+            width: 100%;
+            padding: 13px 20px;
+            border-radius: 10px;
+            background-color: var(--login-dark-btn);
+            color: #ffffff;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(26, 19, 14, 0.25);
+        }
+
+        .btn-signin-submit:hover {
+            background-color: var(--login-dark-btn-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(26, 19, 14, 0.35);
+        }
+
+        .login-version-tag {
+            font-size: 0.75rem;
+            color: #a89e93;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .btn-google-signin {
+            width: 100%;
+            padding: 12px 20px;
+            border-radius: 10px;
+            background-color: #ffffff;
+            color: #3c4043;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: 1px solid #dadce0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(60, 64, 67, 0.12);
+        }
+
+        .btn-google-signin:hover {
+            background-color: #f8f9fa;
+            box-shadow: 0 2px 6px rgba(60, 64, 67, 0.2);
+        }
+
+        .btn-google-signin:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .google-g {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .divider-with-text {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 18px 0 20px;
+        }
+
+        .divider-with-text::before,
+        .divider-with-text::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background-color: #ece5dc;
+        }
+
+        .divider-with-text span {
+            font-size: 0.78rem;
+            color: #a89e93;
+            white-space: nowrap;
+        }
+
+        .login-alert {
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-bottom: 14px;
+            line-height: 1.4;
+        }
+
+        .login-alert.alert-success {
+            background-color: #e7f6ec;
+            color: #1e6f3e;
+            border: 1px solid #bfe5cc;
+        }
+
+        .login-alert.alert-info, .login-alert.alert-warning {
+            background-color: #fff6e6;
+            color: #8a5a12;
+            border: 1px solid #f3dcae;
+        }
+
+        .login-alert.alert-danger {
+            background-color: #fdebeb;
+            color: #b3352e;
+            border: 1px solid #f3c2c0;
+        }
+
+        .firebase-warning {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            background-color: #fff6e6;
+            border: 1px solid #f3dcae;
+            color: #7a5313;
+            font-size: 0.82rem;
+            line-height: 1.45;
+        }
+
+        .firebase-warning code {
+            background: rgba(0, 0, 0, 0.06);
+            padding: 1px 4px;
+            border-radius: 4px;
+            font-size: 0.76rem;
+        }
+
+        /* Right Side */
+        .login-right-pane {
+            width: 56%;
+            position: relative;
+            background-color: #140f0c;
+            background-image: url('/images/event_banner.jpg');
+            background-size: cover;
+            background-position: center center;
+        }
+
+        .login-hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(18, 14, 11, 0.45) 0%, rgba(18, 14, 11, 0.85) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 50px 60px;
+            color: #ffffff;
+        }
+
+        .platform-badge-pill {
+            align-self: flex-start;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border-radius: 9999px;
+            font-size: 0.82rem;
+            color: #f5efe8;
+            font-weight: 500;
+        }
+
+        .badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--login-amber);
+        }
+
+        .login-quote-wrap {
+            max-width: 580px;
+        }
+
+        .login-quote-text {
+            font-family: var(--font-serif);
+            font-size: 2.2rem;
+            font-weight: 600;
+            line-height: 1.35;
+            color: #ffffff;
+            margin-bottom: 24px;
+            letter-spacing: -0.01em;
+        }
+
+        .login-reviewer-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .reviewer-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #c88d3e 0%, #a86b24 100%);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .reviewer-name {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .reviewer-title {
+            font-size: 0.82rem;
+            color: var(--login-amber);
+        }
+
+        .login-stats-strip {
+            display: flex;
+            gap: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .login-stat-col {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-big {
+            font-family: var(--font-serif);
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.1;
+        }
+
+        .stat-small {
+            font-size: 0.78rem;
+            color: #cfc5b8;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-top: 2px;
+        }
+
+        @@media (max-width: 900px) {
+            .login-right-pane { display: none; }
+            .login-left-pane { width: 100%; min-width: 100%; padding: 30px 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-split-layout">
+        <!-- Left Form Pane Component -->
+        @await Html.PartialAsync("~/Views/Account/Components/_LoginForm.cshtml")
+
+        <!-- Right Hero & Quote Pane Component -->
+        @await Html.PartialAsync("~/Views/Account/Components/_LoginHeroRight.cshtml")
+    </div>
+
+    <!-- Firebase SDK (compat build: exposes window.firebase) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+    <script>
+        // ---------- Firebase Configuration ----------
+        const firebaseSettingsJson = @Html.Raw(firebaseJson ?? "null");
+        let firebaseApp = null;
+        if (firebaseSettingsJson) {
+            firebaseApp = firebase.initializeApp(firebaseSettingsJson);
+        }
+
+        const googleButtonHtml = '<span class="google-g" aria-hidden="true">' +
+            '<svg width="18" height="18" viewBox="0 0 48 48">' +
+            '<path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>' +
+            '<path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>' +
+            '<path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>' +
+            '<path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>' +
+            '</svg></span>Continue with Google';
+
+        // ---------- Helpers ----------
+        function getCsrfToken() {
+            const el = document.querySelector('input[name="__RequestVerificationToken"]');
+            return el ? el.value : '';
+        }
+
+        function showLoginAlert(message, type) {
+            const box = document.getElementById('loginAlert');
+            box.style.display = 'block';
+            box.className = 'login-alert alert-' + (type || 'danger');
+            box.innerHTML = message;
+        }
+
+        function clearLoginAlert() {
+            const box = document.getElementById('loginAlert');
+            if (box) box.style.display = 'none';
+        }
+
+        function notConfiguredMessage() {
+            return 'Firebase is not configured yet. Ask your admin to add the Firebase settings.';
+        }
+
+        function friendlyAuthError(err) {
+            const map = {
+                'auth/user-not-found': 'No account found with this email.',
+                'auth/wrong-password': 'Incorrect password. Try again.',
+                'auth/invalid-email': 'Enter a valid email address.',
+                'auth/user-disabled': 'This account has been disabled.',
+                'auth/too-many-requests': 'Too many attempts. Please try again later.',
+                'auth/invalid-credential': 'Invalid email or password.',
+                'auth/network-request-failed': 'Network error. Check your connection.',
+                'auth/popup-closed-by-user': 'Google sign-in was cancelled.'
+            };
+            if (err) {
+                if (map[err.code]) return map[err.code];
+                if (err.message) return err.message;
+            }
+            return 'Sign-in failed. Please try again.';
+        }
+
+        function safeRedirect(url) {
+            window.location.href = (url && url.indexOf('/') === 0) ? url : '/';
+        }
+
+        // ---------- Token exchange with the server ----------
+        async function exchangeFirebaseToken(idToken) {
+            const returnUrlEl = document.querySelector('input[name="returnUrl"]');
+            const resp = await fetch('/Account/FirebaseLogin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': getCsrfToken()
+                },
+                body: JSON.stringify({
+                    idToken: idToken,
+                    returnUrl: returnUrlEl ? (returnUrlEl.value || '') : ''
+                })
+            });
+            let data = {};
+            try { data = await resp.json(); } catch (e) { data = {}; }
+            if (!resp.ok) throw new Error(data.error || 'Sign-in failed (' + resp.status + ').');
+            return data;
+        }
+
+        // ---------- Google Sign-In ----------
+        async function handleGoogleSignIn() {
+            clearLoginAlert();
+            if (!firebaseApp) { showLoginAlert(notConfiguredMessage()); return; }
+            const btn = document.getElementById('googleSignInBtn');
+            btn.disabled = true;
+            btn.textContent = 'Signing in...';
+            try {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                provider.setCustomParameters({ prompt: 'select_account' });
+                const result = await firebase.auth().signInWithPopup(provider);
+                const token = await result.user.getIdToken();
+                const data = await exchangeFirebaseToken(token);
+                safeRedirect(data.redirectUrl);
+            } catch (err) {
+                showLoginAlert(friendlyAuthError(err));
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = googleButtonHtml;
+            }
+        }
+
+        // ---------- Email / Password Sign-In ----------
+        async function handleEmailPasswordLogin(e) {
+            e.preventDefault();
+            clearLoginAlert();
+            if (!firebaseApp) { showLoginAlert(notConfiguredMessage()); return; }
+            const email = document.getElementById('emailInput').value.trim();
+            const password = document.getElementById('passwordInput').value;
+            if (!email || !password) { showLoginAlert('Enter your email and password.'); return; }
+            const btn = document.getElementById('signInSubmitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Signing in...';
+            try {
+                const cred = await firebase.auth().signInWithEmailAndPassword(email, password);
+                const token = await cred.user.getIdToken(true);
+                const data = await exchangeFirebaseToken(token);
+                safeRedirect(data.redirectUrl);
+            } catch (err) {
+                showLoginAlert(friendlyAuthError(err));
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Sign In <i class="bi bi-arrow-right ms-2"></i>';
+            }
+        }
+
+        // ---------- Forgot Password ----------
+        async function forgotPassword() {
+            clearLoginAlert();
+            if (!firebaseApp) { showLoginAlert(notConfiguredMessage()); return; }
+            const email = document.getElementById('emailInput').value.trim();
+            if (!email) { showLoginAlert('Enter your email address first.'); return; }
+            try {
+                await firebase.auth().sendPasswordResetEmail(email);
+                showLoginAlert('Password reset link sent to <strong>' + email + '</strong>.', 'success');
+            } catch (err) {
+                showLoginAlert(friendlyAuthError(err));
+            }
+        }
+
+        function togglePasswordVisibility() {
+            const passInput = document.getElementById('passwordInput');
+            const eyeIcon = document.getElementById('passwordEyeIcon');
+            if (passInput && eyeIcon) {
+                if (passInput.type === 'password') {
+                    passInput.type = 'text';
+                    eyeIcon.classList.remove('bi-eye');
+                    eyeIcon.classList.add('bi-eye-slash');
+                } else {
+                    passInput.type = 'password';
+                    eyeIcon.classList.remove('bi-eye-slash');
+                    eyeIcon.classList.add('bi-eye');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

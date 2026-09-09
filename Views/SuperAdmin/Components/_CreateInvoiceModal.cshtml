@@ -1,0 +1,52 @@
+@* Views/SuperAdmin/Components/_CreateInvoiceModal.cshtml *@
+<div id="createInvoiceModal" class="admin-modal-backdrop">
+    <div class="admin-modal-dialog">
+        <div class="admin-modal-header">
+            <div>
+                <h5 class="admin-modal-title mb-1">Create Client Invoice</h5>
+                <p class="text-muted small mb-0">Generate a billing invoice for deposit or final settlement.</p>
+            </div>
+            <button class="admin-modal-close" onclick="closeAdminModal('createInvoiceModal')">&times;</button>
+        </div>
+        <form onsubmit="event.preventDefault(); alert('Invoice INV-2025-007 created successfully!'); closeAdminModal('createInvoiceModal');">
+            <div class="admin-modal-body">
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Customer *</label>
+                        <input type="text" class="form-control" placeholder="e.g. Maria Santos" required />
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Event *</label>
+                        <input type="text" class="form-control" placeholder="e.g. Santos Wedding Reception" required />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Total Amount (₱) *</label>
+                        <input type="text" class="form-control" value="₱187,500" required />
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Due Date *</label>
+                        <input type="date" class="form-control" value="2025-09-01" required />
+                    </div>
+                </div>
+
+                <div class="form-group-admin mb-0">
+                    <label>Invoice Status</label>
+                    <select class="form-control">
+                        <option value="Unpaid">Unpaid</option>
+                        <option value="Partial" selected>Partial (Deposit Received)</option>
+                        <option value="Paid">Paid (Settled)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="admin-modal-footer">
+                <button type="button" class="admin-btn-secondary" onclick="closeAdminModal('createInvoiceModal')">Cancel</button>
+                <button type="submit" class="admin-btn-primary">
+                    <i class="bi bi-receipt-cutoff me-1"></i> Issue Invoice
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

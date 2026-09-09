@@ -1,0 +1,57 @@
+@* Views/SuperAdmin/Components/_RecordPaymentModal.cshtml *@
+<div id="recordPaymentModal" class="admin-modal-backdrop">
+    <div class="admin-modal-dialog">
+        <div class="admin-modal-header">
+            <div>
+                <h5 class="admin-modal-title mb-1">Record Client Payment</h5>
+                <p class="text-muted small mb-0">Post a received bank transfer, GCash, or card deposit.</p>
+            </div>
+            <button class="admin-modal-close" onclick="closeAdminModal('recordPaymentModal')">&times;</button>
+        </div>
+        <form onsubmit="event.preventDefault(); alert('Payment successfully recorded!'); closeAdminModal('recordPaymentModal');">
+            <div class="admin-modal-body">
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Invoice Number *</label>
+                        <select class="form-control">
+                            <option value="INV-2025-001">INV-2025-001 (Maria Santos - Balance ₱93,750)</option>
+                            <option value="INV-2025-004">INV-2025-004 (Manila City Gov - Balance ₱960,000)</option>
+                            <option value="INV-2025-005">INV-2025-005 (Ana Reyes - Balance ₱135,000)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Amount Paid (₱) *</label>
+                        <input type="text" class="form-control" value="₱93,750" required />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Payment Method</label>
+                        <select class="form-control">
+                            <option value="Bank Transfer" selected>Bank Transfer (BDO / BPI)</option>
+                            <option value="GCash">GCash</option>
+                            <option value="Credit Card">Credit / Debit Card</option>
+                            <option value="Cash">Cash / Manager's Check</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Payment Date</label>
+                        <input type="date" class="form-control" value="2025-08-20" />
+                    </div>
+                </div>
+
+                <div class="form-group-admin mb-0">
+                    <label>Reference / Transaction No. *</label>
+                    <input type="text" class="form-control" placeholder="e.g. BT-20250820-098" required />
+                </div>
+            </div>
+            <div class="admin-modal-footer">
+                <button type="button" class="admin-btn-secondary" onclick="closeAdminModal('recordPaymentModal')">Cancel</button>
+                <button type="submit" class="admin-btn-primary">
+                    <i class="bi bi-cash-coin me-1"></i> Post Payment
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

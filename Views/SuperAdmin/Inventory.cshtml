@@ -1,0 +1,87 @@
+@* Views/SuperAdmin/Inventory.cshtml *@
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Inventory & Stock";
+    ViewData["ActivePage"] = "Inventory";
+}
+
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Kitchen Inventory & Stock</h1>
+        <div class="page-header-sub">Track perishable ingredients, buffet hardware, and supplier reorders.</div>
+    </div>
+    <div>
+        <button class="admin-btn-primary" onclick="alert('Stock item entry modal');">
+            <i class="bi bi-plus-lg"></i> + Add Item
+        </button>
+    </div>
+</div>
+
+<div class="table-container-card">
+    <table class="admin-data-table">
+        <thead>
+            <tr>
+                <th>Item Code</th>
+                <th>Item Name</th>
+                <th>Category</th>
+                <th>Current Stock</th>
+                <th>Min Reorder Level</th>
+                <th>Unit Cost</th>
+                <th>Supplier</th>
+                <th>Stock Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="fw-semibold text-primary">INV-010</td>
+                <td class="fw-semibold">Pork Belly (Pork Liempo)</td>
+                <td>Meats & Poultry</td>
+                <td>12 kg</td>
+                <td>25 kg</td>
+                <td>₱320/kg</td>
+                <td>Monterey Meats PH</td>
+                <td><span class="status-pill low-stock">Low Stock</span></td>
+            </tr>
+            <tr>
+                <td class="fw-semibold text-primary">INV-014</td>
+                <td class="fw-semibold">Fresh Black Tiger Shrimp</td>
+                <td>Seafood</td>
+                <td>8 kg</td>
+                <td>15 kg</td>
+                <td>₱580/kg</td>
+                <td>Navotas Fresh Catch</td>
+                <td><span class="status-pill expiring">Expiring Soon</span></td>
+            </tr>
+            <tr>
+                <td class="fw-semibold text-primary">INV-022</td>
+                <td class="fw-semibold">Prime Beef Sirloin</td>
+                <td>Meats & Poultry</td>
+                <td>0 kg</td>
+                <td>30 kg</td>
+                <td>₱890/kg</td>
+                <td>Highland Prime Beef</td>
+                <td><span class="status-pill out-of-stock">Out of Stock</span></td>
+            </tr>
+            <tr>
+                <td class="fw-semibold text-primary">INV-031</td>
+                <td class="fw-semibold">Red Onions</td>
+                <td>Produce</td>
+                <td>4 kg</td>
+                <td>20 kg</td>
+                <td>₱95/kg</td>
+                <td>Baguio Growers Coop</td>
+                <td><span class="status-pill low-stock">Low Stock</span></td>
+            </tr>
+            <tr>
+                <td class="fw-semibold text-primary">INV-045</td>
+                <td class="fw-semibold">Jasmine Rice (25kg sack)</td>
+                <td>Grains</td>
+                <td>18 sacks</td>
+                <td>5 sacks</td>
+                <td>₱1,350/sack</td>
+                <td>Nueva Ecija Rice Mills</td>
+                <td><span class="status-pill completed">Adequate</span></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

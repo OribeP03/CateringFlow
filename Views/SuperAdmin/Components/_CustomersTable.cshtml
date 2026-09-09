@@ -1,0 +1,196 @@
+@* Views/SuperAdmin/Components/_CustomersTable.cshtml *@
+<div class="table-container-card">
+    <table class="admin-data-table">
+        <thead>
+            <tr>
+                <th>Customer ID</th>
+                <th>Name</th>
+                <th>Company</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Type</th>
+                <th>Bookings</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="fw-semibold text-primary">C-001</td>
+                <td>
+                    <div class="customer-name-cell">
+                        <div class="avatar-initials-pill">MS</div>
+                        <span class="fw-semibold">Maria Santos</span>
+                    </div>
+                </td>
+                <td>Santos Family</td>
+                <td>maria.santos@email.com</td>
+                <td>0917-123-4567</td>
+                <td><span class="type-pill">Individual</span></td>
+                <td>3</td>
+                <td><span class="status-badge-active">Active</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('C-001')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">C-002</td>
+                <td>
+                    <div class="customer-name-cell">
+                        <div class="avatar-initials-pill">TP</div>
+                        <span class="fw-semibold">TechCorp Philippines</span>
+                    </div>
+                </td>
+                <td>TechCorp Inc.</td>
+                <td>events@techcorp.ph</td>
+                <td>0918-234-5678</td>
+                <td><span class="type-pill">Corporate</span></td>
+                <td>8</td>
+                <td><span class="status-badge-active">Active</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('C-002')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">C-003</td>
+                <td>
+                    <div class="customer-name-cell">
+                        <div class="avatar-initials-pill">JD</div>
+                        <span class="fw-semibold">Juan dela Cruz</span>
+                    </div>
+                </td>
+                <td>dela Cruz Family</td>
+                <td>juan.delacruz@email.com</td>
+                <td>0919-345-6789</td>
+                <td><span class="type-pill">Individual</span></td>
+                <td>1</td>
+                <td><span class="status-badge-active">Active</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('C-003')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">C-004</td>
+                <td>
+                    <div class="customer-name-cell">
+                        <div class="avatar-initials-pill">CG</div>
+                        <span class="fw-semibold">City Government of Manila</span>
+                    </div>
+                </td>
+                <td>Manila City Gov.</td>
+                <td>events@manila.gov.ph</td>
+                <td>02-8234-5678</td>
+                <td><span class="type-pill">Government</span></td>
+                <td>12</td>
+                <td><span class="status-badge-active">Active</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('C-004')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">C-005</td>
+                <td>
+                    <div class="customer-name-cell">
+                        <div class="avatar-initials-pill">AR</div>
+                        <span class="fw-semibold">Ana Reyes</span>
+                    </div>
+                </td>
+                <td>Reyes Wedding</td>
+                <td>ana.reyes@email.com</td>
+                <td>0920-456-7890</td>
+                <td><span class="type-pill">Individual</span></td>
+                <td>2</td>
+                <td><span class="status-badge-active">Active</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('C-005')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">C-006</td>
+                <td>
+                    <div class="customer-name-cell">
+                        <div class="avatar-initials-pill">BG</div>
+                        <span class="fw-semibold">BPO Global Services</span>
+                    </div>
+                </td>
+                <td>BPO Global Inc.</td>
+                <td>hr@bpoglobal.com</td>
+                <td>0921-567-8901</td>
+                <td><span class="type-pill">Corporate</span></td>
+                <td>5</td>
+                <td><span class="status-badge-inactive">Inactive</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('C-006')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">C-007</td>
+                <td>
+                    <div class="customer-name-cell">
+                        <div class="avatar-initials-pill">RM</div>
+                        <span class="fw-semibold">Roberto Mendoza</span>
+                    </div>
+                </td>
+                <td>Mendoza Group</td>
+                <td>rmendoza@email.com</td>
+                <td>0922-678-9012</td>
+                <td><span class="type-pill">Individual</span></td>
+                <td>4</td>
+                <td><span class="status-badge-active">Active</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('C-007')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="fw-semibold text-primary">C-008</td>
+                <td>
+                    <div class="customer-name-cell">
+                        <div class="avatar-initials-pill">SP</div>
+                        <span class="fw-semibold">SM Prime Holdings</span>
+                    </div>
+                </td>
+                <td>SM Prime</td>
+                <td>events@smprime.com</td>
+                <td>02-8888-8888</td>
+                <td><span class="type-pill">Corporate</span></td>
+                <td>20</td>
+                <td><span class="status-badge-active">Active</span></td>
+                <td class="table-actions-cell">
+                    <button class="action-icon-btn" title="View"><i class="bi bi-eye"></i></button>
+                    <button class="action-icon-btn" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-icon-btn danger" title="Delete" onclick="handleDeleteRow('C-008')"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="table-pagination-footer">
+        <div>Showing 8 of 8 customers</div>
+        <div class="pagination-controls">
+            <button class="page-btn" disabled>Previous</button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn" disabled>Next</button>
+        </div>
+    </div>
+</div>

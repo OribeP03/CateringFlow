@@ -1,0 +1,76 @@
+@* Views/SuperAdmin/Components/_NewEventModal.cshtml *@
+<div id="newEventModal" class="admin-modal-backdrop">
+    <div class="admin-modal-dialog">
+        <div class="admin-modal-header">
+            <div>
+                <h5 class="admin-modal-title mb-1">Create New Event Booking</h5>
+                <p class="text-muted small mb-0">Record a confirmed catering contract into the schedule.</p>
+            </div>
+            <button class="admin-modal-close" onclick="closeAdminModal('newEventModal')">&times;</button>
+        </div>
+        <form onsubmit="event.preventDefault(); alert('Event EVT-009 successfully created!'); closeAdminModal('newEventModal');">
+            <div class="admin-modal-body">
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Event Name *</label>
+                        <input type="text" class="form-control" placeholder="e.g. Ayala Executive Dinner" required />
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Customer Name *</label>
+                        <input type="text" class="form-control" placeholder="e.g. Ayala Land Corp" required />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Event Type</label>
+                        <select class="form-control">
+                            <option value="Wedding">Wedding</option>
+                            <option value="Corporate" selected>Corporate</option>
+                            <option value="Birthday">Birthday</option>
+                            <option value="Anniversary">Anniversary</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Event Date *</label>
+                        <input type="date" class="form-control" value="2025-12-05" required />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Venue *</label>
+                        <input type="text" class="form-control" placeholder="e.g. Grand Hyatt Ballroom" required />
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Guest Count *</label>
+                        <input type="number" class="form-control" value="300" required />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Package</label>
+                        <select class="form-control">
+                            <option value="Classic Package">Classic Package (₱450/pax)</option>
+                            <option value="Premium Package">Premium Package (₱750/pax)</option>
+                            <option value="Executive Package" selected>Executive Package (₱1,200/pax)</option>
+                            <option value="Grand Package">Grand Package (₱1,500/pax)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Total Contract Amount (₱) *</label>
+                        <input type="text" class="form-control" value="₱360,000" required />
+                    </div>
+                </div>
+            </div>
+            <div class="admin-modal-footer">
+                <button type="button" class="admin-btn-secondary" onclick="closeAdminModal('newEventModal')">Cancel</button>
+                <button type="submit" class="admin-btn-primary">
+                    <i class="bi bi-check-lg me-1"></i> Save Event
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

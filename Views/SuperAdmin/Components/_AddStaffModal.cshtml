@@ -1,0 +1,71 @@
+@* Views/SuperAdmin/Components/_AddStaffModal.cshtml *@
+<div id="addStaffModal" class="admin-modal-backdrop">
+    <div class="admin-modal-dialog">
+        <div class="admin-modal-header">
+            <div>
+                <h5 class="admin-modal-title mb-1">Add New Staff Member</h5>
+                <p class="text-muted small mb-0">Add catering crew, chefs, or management personnel.</p>
+            </div>
+            <button class="admin-modal-close" onclick="closeAdminModal('addStaffModal')">&times;</button>
+        </div>
+        <form onsubmit="event.preventDefault(); alert('Staff member successfully registered!'); closeAdminModal('addStaffModal');">
+            <div class="admin-modal-body">
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Staff Name *</label>
+                        <input type="text" class="form-control" placeholder="e.g. Kenneth Cruz" required />
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Position / Role *</label>
+                        <select class="form-control">
+                            <option value="Event Coordinator">Event Coordinator</option>
+                            <option value="Head Chef">Head Chef</option>
+                            <option value="Sous Chef">Sous Chef</option>
+                            <option value="Banquet Captain">Banquet Captain</option>
+                            <option value="Waitstaff Lead">Waitstaff Lead</option>
+                            <option value="Bartender">Bartender</option>
+                            <option value="Finance Officer">Finance Officer</option>
+                            <option value="Sales Manager">Sales Manager</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Phone Number *</label>
+                        <input type="tel" class="form-control" placeholder="0917-xxx-xxxx" required />
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Email Address *</label>
+                        <input type="email" class="form-control" placeholder="staff@cateringflow.ph" required />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Availability</label>
+                        <select class="form-control">
+                            <option value="Available" selected>Available</option>
+                            <option value="Busy">Busy</option>
+                            <option value="On Leave">On Leave</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Employment Type</label>
+                        <select class="form-control">
+                            <option value="Full-time" selected>Full-time</option>
+                            <option value="Part-time">Part-time</option>
+                            <option value="Contractual">Contractual</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-modal-footer">
+                <button type="button" class="admin-btn-secondary" onclick="closeAdminModal('addStaffModal')">Cancel</button>
+                <button type="submit" class="admin-btn-primary">
+                    <i class="bi bi-person-plus-fill me-1"></i> Add Staff
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

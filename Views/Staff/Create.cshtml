@@ -1,0 +1,68 @@
+@model StaffModel
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Add Staff";
+    ViewData["ActivePage"] = "Staff";
+}
+
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Add Staff</h1>
+        <div class="page-header-sub">Register a new team member</div>
+    </div>
+</div>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="widget-card" style="max-width: 760px;">
+        <div class="row g-3">
+            <div class="col-md-12">
+                <label asp-for="FullName" class="form-label">Full Name</label>
+                <input asp-for="FullName" class="form-control" />
+                <span asp-validation-for="FullName" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Email" class="form-label">Email</label>
+                <input asp-for="Email" class="form-control" type="email" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Phone" class="form-label">Phone</label>
+                <input asp-for="Phone" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Position" class="form-label">Job Title</label>
+                <input asp-for="Position" class="form-control" placeholder="e.g. Head Chef" />
+                <span asp-validation-for="Position" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Specialty" class="form-label">Specialty</label>
+                <input asp-for="Specialty" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Availability" class="form-label">Availability</label>
+                <select asp-for="Availability" class="form-select">
+                    <option>Available</option>
+                    <option>Busy</option>
+                    <option>On Leave</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="EmploymentType" class="form-label">Employment</label>
+                <select asp-for="EmploymentType" class="form-select">
+                    <option>Full-time</option>
+                    <option>Part-time</option>
+                    <option>Contractual</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="DateHired" class="form-label">Date Hired</label>
+                <input asp-for="DateHired" class="form-control" type="date" />
+            </div>
+            <div class="col-md-12 d-flex gap-2">
+                <button type="submit" class="admin-btn-primary"><i class="bi bi-check-lg"></i> Save Staff</button>
+                <a asp-action="Index" class="admin-btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,89 @@
+@model IEnumerable<CustomerModel>
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Customers - Transaction";
+    ViewData["ActivePage"] = "Customers";
+}
+
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Customer Transactions</h1>
+        <div class="page-header-sub">@Model.Count() total customers</div>
+    </div>
+    <div>
+        <a asp-action="Create" class="admin-btn-primary">
+            <i class="bi bi-plus-lg"></i> + Add Customer
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success d-flex align-items-center gap-2">
+        <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+    </div>
+}
+
+<form method="get" class="filter-toolbar">
+    <div class="filter-search-wrap">
+        <i class="bi bi-search"></i>
+        <input name="search" type="text" placeholder="Search customers..." value="@ViewData["Search"]" />
+    </div>
+    <div class="filter-selects-group">
+        <select name="type" class="filter-select">
+            <option value="All">All Types</option>
+            <option value="Individual" selected="@(ViewData["TypeFilter"]?.ToString() == "Individual")">Individual</option>
+            <option value="Corporate" selected="@(ViewData["TypeFilter"]?.ToString() == "Corporate")">Corporate</option>
+            <option value="Government" selected="@(ViewData["TypeFilter"]?.ToString() == "Government")">Government</option>
+        </select>
+        <select name="status" class="filter-select">
+            <option value="All">All Statuses</option>
+            <option value="Active" selected="@(ViewData["StatusFilter"]?.ToString() == "Active")">Active</option>
+            <option value="Inactive" selected="@(ViewData["StatusFilter"]?.ToString() == "Inactive")">Inactive</option>
+        </select>
+        <button type="submit" class="admin-btn-secondary">Filter</button>
+        <a asp-action="Index" class="admin-btn-secondary">Reset</a>
+    </div>
+</form>
+
+<div class="table-container-card">
+    <table class="admin-data-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Events</th>
+                <th>Created</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr><td colspan="8" class="text-center text-muted py-4">No customers found.</td></tr>
+            }
+            @foreach (var c in Model)
+            {
+                <tr>
+                    <td class="fw-semibold">@c.FullName</td>
+                    <td>@c.Email</td>
+                    <td>@(c.Phone ?? "—")</td>
+                    <td><span class="status-pill @(c.Type == "Corporate" ? "upcoming" : c.Type == "Government" ? "expiring" : "completed")">@c.Type</span></td>
+                    <td><span class="status-pill @(c.Status == "Active" ? "completed" : "rejected")">@c.Status</span></td>
+                    <td>@(c.Events?.Count ?? 0)</td>
+                    <td>@c.CreatedAt.ToString("MMM dd, yyyy")</td>
+                    <td class="d-flex gap-1">
+                        <a asp-action="Details" asp-route-id="@c.Id" class="btn btn-sm btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+                        <a asp-action="Edit" asp-route-id="@c.Id" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
+                        <form asp-action="Delete" asp-route-id="@c.Id" method="post" onsubmit="return confirm('Delete customer @c.FullName? This will also remove linked records.');" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
