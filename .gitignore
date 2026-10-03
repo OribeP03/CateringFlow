@@ -59,3 +59,11 @@ uploads/
 # Publish artifacts (not source)
 publish-output/
 WebDeploy_*.msi
+
+# Web Deploy profiles contain a plaintext password - never commit
+*.publishSettings
+Properties/PublishProfiles/
+
+# Deployment bundles
+publish-tc.zip
+tools/__pycache__/
