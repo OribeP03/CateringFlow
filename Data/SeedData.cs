@@ -279,7 +279,13 @@ public static class SeedData
     /// </summary>
     private static void SeedInquiries(CateringFlowDbContext db)
     {
-        if (db.Inquiries.Any()) return;
+        if (db.Inquiries.Any())
+        {
+            // Database already seeded: still backfill the Phase 27 demo quotation so an
+            // older database shows the inquiry -> quotation link too.
+            SeedInquiryQuotation(db, db.Inquiries.ToList());
+            return;
+        }
 
         var packages = db.MenuPackages.OrderBy(p => p.PricePerPax).ToList();
         var leads = db.CrmLeads.OrderBy(l => l.Id).ToList();
@@ -350,6 +356,69 @@ public static class SeedData
         }
 
         db.Inquiries.AddRange(inquiries);
+        db.SaveChanges();
+
+        SeedInquiryQuotation(db, inquiries);
+    }
+
+    /// <summary>
+    /// Phase 27 - links the seeded "Quoted" inquiry to a draft quotation so the inbox and
+    /// the pipeline demonstrate the conversion out of the box. Idempotent.
+    /// </summary>
+    private static void SeedInquiryQuotation(CateringFlowDbContext db, IReadOnlyList<InquiryModel> inquiries)
+    {
+        var quoted = inquiries.FirstOrDefault(i => i.Status == InquiryStatuses.Quoted && i.Id > 0);
+        if (quoted == null || db.Quotations.Any(q => q.InquiryId == quoted.Id)) return;
+
+        var package = quoted.PackageId.HasValue
+            ? db.MenuPackages.FirstOrDefault(p => p.Id == quoted.PackageId.Value)
+            : null;
+        var lead = quoted.CrmLeadId.HasValue
+            ? db.CrmLeads.FirstOrDefault(l => l.Id == quoted.CrmLeadId.Value)
+            : null;
+
+        // The quotation needs a customer; reuse the lead's if it already has one.
+        var customer = (quoted.CustomerId.HasValue ? db.Customers.FirstOrDefault(c => c.Id == quoted.CustomerId.Value) : null)
+                       ?? (lead?.CustomerId != null ? db.Customers.FirstOrDefault(c => c.Id == lead.CustomerId.Value) : null)
+                       ?? db.Customers.FirstOrDefault(c => c.Email == quoted.Email);
+
+        if (customer == null)
+        {
+            customer = new CustomerModel
+            {
+                FullName = quoted.FullName,
+                Email = quoted.Email,
+                Phone = quoted.Phone,
+                Type = "Government",
+                Status = "Active",
+                CreatedAt = quoted.CreatedAt,
+                Notes = $"Auto-created from {quoted.Source} inquiry {quoted.Reference}."
+            };
+            db.Customers.Add(customer);
+            db.SaveChanges();
+            quoted.CustomerId = customer.Id;
+        }
+
+        var pax = Math.Max(1, quoted.PaxCount);
+        var last = db.Quotations.OrderByDescending(q => q.Id).FirstOrDefault();
+        var nextNumber = last != null && int.TryParse(last.QuotationNumber.Replace("QTN-", ""), out var n)
+            ? $"QTN-{n + 1}"
+            : "QTN-1001";
+
+        db.Quotations.Add(new QuotationModel
+        {
+            QuotationNumber = nextNumber,
+            CustomerId = customer.Id,
+            EventDate = (quoted.EventDate ?? DateTime.Today.AddDays(30)).Date,
+            PaxCount = pax,
+            PackageId = package?.Id,
+            TotalAmount = Math.Round((package?.PricePerPax ?? 0m) * pax, 2),
+            Status = "Draft",
+            ValidUntil = DateTime.Today.AddDays(14),
+            CreatedAt = quoted.CreatedAt.AddHours(2),
+            Notes = $"Converted from inquiry {quoted.Reference} ({quoted.Source}) · {quoted.EventType} · {quoted.Venue}",
+            InquiryId = quoted.Id
+        });
         db.SaveChanges();
     }
 }

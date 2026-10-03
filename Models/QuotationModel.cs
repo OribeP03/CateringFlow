@@ -39,6 +39,16 @@ public class QuotationModel
     [ForeignKey("PackageId")]
     public MenuPackageModel? Package { get; set; }
 
+    /// <summary>
+    /// The website inquiry this quotation was generated from (Phase 27). Null for a
+    /// quotation typed in directly; unique, so an inquiry can only ever be quoted once.
+    /// </summary>
+    [Display(Name = "From Inquiry")]
+    public int? InquiryId { get; set; }
+
+    [ForeignKey("InquiryId")]
+    public InquiryModel? Inquiry { get; set; }
+
     [DataType(DataType.Currency)]
     [Display(Name = "Total Amount")]
     public decimal TotalAmount { get; set; }
@@ -62,4 +72,6 @@ public class QuotationModel
     public string CustomerName => Customer?.FullName ?? (CustomerId > 0 ? $"Customer #{CustomerId}" : "N/A");
     [NotMapped]
     public string PackageName => Package?.PackageName ?? "N/A";
+    [NotMapped]
+    public string InquiryReference => Inquiry?.Reference ?? (InquiryId.HasValue ? $"INQ-{InquiryId}" : string.Empty);
 }

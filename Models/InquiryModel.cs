@@ -81,6 +81,12 @@ public class InquiryModel
     [ForeignKey("CustomerId")]
     public CustomerModel? Customer { get; set; }
 
+    /// <summary>
+    /// The quotation generated from this inquiry, if the sales team already quoted it.
+    /// One quotation per inquiry (Phase 27).
+    /// </summary>
+    public QuotationModel? Quotation { get; set; }
+
     [Display(Name = "Created At")]
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
@@ -90,6 +96,10 @@ public class InquiryModel
     /// <summary>Human-friendly inquiry reference (INQ-YYYY-NNN), shown to the client.</summary>
     [NotMapped]
     public string Reference => $"INQ-{CreatedAt.Year}-{Id:000}";
+
+    /// <summary>A lost inquiry is closed for business - staff cannot quote it anymore.</summary>
+    [NotMapped]
+    public bool IsQuotable => Status != InquiryStatuses.Lost;
 }
 
 /// <summary>Where an inquiry came from.</summary>

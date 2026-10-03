@@ -157,6 +157,17 @@ public class CateringFlowDbContext : DbContext
             .HasForeignKey<InvoiceModel>(i => i.QuotationId)
             .OnDelete(DeleteBehavior.SetNull);
 
+        // Website Inquiry -> Quotation (Phase 27: an inquiry is quoted at most once)
+        modelBuilder.Entity<QuotationModel>()
+            .HasOne(q => q.Inquiry)
+            .WithOne(i => i.Quotation)
+            .HasForeignKey<QuotationModel>(q => q.InquiryId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<QuotationModel>()
+            .HasIndex(q => q.InquiryId)
+            .IsUnique();
+
         // Invoice -> Payments
         modelBuilder.Entity<InvoiceModel>()
             .HasMany(i => i.Payments)

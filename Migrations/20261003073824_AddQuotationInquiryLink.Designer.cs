@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using cateringflow.Data;
 
@@ -11,9 +12,11 @@ using cateringflow.Data;
 namespace cateringflow.Migrations
 {
     [DbContext(typeof(CateringFlowDbContext))]
-    partial class CateringFlowDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261003073824_AddQuotationInquiryLink")]
+    partial class AddQuotationInquiryLink
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

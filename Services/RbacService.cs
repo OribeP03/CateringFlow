@@ -32,6 +32,7 @@ public class RbacService : IRbacService
             ["UpdateInquiryStatus"] = "Manage",
             ["AssignInquiry"] = "Manage",
             ["DeleteInquiry"] = "Manage",
+            ["ConvertInquiryToQuotation"] = "Manage",
             ["Reports"] = "View / Generate",
             ["ActivityLog"] = "View",
             ["Notifications"] = "Manage",
@@ -48,6 +49,7 @@ public class RbacService : IRbacService
             ["UpdateInquiryStatus"] = "Manage",
             ["AssignInquiry"] = "Manage",
             ["DeleteInquiry"] = "Manage",
+            ["ConvertInquiryToQuotation"] = "Manage",
             ["Events"] = "Submit / Manage",
             ["Quotations"] = "Quotations"
         },

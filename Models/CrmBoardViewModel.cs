@@ -59,11 +59,29 @@ public class CrmBoardViewModel
     public string? StageFilter { get; init; }
     public string? AssigneeFilter { get; init; }
 
+    /// <summary>Leads that already produced a quotation (Phase 27).</summary>
+    public int QuotedLeads { get; init; }
+
+    /// <summary>Combined value of the quotations generated from pipeline leads.</summary>
+    public decimal QuotedValue { get; init; }
+
+    /// <summary>
+    /// Lead id -> the inquiry it came from, so the pipeline table can offer a
+    /// "quote this inquiry" action for exactly those leads that have one.
+    /// </summary>
+    public IReadOnlyDictionary<int, int> InquiryIdByLead { get; init; } = new Dictionary<int, int>();
+
     /// <summary>
     /// Share of leads that converted to Won (0-100, one decimal). Zero when there
     /// are no leads at all so the KPI card never divides by zero.
     /// </summary>
     public double ConversionRate => TotalLeads == 0 ? 0 : Math.Round(WonLeads * 100.0 / TotalLeads, 1);
+
+    /// <summary>
+    /// Share of leads that already produced a quotation (0-100, one decimal) — the
+    /// Phase 27 commercial conversion, as opposed to <see cref="ConversionRate"/>.
+    /// </summary>
+    public double QuotationRate => TotalLeads == 0 ? 0 : Math.Round(QuotedLeads * 100.0 / TotalLeads, 1);
 
     /// <summary>Assignees present in the pipeline, for the filter dropdown.</summary>
     public IReadOnlyList<string> Assignees { get; init; } = Array.Empty<string>();
@@ -77,7 +95,10 @@ public class CrmBoardViewModel
         IPagedResult pagedLeads,
         string? search,
         string? stageFilter,
-        string? assigneeFilter)
+        string? assigneeFilter,
+        int quotedLeads = 0,
+        decimal quotedValue = 0m,
+        IReadOnlyDictionary<int, int>? inquiryIdByLead = null)
     {
         var columns = Pipeline
             .Select(p => new CrmStageColumn
@@ -107,6 +128,9 @@ public class CrmBoardViewModel
             NewLeads = allLeads.Count(l => NormalizeStage(l.Stage) == StageNew),
             PipelineValue = open.Sum(l => l.EstimatedValue),
             WonValue = won.Sum(l => l.EstimatedValue),
+            QuotedLeads = quotedLeads,
+            QuotedValue = quotedValue,
+            InquiryIdByLead = inquiryIdByLead ?? new Dictionary<int, int>(),
             Search = search,
             StageFilter = stageFilter,
             AssigneeFilter = assigneeFilter,
@@ -139,6 +163,32 @@ public class CrmBoardViewModel
     public static bool IsLost(string? stage)
         => string.Equals(stage?.Trim(), "Lost", StringComparison.OrdinalIgnoreCase)
            || string.Equals(stage?.Trim(), "Locked/Lost", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>Forward-only pipeline order, used to decide whether a stage move is progress.</summary>
+    private static readonly string[] StageOrder =
+    {
+        StageNew, StageContacted, StageQualified, StageProposal, StageNegotiation, StageWon
+    };
+
+    /// <summary>Position of a stage in the forward pipeline order; -1 when unknown or lost.</summary>
+    private static int StageIndex(string? stage)
+    {
+        var normalized = NormalizeStage(stage);
+        return Array.IndexOf(StageOrder, normalized);
+    }
+
+    /// <summary>
+    /// The stage a lead should move to when a quotation is generated for its inquiry
+    /// (Phase 27): <c>Proposal</c> for leads that have not reached it yet. Returns
+    /// <c>null</c> when nothing should change — a lead already in Negotiation/Won, or a
+    /// closed lead, is never dragged backwards.
+    /// </summary>
+    public static string? StageForQuotation(string? stage)
+    {
+        var current = StageIndex(stage);
+        var target = Array.IndexOf(StageOrder, StageProposal);
+        return current >= 0 && current < target ? StageProposal : null;
+    }
 
     /// <summary>Days since the lead was created — the "aging" signal on a kanban card.</summary>
     public static int DaysWaiting(CRMLeadModel lead, DateTime now)

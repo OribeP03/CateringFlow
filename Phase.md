@@ -612,3 +612,62 @@ regressions; every CRUD verb of every controller now has at least one green test
 **Status - BUILT & verified.** `dotnet build` clean (0 warnings / 0 errors); full suite **316 passed, 0 failed,
 0 skipped**; no stale `Add Lead` / `_AddLeadModal` / `CRMLead/Create` / `_BuiltForPros` references remain; committed as
 `52d4a62` and pushed to `origin/main`.
+
+---
+
+## Phase 27 - CRM-to-Quotation Conversion (Close the Pipeline Loop)
+
+**Goal**: today an inquiry becomes a CRM lead and the lead can be won, but nobody can turn a qualified lead into an
+actual **quotation** — so the commercial loop is still broken. Phase 27 closes it: staff quote a live inquiry from the
+inbox or the pipeline, the quotation is **prefilled from the inquiry** (event date, pax, package, venue, client), it is
+**linked to the inquiry and the lead**, the inquiry flips to `Quoted`, the lead advances to `Proposal`, and the CRM page
+reports how many leads turned into quotes.
+
+### Implementation (Phase 27)
+
+1. `Models/QuotationModel.cs` - `InquiryId?` + `[ForeignKey] Inquiry`, `[NotMapped] InquiryReference`. One quotation per
+   inquiry (unique index), so a quote can never be duplicated by accident.
+2. `Models/InquiryModel.cs` - inverse `Quotation?` navigation so the inbox can show "QTN-xxxx" without extra queries,
+   plus `[NotMapped] IsQuotable` (a `Lost` inquiry cannot be quoted).
+3. `Data/CateringFlowDbContext.cs` - `Quotation -> Inquiry` one-to-one (`Restrict` on delete, unique index on
+   `InquiryId`) + EF migration `AddQuotationInquiryLink`.
+4. `Controllers/QuotationController.cs`:
+   - private `BuildFromInquiry(InquiryModel)` - maps inquiry → draft quotation (next `QTN-` number, client, event date
+     or +30 days, pax >= 1, package, `Total = PricePerPax * Pax`, `Status = Draft`, `ValidUntil = +14 days`, notes
+     carrying the inquiry reference / venue / source) and resolves the **customer** (inquiry → lead → email match →
+     auto-create, mirroring the "Won lead creates a customer" rule).
+   - `GET CreateFromInquiry(id, returnUrl)` - prefilled review screen (reuses `Views/Quotation/Create.cshtml` with an
+     "converted from inquiry" banner); writes nothing.
+   - `POST ConvertFromInquiry(id, returnUrl)` - one-click draft: creates the quotation, links it, sets the inquiry to
+     `Quoted`, advances the linked lead to `Proposal` (never downgrades `Won`/`Lost`), writes an `ActivityLogger` row and
+     a `Sales / CRM Staff` notification, redirects to the new quotation. Converting an inquiry that already has a
+     quotation does **not** duplicate it - it redirects to the existing one.
+   - `Create(quotation, returnUrl, inquiryId)` - the save path honours the inquiry link: same linking, stage sync,
+     activity row and notification.
+5. `Controllers/SuperAdminController.cs` - `CRM()` adds `QuotedLeads` / `QuotedValue` and an `InquiryIdByLead` map
+   (lead → its inquiry) to `CrmBoardViewModel`; `Inquiries()` includes `Quotation` and a `QuotableCount`.
+6. `Models/CrmBoardViewModel.cs` - `QuotedLeads`, `QuotedValue`, `InquiryIdByLead` (query conversion is
+   `QuotedLeads / TotalLeads`).
+7. Views: `Views/SuperAdmin/CRM.cshtml` shows "N of M leads converted to quotations · ₱X quoted" and a per-row
+   **Quote** button (only for leads that have an inquiry); `Views/SuperAdmin/Inquiries.cshtml` gains a Quotation column
+   (linked number or "Create quote" / "Review quote") and the actions cell keeps status + delete;
+   `Views/Quotation/Create.cshtml` shows the source-inquiry banner + hidden `inquiryId`.
+8. `Services/RbacService.cs` - `ConvertInquiryToQuotation` for Super Admin and Sales CRM (staff crew / finance cannot
+   convert an inquiry into a quote).
+9. `Data/SeedData.cs` - the seeded `Quoted` inquiry gets a linked draft quotation (idempotent) so the inbox and
+   pipeline demo the conversion out of the box.
+
+### Test Phase A27 (`CrmQuotationConversionTests.cs`) - mirror of Phase 27
+
+- `BuildFromInquiry` maps every field (number, client, date, pax, package, total = price x pax, Draft, valid-until,
+  notes with the inquiry reference); a `Lost` inquiry is not quotable.
+- `GET CreateFromInquiry` prefills and writes **no** rows; unknown id -> `NotFound`; the view carries the inquiry banner.
+- `POST ConvertFromInquiry` creates one Draft quotation, links quotation -> inquiry -> lead, sets the inquiry to
+  `Quoted`, advances the lead to `Proposal`, writes an activity row + notification, and redirects to the quotation.
+- The customer is created once and reused (email match does not create a second customer).
+- Converting twice does not create a duplicate quotation (redirects to the existing one).
+- `Create` with `inquiryId` links and syncs the same way; a lead already `Won` is never downgraded to `Proposal`.
+- RBAC exposes `ConvertInquiryToQuotation` for Super Admin + Sales CRM only.
+- `/SuperAdmin/CRM` reports the conversion stats and the inquiry id per lead; both views render the conversion control.
+
+**Gate**: build green + A27 green + full suite green before Phase 28.

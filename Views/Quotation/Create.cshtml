@@ -12,6 +12,24 @@
     </div>
 </div>
 
+@if (Model.InquiryId.HasValue)
+{
+    <input type="hidden" asp-for="InquiryId" />
+    <div class="alert alert-info d-flex align-items-start gap-2">
+        <i class="bi bi-inbox-fill mt-1"></i>
+        <div>
+            <strong>Converted from website inquiry @Model.InquiryReference.</strong>
+            The client, event date, pax, package and pricing were prefilled from the inquiry, and the notes keep
+            its reference. Saving links the quotation to the inquiry, moves the inquiry to
+            <strong>@InquiryStatuses.Quoted</strong> and advances the CRM lead to <strong>@CRMLeadModelStages.Proposal</strong>.
+            @if (Model.CustomerId <= 0)
+            {
+                <div class="mt-1">No customer record matches this inquiry yet — pick a customer below and it will be created with the quotation.</div>
+            }
+        </div>
+    </div>
+}
+
 <form asp-action="Create" method="post">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="widget-card" style="max-width: 760px;">

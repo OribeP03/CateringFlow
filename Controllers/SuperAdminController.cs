@@ -489,7 +489,25 @@ public class SuperAdminController : Controller
         ViewData["StageFilter"] = stage;
         ViewData["AssigneeFilter"] = assignee;
 
-        return View(CrmBoardViewModel.Build(allLeads, paged, search, stage, assignee));
+        // Phase 27: which leads have been quoted, and which inquiry to quote from.
+        var quotedLeadIds = await _db.Quotations
+            .Where(q => q.InquiryId != null && q.Inquiry!.CrmLeadId != null)
+            .Select(q => q.Inquiry!.CrmLeadId!.Value)
+            .Distinct()
+            .ToListAsync();
+
+        var inquiryIdByLead = await _db.Inquiries
+            .Where(i => i.CrmLeadId != null)
+            .Select(i => new { i.CrmLeadId, i.Id })
+            .ToDictionaryAsync(x => x.CrmLeadId!.Value, x => x.Id);
+
+        var quotedValue = await _db.Quotations
+            .Where(q => q.InquiryId != null && q.Inquiry!.CrmLeadId != null)
+            .SumAsync(q => (decimal?)q.TotalAmount) ?? 0m;
+
+        return View(CrmBoardViewModel.Build(
+            allLeads, paged, search, stage, assignee,
+            quotedLeadIds.Count, quotedValue, inquiryIdByLead));
     }
 
     /// <summary>
@@ -502,6 +520,7 @@ public class SuperAdminController : Controller
         var query = _db.Inquiries
             .Include(i => i.Package)
             .Include(i => i.CrmLead)
+            .Include(i => i.Quotation)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(search))
@@ -528,6 +547,8 @@ public class SuperAdminController : Controller
         ViewData["TotalQuoted"] = await _db.Inquiries.CountAsync(i => i.Status == InquiryStatuses.Quoted);
         ViewData["TotalWon"] = await _db.Inquiries.CountAsync(i => i.Status == InquiryStatuses.Won);
         ViewData["TotalUnassigned"] = await _db.Inquiries.CountAsync(i => i.AssignedTo == null || i.AssignedTo == "");
+        ViewData["TotalQuotable"] = await _db.Inquiries.CountAsync(i => i.Status != InquiryStatuses.Lost);
+        ViewData["TotalWithQuotation"] = await _db.Inquiries.CountAsync(i => i.Quotation != null);
         ViewData["Search"] = search;
         ViewData["StatusFilter"] = status;
         ViewData["AssigneeFilter"] = assignee;

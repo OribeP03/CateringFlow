@@ -15,6 +15,11 @@
             Pipeline · @Model.OpenLeads open leads of @Model.TotalLeads ·
             ₱@Model.PipelineValue.ToString("N0") open pipeline value
         </div>
+        <div class="page-header-sub">
+            <i class="bi bi-file-earmark-text"></i>
+            @Model.QuotedLeads of @Model.TotalLeads leads converted to quotations
+            (@Model.QuotationRate.ToString("0.#")%) · ₱@Model.QuotedValue.ToString("N0") quoted
+        </div>
     </div>
     <div class="d-flex gap-2">
         <a href="/SuperAdmin/Inquiries" class="admin-btn-secondary">
@@ -40,7 +45,8 @@
         <strong>Leads arrive automatically.</strong>
         No admin types a lead in — every card here was created from a client inquiry submitted on the
         website (<a href="/#contact">Contact / Request a Quote</a>) or a booking. Qualify, assign,
-        and advance each lead; winning a lead auto-creates the customer record.
+        and advance each lead; winning a lead auto-creates the customer record, and the
+        <strong>Quote</strong> button generates a prefilled quotation from the inquiry that created the lead.
     </div>
 </div>
 
@@ -138,6 +144,16 @@
                     </td>
                     <td>@(lead.AssignedTo ?? "Unassigned")</td>
                     <td class="d-flex gap-1">
+                        @if (Model.InquiryIdByLead.TryGetValue(lead.Id, out var inquiryId))
+                        {
+                            <form asp-controller="Quotation" asp-action="ConvertFromInquiry" asp-route-returnUrl="/SuperAdmin/CRM" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@inquiryId" />
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-outline-success" title="Generate a quotation from this lead's inquiry">
+                                    <i class="bi bi-file-earmark-plus"></i> Quote
+                                </button>
+                            </form>
+                        }
                         <a asp-controller="CRMLead" asp-action="Details" asp-route-id="@lead.Id" class="btn btn-sm btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
                         <a asp-controller="CRMLead" asp-action="Edit" asp-route-id="@lead.Id" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
                         <form asp-controller="CRMLead" asp-action="Delete" asp-route-returnUrl="/SuperAdmin/CRM" method="post" class="d-inline" onsubmit="return confirm('Remove lead @lead.LeadName from the pipeline?');">

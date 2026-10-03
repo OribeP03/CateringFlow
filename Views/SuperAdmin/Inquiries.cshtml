@@ -98,6 +98,7 @@
                 <th>Event</th>
                 <th>Source</th>
                 <th>CRM Lead</th>
+                <th>Quotation</th>
                 <th>Status</th>
                 <th>Assigned To</th>
                 <th>Received</th>
@@ -108,7 +109,7 @@
             @if (Model.Items.Count == 0)
             {
                 <tr>
-                    <td colspan="9" class="text-center text-muted py-4">
+                    <td colspan="10" class="text-center text-muted py-4">
                         No inquiries yet. They will appear here as soon as a client submits the contact form.
                     </td>
                 </tr>
@@ -168,6 +169,26 @@
                             <span class="text-muted small">Not linked</span>
                         }
                     </td>
+                    <td>
+                        @if (inquiry.Quotation != null)
+                        {
+                            <a asp-controller="Quotation" asp-action="Details" asp-route-id="@inquiry.Quotation.Id" class="fw-semibold">
+                                @inquiry.Quotation.QuotationNumber
+                            </a>
+                            <div class="small text-muted">@inquiry.Quotation.Status · ₱@inquiry.Quotation.TotalAmount.ToString("N0")</div>
+                        }
+                        else if (inquiry.IsQuotable)
+                        {
+                            <a asp-controller="Quotation" asp-action="CreateFromInquiry" asp-route-id="@inquiry.Id"
+                               asp-route-returnUrl="@returnUrl" class="btn btn-sm btn-outline-success" title="Quote this inquiry">
+                                <i class="bi bi-file-earmark-plus"></i> Create quote
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="text-muted small">Not quotable</span>
+                        }
+                    </td>
                     <td><span class="status-pill @statusClass">@inquiry.Status</span></td>
                     <td>
                         <form method="post" action="/Inquiry/Assign" class="inquiry-assign-form">
@@ -185,6 +206,18 @@
                     </td>
                     <td class="small text-muted">@inquiry.CreatedAt.ToString("MMM dd, yyyy · h:mm tt")</td>
                     <td class="text-end">
+                        @if (inquiry.Quotation == null && inquiry.IsQuotable)
+                        {
+                            <form method="post" action="/Quotation/ConvertFromInquiry" class="d-inline"
+                                  onsubmit="return confirm('Generate a draft quotation from @inquiry.Reference?');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@inquiry.Id" />
+                                <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                <button type="submit" class="btn btn-sm btn-outline-success" title="Generate quotation now">
+                                    <i class="bi bi-magic"></i>
+                                </button>
+                            </form>
+                        }
                         <form method="post" action="/Inquiry/UpdateStatus" class="d-inline">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="id" value="@inquiry.Id" />
@@ -209,7 +242,7 @@
                 </tr>
 
                 <tr class="inquiry-message-row">
-                    <td colspan="9">
+                    <td colspan="10">
                         <div class="inquiry-message">
                             <i class="bi bi-chat-left-text"></i>
                             <span>@inquiry.Message</span>
