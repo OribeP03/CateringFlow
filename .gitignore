@@ -56,3 +56,6 @@ uploads/
 
 # Obsidian vault config (project docs are authored here)
 .obsidian/
+# Publish artifacts (not source)
+publish-output/
+WebDeploy_*.msi
