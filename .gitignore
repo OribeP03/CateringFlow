@@ -67,3 +67,4 @@ Properties/PublishProfiles/
 # Deployment bundles
 publish-tc.zip
 tools/__pycache__/
+tools/appsettings.production.json
