@@ -671,3 +671,7 @@ reports how many leads turned into quotes.
 - `/SuperAdmin/CRM` reports the conversion stats and the inquiry id per lead; both views render the conversion control.
 
 **Gate**: build green + A27 green + full suite green before Phase 28.
+
+**Status - BUILT & verified.** `dotnet build` clean (0 warnings / 0 errors); A27 tests **33 passed**, full suite
+**349 passed, 0 failed, 0 skipped**; migration `AddQuotationInquiryLink` applied (inquiry->quotation 1-1);
+seeded quoted inquiry linked to a draft quotation (idempotent). Committed as `f0ddef3` and pushed to `origin/main`.
