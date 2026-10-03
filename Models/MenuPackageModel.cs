@@ -25,6 +25,14 @@ public class MenuPackageModel
     [Display(Name = "Service Hours")]
     public int ServiceHours { get; set; } = 4;
 
+    // Pipe "|"-separated list of inclusions shown on the client "View Details" modal.
+    public string? Features { get; set; }
+
+    public string? ImageName { get; set; }
+
+    [Display(Name = "Highlight")]
+    public string? Highlight { get; set; }
+
     [Required]
     public string Status { get; set; } = "Active";
 

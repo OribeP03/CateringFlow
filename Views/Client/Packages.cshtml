@@ -1,0 +1,74 @@
+@using cateringflow.Models
+@{
+    Layout = null;
+    ViewData["Title"] = "Catering Packages - CateringFlow";
+    var packages = (Model as List<MenuPackageModel>) ?? new List<MenuPackageModel>();
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 & Bootstrap Icons -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <!-- Client CSS -->
+    <link rel="stylesheet" href="~/css/client.css" asp-append-version="true" />
+</head>
+<body class="packages-page">
+
+    @await Html.PartialAsync("~/Views/Client/Components/_Navbar.cshtml")
+
+    <section class="packages-hero">
+        <div class="container text-center">
+            <span class="section-tag text-light">Explore Our Menu</span>
+            <h1 class="packages-hero-title">Find the perfect package</h1>
+            <p class="packages-hero-sub">
+                From intimate celebrations to grand galas — every package includes curated menus,
+                professional service, and stress-free setup. Tap <strong>View Details</strong> to see
+                exactly what's included.
+            </p>
+        </div>
+    </section>
+
+    @await Html.PartialAsync("~/Views/Client/Components/_PackageCards.cshtml")
+
+    <!-- Contact & Request-a-Quote Component -->
+    @await Html.PartialAsync("~/Views/Client/Components/_ContactInquiry.cshtml")
+
+    <!-- Call to Action Banner Component -->
+    @await Html.PartialAsync("~/Views/Client/Components/_CtaBanner.cshtml")
+
+    @await Html.PartialAsync("~/Views/Client/Components/_Footer.cshtml")
+
+    @await Html.PartialAsync("~/Views/Client/Components/_PackageDetailsModal.cshtml")
+    @await Html.PartialAsync("~/Views/Client/Components/_BookingModal.cshtml")
+
+    <script>
+        window.__CATERINGFLOW_AUTH__ = '@(User.Identity?.IsAuthenticated == true ? "true" : "false")';
+        window.__CATERINGFLOW_INQUIRY_SOURCE__ = 'Packages Page';
+        window.__CATERINGFLOW_PACKAGES__ = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(packages.Select(p => new
+        {
+            p.PackageName,
+            p.Description,
+            price = p.PricePerPax,
+            p.CourseCount,
+            p.ServiceHours,
+            p.Highlight,
+            features = (p.Features ?? "").Split('|', StringSplitOptions.RemoveEmptyEntries),
+            image = string.IsNullOrWhiteSpace(p.ImageName) ? "hero_spread.jpg" : p.ImageName
+        })));
+    </script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/client.js" asp-append-version="true"></script>
+</body>
+</html>

@@ -7,7 +7,7 @@ using cateringflow.Models;
 namespace cateringflow.Controllers;
 
 [Authorize]
-public class MenuPackageController : Controller
+public class MenuPackageController : AppController
 {
     private readonly CateringFlowDbContext _db;
 
@@ -16,12 +16,11 @@ public class MenuPackageController : Controller
         _db = db;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int? page)
     {
-        var packages = await _db.MenuPackages
-            .Include(p => p.Events)
-            .OrderBy(p => p.PricePerPax)
-            .ToListAsync();
+        var packages = await PagedResult<MenuPackageModel>.CreateAsync(
+            _db.MenuPackages.Include(p => p.Events).OrderBy(p => p.PricePerPax),
+            page);
         return View(packages);
     }
 
@@ -43,7 +42,7 @@ public class MenuPackageController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(MenuPackageModel package)
+    public async Task<IActionResult> Create(MenuPackageModel package, string? returnUrl = null)
     {
         package.CreatedAt = DateTime.Now;
         ModelState.Remove(nameof(package.Events));
@@ -52,7 +51,7 @@ public class MenuPackageController : Controller
             _db.MenuPackages.Add(package);
             await _db.SaveChangesAsync();
             TempData["Success"] = $"Package \"{package.PackageName}\" created successfully.";
-            return RedirectToAction(nameof(Index));
+            return RedirectToIndex(returnUrl);
         }
         return View(package);
     }
@@ -68,7 +67,7 @@ public class MenuPackageController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, MenuPackageModel package)
+    public async Task<IActionResult> Edit(int id, MenuPackageModel package, string? returnUrl = null)
     {
         if (id != package.Id) return NotFound();
         ModelState.Remove(nameof(package.Events));
@@ -87,7 +86,7 @@ public class MenuPackageController : Controller
                 _db.MenuPackages.Update(existing);
                 await _db.SaveChangesAsync();
                 TempData["Success"] = "Package updated successfully.";
-                return RedirectToAction(nameof(Index));
+                return RedirectToIndex(returnUrl);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -100,13 +99,13 @@ public class MenuPackageController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int id, string? returnUrl = null)
     {
         var package = await _db.MenuPackages.FindAsync(id);
         if (package == null) return NotFound();
         _db.MenuPackages.Remove(package);
         await _db.SaveChangesAsync();
         TempData["Success"] = "Package deleted successfully.";
-        return RedirectToAction(nameof(Index));
+        return RedirectToIndex(returnUrl);
     }
 }

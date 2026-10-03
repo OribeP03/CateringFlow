@@ -3,11 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using cateringflow.Data;
 using cateringflow.Models;
+using cateringflow.Services;
 
 namespace cateringflow.Controllers;
 
 [Authorize]
-public class PaymentController : Controller
+public class PaymentController : AppController
 {
     private readonly CateringFlowDbContext _db;
 
@@ -16,24 +17,31 @@ public class PaymentController : Controller
         _db = db;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int? page)
     {
-        var payments = await _db.Payments
+        var query = _db.Payments
             .Include(p => p.Invoice)
             .Include(p => p.Customer)
-            .OrderByDescending(p => p.PaymentDate)
-            .ToListAsync();
+            .AsQueryable();
 
-        ViewData["TotalCollected"] = payments.Sum(p => p.Amount);
-        ViewData["ThisMonth"] = payments.Where(p => p.PaymentDate.Month == DateTime.Now.Month && p.PaymentDate.Year == DateTime.Now.Year).Sum(p => p.Amount);
-        ViewData["MostUsedMethod"] = payments.GroupBy(p => p.PaymentMethod)
+        var now = DateTime.Now;
+        var thisMonthQuery = _db.Payments.Where(p => p.PaymentDate.Month == now.Month && p.PaymentDate.Year == now.Year);
+        var methodStat = await _db.Payments
+            .GroupBy(p => p.PaymentMethod)
             .OrderByDescending(g => g.Count())
-            .Select(g => g.Key)
-            .FirstOrDefault() ?? "N/A";
-        ViewData["MostUsedMethodCount"] = payments.GroupBy(p => p.PaymentMethod)
-            .OrderByDescending(g => g.Count())
-            .Select(g => g.Count())
-            .FirstOrDefault();
+            .Select(g => new { g.Key, Count = g.Count() })
+            .FirstOrDefaultAsync();
+
+        ViewData["TotalCollected"] = await _db.Payments.SumAsync(p => (decimal?)p.Amount) ?? 0m;
+        ViewData["PaymentCount"] = await _db.Payments.CountAsync();
+        ViewData["ThisMonth"] = await thisMonthQuery.SumAsync(p => (decimal?)p.Amount) ?? 0m;
+        ViewData["ThisMonthCount"] = await thisMonthQuery.CountAsync();
+        ViewData["MostUsedMethod"] = methodStat?.Key ?? "N/A";
+        ViewData["MostUsedMethodCount"] = methodStat?.Count;
+
+        var payments = await PagedResult<PaymentModel>.CreateAsync(
+            query.OrderByDescending(p => p.PaymentDate),
+            page);
 
         return View(payments);
     }
@@ -51,7 +59,7 @@ public class PaymentController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(PaymentModel payment)
+    public async Task<IActionResult> Create(PaymentModel payment, string? returnUrl = null)
     {
         payment.CreatedAt = DateTime.Now;
         ModelState.Remove(nameof(payment.Invoice));
@@ -75,8 +83,9 @@ public class PaymentController : Controller
 
             _db.Payments.Add(payment);
             await _db.SaveChangesAsync();
+            await ActivityLogger.LogAsync(_db, "Created", "Payment", payment.Id, $"Payment of ₱{payment.Amount:N2} via {payment.PaymentMethod} recorded{(invoice != null ? $" against {invoice.InvoiceNumber}" : "")}.", User.Identity?.Name);
             TempData["Success"] = $"Payment of ₱{payment.Amount:N2} recorded successfully.";
-            return RedirectToAction(nameof(Index));
+            return RedirectToIndex(returnUrl);
         }
 
         ViewData["Invoices"] = await _db.Invoices
@@ -89,7 +98,7 @@ public class PaymentController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int id, string? returnUrl = null)
     {
         var payment = await _db.Payments.FindAsync(id);
         if (payment == null) return NotFound();
@@ -106,6 +115,6 @@ public class PaymentController : Controller
         _db.Payments.Remove(payment);
         await _db.SaveChangesAsync();
         TempData["Success"] = "Payment deleted and invoice balance updated.";
-        return RedirectToAction(nameof(Index));
+        return RedirectToIndex(returnUrl);
     }
 }

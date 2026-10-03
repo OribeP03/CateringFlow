@@ -1,0 +1,78 @@
+@model cateringflow.Models.IPagedResult
+@{
+    Func<int, string> pageUrl = n =>
+    {
+        var q = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var key in Context.Request.Query.Keys)
+        {
+            if (string.Equals(key, "page", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+            var values = Context.Request.Query[key];
+            if (values.Count > 0)
+            {
+                q[key] = values.ToString();
+            }
+        }
+        q["page"] = n.ToString();
+        return $"{Context.Request.Path}?{string.Join("&", q.Select(kvp => $"{Uri.EscapeDataString(kvp.Key)}={Uri.EscapeDataString(kvp.Value)}"))}";
+    };
+}
+@if (Model.TotalPages > 1)
+{
+    <div class="pagination-bar">
+        <div class="small text-muted">
+            Showing <strong>@Model.FirstItem</strong>–<strong>@Model.LastItem</strong> of <strong>@Model.TotalItems</strong>
+        </div>
+        <nav aria-label="Pagination">
+            <ul class="pagination">
+                <li class="page-item @(Model.HasPrevious ? "" : "disabled")">
+                    <a class="page-link" href="@pageUrl(Model.Page - 1)" tabindex="@(Model.HasPrevious ? "0" : "-1")" aria-disabled="@(Model.HasPrevious ? "false" : "true")">‹</a>
+                </li>
+                @{
+                    var pages = Model.GetPageWindow();
+                    var first = pages.First();
+                    var last = pages.Last();
+                }
+                @if (first > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@pageUrl(1)">1</a>
+                    </li>
+                    @if (first > 2)
+                    {
+                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                    }
+                }
+                @foreach (var p in pages)
+                {
+                    <li class="page-item @(p == Model.Page ? "active" : "")">
+                        <a class="page-link" href="@pageUrl(p)">@p</a>
+                    </li>
+                }
+                @if (last < Model.TotalPages)
+                {
+                    @if (last < Model.TotalPages - 1)
+                    {
+                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                    }
+                    <li class="page-item">
+                        <a class="page-link" href="@pageUrl(Model.TotalPages)">@Model.TotalPages</a>
+                    </li>
+                }
+                <li class="page-item @(Model.HasNext ? "" : "disabled")">
+                    <a class="page-link" href="@pageUrl(Model.Page + 1)" tabindex="@(Model.HasNext ? "0" : "-1")" aria-disabled="@(Model.HasNext ? "false" : "true")">›</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+}
+else if (Model.TotalItems > 0)
+{
+    <div class="pagination-bar">
+        <div class="small text-muted">
+            Showing <strong>@Model.FirstItem</strong>–<strong>@Model.LastItem</strong> of <strong>@Model.TotalItems</strong>
+        </div>
+    </div>
+}

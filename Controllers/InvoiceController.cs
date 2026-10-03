@@ -3,11 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using cateringflow.Data;
 using cateringflow.Models;
+using cateringflow.Services;
 
 namespace cateringflow.Controllers;
 
 [Authorize]
-public class InvoiceController : Controller
+public class InvoiceController : AppController
 {
     private readonly CateringFlowDbContext _db;
 
@@ -16,7 +17,7 @@ public class InvoiceController : Controller
         _db = db;
     }
 
-    public async Task<IActionResult> Index(string? search, string? status)
+    public async Task<IActionResult> Index(string? search, string? status, int? page)
     {
         var query = _db.Invoices
             .Include(i => i.Customer)
@@ -34,9 +35,15 @@ public class InvoiceController : Controller
             query = query.Where(i => i.Status == status);
         }
 
-        var invoices = await query
-            .OrderByDescending(i => i.IssueDate)
-            .ToListAsync();
+        ViewData["TotalInvoices"] = await query.CountAsync();
+        ViewData["TotalPartial"] = await query.CountAsync(i => i.Status == "Partial");
+        ViewData["TotalUnpaid"] = await query.CountAsync(i => i.Status == "Unpaid");
+        ViewData["TotalOverdue"] = await query.CountAsync(i => i.Status == "Overdue");
+        ViewData["TotalPaid"] = await query.CountAsync(i => i.Status == "Paid");
+
+        var invoices = await PagedResult<InvoiceModel>.CreateAsync(
+            query.OrderByDescending(i => i.IssueDate),
+            page);
 
         ViewData["Search"] = search;
         ViewData["StatusFilter"] = status;
@@ -58,6 +65,20 @@ public class InvoiceController : Controller
     }
 
     [HttpGet]
+    public async Task<IActionResult> Print(int? id)
+    {
+        if (id == null) return NotFound();
+        var invoice = await _db.Invoices
+            .Include(i => i.Customer)
+            .Include(i => i.Quotation)
+            .Include(i => i.Event)
+            .Include(i => i.Payments)
+            .FirstOrDefaultAsync(i => i.Id == id);
+        if (invoice == null) return NotFound();
+        return View("Print", invoice);
+    }
+
+    [HttpGet]
     public async Task<IActionResult> Create()
     {
         ViewData["Customers"] = await _db.Customers.Where(c => c.Status == "Active").OrderBy(c => c.FullName).ToListAsync();
@@ -71,7 +92,7 @@ public class InvoiceController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(InvoiceModel invoice)
+    public async Task<IActionResult> Create(InvoiceModel invoice, string? returnUrl = null)
     {
         invoice.CreatedAt = DateTime.Now;
         invoice.Status = ComputeInvoiceStatus(invoice);
@@ -96,8 +117,9 @@ public class InvoiceController : Controller
         {
             _db.Invoices.Add(invoice);
             await _db.SaveChangesAsync();
+            await ActivityLogger.LogAsync(_db, "Created", "Invoice", invoice.Id, $"Invoice {invoice.InvoiceNumber} created for ₱{invoice.TotalAmount:N2} ({invoice.Status}).", User.Identity?.Name);
             TempData["Success"] = $"Invoice {invoice.InvoiceNumber} created successfully.";
-            return RedirectToAction(nameof(Index));
+            return RedirectToIndex(returnUrl);
         }
         ViewData["Customers"] = await _db.Customers.Where(c => c.Status == "Active").OrderBy(c => c.FullName).ToListAsync();
         ViewData["Quotations"] = await _db.Quotations.Where(q => q.Status == "Approved").OrderByDescending(q => q.CreatedAt).ToListAsync();
@@ -107,7 +129,7 @@ public class InvoiceController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateStatus(int id, string status)
+    public async Task<IActionResult> UpdateStatus(int id, string status, string? returnUrl = null)
     {
         var invoice = await _db.Invoices.FindAsync(id);
         if (invoice == null) return NotFound();
@@ -119,19 +141,19 @@ public class InvoiceController : Controller
         _db.Invoices.Update(invoice);
         await _db.SaveChangesAsync();
         TempData["Success"] = $"Invoice status updated to \"{status}\".";
-        return RedirectToAction(nameof(Details), new { id });
+        return RedirectToDetails(returnUrl, nameof(Details), new { id });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int id, string? returnUrl = null)
     {
         var invoice = await _db.Invoices.FindAsync(id);
         if (invoice == null) return NotFound();
         _db.Invoices.Remove(invoice);
         await _db.SaveChangesAsync();
         TempData["Success"] = "Invoice deleted successfully.";
-        return RedirectToAction(nameof(Index));
+        return RedirectToIndex(returnUrl);
     }
 
     private static string ComputeInvoiceStatus(InvoiceModel invoice)

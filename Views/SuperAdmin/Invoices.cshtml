@@ -18,38 +18,19 @@
     </div>
 </div>
 
-<!-- 5 Invoice Status KPI Cards -->
-<div class="kpi-cards-grid">
-    <!-- Total -->
-    <div class="kpi-card">
-        <div class="kpi-value" style="font-size: 1.8rem;">6</div>
-        <div class="kpi-title">Total</div>
-    </div>
-
-    <!-- Paid -->
-    <div class="kpi-card" style="background: #ecfdf5; border-color: #a7f3d0;">
-        <div class="kpi-value text-success" style="font-size: 1.8rem;">3</div>
-        <div class="kpi-title text-success">Paid</div>
-    </div>
-
-    <!-- Partial -->
-    <div class="kpi-card" style="background: #fefce8; border-color: #fef08a;">
-        <div class="kpi-value" style="font-size: 1.8rem; color: #ca8a04;">1</div>
-        <div class="kpi-title" style="color: #ca8a04;">Partial</div>
-    </div>
-
-    <!-- Unpaid -->
-    <div class="kpi-card" style="background: #eff6ff; border-color: #bfdbfe;">
-        <div class="kpi-value text-primary" style="font-size: 1.8rem;">1</div>
-        <div class="kpi-title text-primary">Unpaid</div>
-    </div>
-
-    <!-- Overdue -->
-    <div class="kpi-card" style="background: #fef2f2; border-color: #fecaca;">
-        <div class="kpi-value text-danger" style="font-size: 1.8rem;">1</div>
-        <div class="kpi-title text-danger">Overdue</div>
-    </div>
-</div>
+<!-- 5 Invoice Status KPI Cards (incremental, largest value on right) -->
+@{
+    ViewData["KpiGridClass"] = "";
+    var invoiceCards = new List<KpiCardModel>
+    {
+        new() { Label = "Partial", Value = "1", SortValue = 1, ValueFirst = true, FontSize = "1.8rem", Background = "#fefce8", BorderColor = "#fef08a", Foreground = "#ca8a04" },
+        new() { Label = "Unpaid", Value = "1", SortValue = 1, ValueFirst = true, FontSize = "1.8rem", Background = "#eff6ff", BorderColor = "#bfdbfe", Foreground = "#0d6efd" },
+        new() { Label = "Overdue", Value = "1", SortValue = 1, ValueFirst = true, FontSize = "1.8rem", Background = "#fef2f2", BorderColor = "#fecaca", Foreground = "#dc3545" },
+        new() { Label = "Paid", Value = "3", SortValue = 3, ValueFirst = true, FontSize = "1.8rem", Background = "#ecfdf5", BorderColor = "#a7f3d0", Foreground = "#198754" },
+        new() { Label = "Total", Value = "6", SortValue = 6, ValueFirst = true, FontSize = "1.8rem" }
+    };
+}
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_KpiCards.cshtml", invoiceCards)
 
 <!-- Overdue Warning Alert Banner -->
 <div class="admin-alert-banner">

@@ -1,0 +1,109 @@
+@* Views/SuperAdmin/Components/_SupplierViewEditModals.cshtml *@
+<!-- Edit Supplier Modal -->
+<div id="editSupplierModal" class="admin-modal-backdrop">
+    <div class="admin-modal-dialog">
+        <div class="admin-modal-header">
+            <div>
+                <h5 class="admin-modal-title mb-1">Edit Supplier</h5>
+                <p class="text-muted small mb-0">Update vendor details and partnership status.</p>
+            </div>
+            <button type="button" class="admin-modal-close" onclick="closeAdminModal('editSupplierModal')">&times;</button>
+        </div>
+        <form asp-controller="Supplier" asp-action="Edit" method="post">
+            <input type="hidden" name="returnUrl" value="/SuperAdmin/Suppliers" />
+            <input type="hidden" name="id" id="editSupplierId" />
+            <input type="hidden" name="Id" id="editSupplierId2" />
+            @Html.AntiForgeryToken()
+            <div class="admin-modal-body">
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Supplier Name *</label>
+                        <input type="text" name="SupplierName" id="editSupplierName" class="form-control" required />
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Category *</label>
+                        <select name="Category" id="editSupplierCategory" class="form-select" required>
+                            <option value="Meats & Poultry">Meats & Poultry</option>
+                            <option value="Seafood">Seafood</option>
+                            <option value="Produce">Produce</option>
+                            <option value="Grains">Grains</option>
+                            <option value="Beverages">Beverages</option>
+                            <option value="Hardware & Linens">Hardware & Linens</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Contact Person</label>
+                        <input type="text" name="ContactPerson" id="editSupplierContact" class="form-control" />
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Phone</label>
+                        <input type="text" name="Phone" id="editSupplierPhone" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="form-group-admin">
+                    <label>Email Address *</label>
+                    <input type="email" name="Email" id="editSupplierEmail" class="form-control" required />
+                </div>
+
+                <div class="form-group-admin">
+                    <label>Address</label>
+                    <input type="text" name="Address" id="editSupplierAddress" class="form-control" />
+                </div>
+
+                <div class="form-group-admin">
+                    <label>Status</label>
+                    <select name="Status" id="editSupplierStatus" class="form-select">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
+            <div class="admin-modal-footer">
+                <button type="button" class="admin-btn-secondary" onclick="closeAdminModal('editSupplierModal')">Cancel</button>
+                <button type="submit" class="admin-btn-primary">
+                    <i class="bi bi-check-lg me-1"></i> Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- View Supplier Modal -->
+<div id="viewSupplierModal" class="admin-modal-backdrop">
+    <div class="admin-modal-dialog">
+        <div class="admin-modal-header">
+            <div>
+                <h5 class="admin-modal-title mb-1">Supplier Details</h5>
+                <p class="text-muted small mb-0">Vendor profile and catalog summary.</p>
+            </div>
+            <button type="button" class="admin-modal-close" onclick="closeAdminModal('viewSupplierModal')">&times;</button>
+        </div>
+        <div class="admin-modal-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-4 text-muted">Supplier Name</dt>
+                <dd class="col-sm-8" id="viewSupplierName"></dd>
+                <dt class="col-sm-4 text-muted">Contact Person</dt>
+                <dd class="col-sm-8" id="viewSupplierContact"></dd>
+                <dt class="col-sm-4 text-muted">Email</dt>
+                <dd class="col-sm-8" id="viewSupplierEmail"></dd>
+                <dt class="col-sm-4 text-muted">Phone</dt>
+                <dd class="col-sm-8" id="viewSupplierPhone"></dd>
+                <dt class="col-sm-4 text-muted">Address</dt>
+                <dd class="col-sm-8" id="viewSupplierAddress"></dd>
+                <dt class="col-sm-4 text-muted">Category</dt>
+                <dd class="col-sm-8" id="viewSupplierCategory"></dd>
+                <dt class="col-sm-4 text-muted">Status</dt>
+                <dd class="col-sm-8" id="viewSupplierStatus"></dd>
+                <dt class="col-sm-4 text-muted">Tracked Items</dt>
+                <dd class="col-sm-8" id="viewSupplierItems"></dd>
+            </dl>
+        </div>
+        <div class="admin-modal-footer">
+            <button type="button" class="admin-btn-secondary" onclick="closeAdminModal('viewSupplierModal')">Close</button>
+        </div>
+    </div>
+</div>

@@ -492,6 +492,14 @@ body.admin-body {
   grid-template-columns: repeat(4, 1fr);
 }
 
+.kpi-cards-grid.three-cols {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.kpi-cards-grid.six-cols {
+  grid-template-columns: repeat(6, 1fr);
+}
+
 .kpi-card {
   background: var(--admin-card-bg);
   border-radius: var(--radius-md);
@@ -499,13 +507,26 @@ body.admin-body {
   border: 1px solid var(--admin-border-light);
   box-shadow: var(--shadow-card);
   position: relative;
-}
-
-.kpi-card-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.kpi-card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  min-width: 0;
+}
+
+.kpi-card--value-right .kpi-card-body {
+  order: 0;
+}
+
+.kpi-card--value-right .kpi-card-value {
+  text-align: right;
 }
 
 .kpi-icon-pill {
@@ -531,12 +552,14 @@ body.admin-body {
   color: var(--admin-text-muted);
 }
 
-.kpi-value {
+.kpi-card-value {
   font-size: 1.65rem;
   font-weight: 700;
   color: var(--admin-text-main);
   line-height: 1.1;
-  margin-bottom: 6px;
+  white-space: nowrap;
+  align-self: center;
+  margin-left: auto;
 }
 
 .kpi-change {
@@ -1230,6 +1253,7 @@ body.admin-body {
 .col-contacted .column-color-indicator { background: #3b82f6; }
 .col-qualified .column-color-indicator { background: #8b5cf6; }
 .col-quotation .column-color-indicator { background: #d946ef; }
+.col-negotiation .column-color-indicator { background: #f59e0b; }
 .col-converted .column-color-indicator { background: #10b981; }
 .col-lost .column-color-indicator { background: #ef4444; }
 
@@ -1484,4 +1508,186 @@ body.admin-body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* ============================================================
+   Admin Payment Proofs - Chat
+   ============================================================ */
+.proof-chat-dialog {
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+}
+
+.proof-chat-body {
+  padding: 18px;
+  background: #f6f2eb;
+  overflow-y: auto;
+  max-height: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 200px;
+}
+
+.proof-chat-msg {
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.proof-msg-customer {
+  align-self: flex-start;
+  background: #ffffff;
+  border: 1px solid #e8e2d8;
+  border-bottom-left-radius: 4px;
+}
+
+.proof-msg-admin {
+  align-self: flex-end;
+  background: linear-gradient(135deg, #d49847 0%, #b87b2e 100%);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+.proof-msg-admin .proof-chat-name,
+.proof-msg-admin .proof-chat-text,
+.proof-msg-admin .proof-chat-time {
+  color: #ffffff;
+}
+
+.proof-chat-name {
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.proof-chat-time {
+  font-size: 0.7rem;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+/* ============================================================
+   Pagination bar (Phase 2)
+   ============================================================ */
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 2px 4px;
+  flex-wrap: wrap;
+}
+.pagination-bar .pagination {
+  margin-bottom: 0;
+}
+.pagination-bar .page-link {
+  color: var(--admin-text-main);
+  border-color: var(--admin-border);
+  background: var(--admin-card-bg);
+  min-width: 36px;
+  text-align: center;
+  border-radius: var(--radius-sm) !important;
+  margin: 0 2px;
+}
+.pagination-bar .page-link:hover {
+  background: #f7f3ed;
+  border-color: #d8cebf;
+  color: var(--admin-primary-gold);
+}
+.pagination-bar .page-item.active .page-link {
+  background: var(--admin-primary-gold);
+  border-color: var(--admin-primary-gold);
+  color: #ffffff;
+}
+.pagination-bar .page-item.disabled .page-link {
+  color: #c9c0b2;
+  background: var(--admin-card-bg);
+}
+
+/* ============================================================
+   Inquiry Inbox
+   ============================================================ */
+.inquiry-kpi-card {
+  background: var(--admin-card-bg);
+  border: 1px solid var(--admin-border-light);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  height: 100%;
+}
+
+.inquiry-kpi-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--admin-text-muted);
+}
+
+.inquiry-kpi-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--admin-text-main);
+  line-height: 1.1;
+}
+
+.inquiry-kpi-won {
+  border-color: rgba(16, 185, 129, 0.45);
+  background: rgba(16, 185, 129, 0.06);
+}
+
+.inquiry-kpi-won .inquiry-kpi-value {
+  color: #059669;
+}
+
+.inquiry-kpi-hint {
+  font-size: 0.78rem;
+  color: var(--admin-text-muted);
+  line-height: 1.5;
+}
+
+.inquiry-kpi-hint i {
+  color: var(--admin-primary-gold);
+  margin-right: 5px;
+}
+
+.inquiry-message-row td {
+  padding-top: 0;
+  border-top: none;
+}
+
+.inquiry-message {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  background: #fbf8f4;
+  border-left: 3px solid var(--admin-primary-gold);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  color: var(--admin-text-main);
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.inquiry-message i {
+  color: var(--admin-primary-gold);
+  margin-top: 2px;
+}
+
+.inquiry-assign-form {
+  display: inline-block;
+  margin: 0;
+}
+
+.filter-select-sm {
+  padding: 5px 26px 5px 10px;
+  font-size: 0.78rem;
+  min-width: 130px;
 }

@@ -12,6 +12,7 @@ public class RbacService : IRbacService
         [UserRoles.SuperAdmin] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
             ["Dashboard"] = "Manage",
+            ["Calendar"] = "Manage",
             ["Customers"] = "Manage",
             ["Events"] = "Manage",
             ["MenuPackages"] = "Manage",
@@ -21,8 +22,18 @@ public class RbacService : IRbacService
             ["Quotations"] = "Manage",
             ["Invoices"] = "Manage",
             ["Payments"] = "Manage",
+            ["PaymentProofs"] = "Manage",
+            ["ProofAdminChat"] = "Manage",
+            ["SendProofAdminMessage"] = "Manage",
+            ["ApprovePaymentProof"] = "Manage",
+            ["RejectPaymentProof"] = "Manage",
             ["CRM"] = "Manage",
+            ["Inquiries"] = "Manage",
+            ["UpdateInquiryStatus"] = "Manage",
+            ["AssignInquiry"] = "Manage",
+            ["DeleteInquiry"] = "Manage",
             ["Reports"] = "View / Generate",
+            ["ActivityLog"] = "View",
             ["Notifications"] = "Manage",
             ["Settings"] = "Manage"
         },
@@ -30,8 +41,13 @@ public class RbacService : IRbacService
         {
             // Customer Management — Manage; Customer CRM — Manage; Event Booking — Submit / Manage; Quotation & Billing — Quotations
             ["Dashboard"] = "View",
+            ["Calendar"] = "View",
             ["Customers"] = "Manage",
             ["CRM"] = "Manage",
+            ["Inquiries"] = "Manage",
+            ["UpdateInquiryStatus"] = "Manage",
+            ["AssignInquiry"] = "Manage",
+            ["DeleteInquiry"] = "Manage",
             ["Events"] = "Submit / Manage",
             ["Quotations"] = "Quotations"
         },
@@ -39,6 +55,7 @@ public class RbacService : IRbacService
         {
             // Event Booking — Submit / Manage; Staff Assignment — Assign / View; Event Scheduling — Manage / View
             ["Dashboard"] = "View",
+            ["Calendar"] = "View",
             ["Events"] = "Submit / Manage / View",
             ["Staff"] = "Assign / View"
         },
@@ -65,6 +82,11 @@ public class RbacService : IRbacService
             ["Quotations"] = "Manage",
             ["Invoices"] = "Manage",
             ["Payments"] = "Manage",
+            ["PaymentProofs"] = "Manage",
+            ["ProofAdminChat"] = "Manage",
+            ["SendProofAdminMessage"] = "Manage",
+            ["ApprovePaymentProof"] = "Manage",
+            ["RejectPaymentProof"] = "Manage",
             ["Reports"] = "View / Generate"
         },
         [UserRoles.StaffCrew] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)

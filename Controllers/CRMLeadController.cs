@@ -7,7 +7,7 @@ using cateringflow.Models;
 namespace cateringflow.Controllers;
 
 [Authorize]
-public class CRMLeadController : Controller
+public class CRMLeadController : AppController
 {
     private readonly CateringFlowDbContext _db;
 
@@ -16,14 +16,46 @@ public class CRMLeadController : Controller
         _db = db;
     }
 
-    public async Task<IActionResult> Index()
+    /// <summary>
+    /// Live pipeline list. Leads are only ever created from a website inquiry
+    /// (<see cref="ClientController.Inquiry"/>) — there is no manual "add lead"
+    /// endpoint, which is how a real CRM behaves.
+    /// </summary>
+    public async Task<IActionResult> Index(string? search, string? stage, string? assignee, int? page)
     {
-        var leads = await _db.CrmLeads
-            .Include(l => l.Customer)
-            .OrderByDescending(l => l.EstimatedValue)
-            .ToListAsync();
+        var query = _db.CrmLeads.Include(l => l.Customer).AsQueryable();
 
-        ViewData["TotalValue"] = leads.Sum(l => l.EstimatedValue);
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(l => l.LeadName.Contains(search)
+                                     || (l.Company != null && l.Company.Contains(search))
+                                     || (l.Email != null && l.Email.Contains(search)));
+        }
+        if (!string.IsNullOrWhiteSpace(stage) && stage != "All")
+        {
+            var requested = stage;
+            query = query.Where(l => l.Stage == requested);
+        }
+        if (!string.IsNullOrWhiteSpace(assignee) && assignee != "All")
+        {
+            var owner = assignee;
+            query = query.Where(l => l.AssignedTo == owner);
+        }
+
+        ViewData["TotalNew"] = await query.CountAsync(l => l.Stage == "New");
+        ViewData["TotalContacted"] = await query.CountAsync(l => l.Stage == "Contacted");
+        ViewData["TotalProposal"] = await query.CountAsync(l => l.Stage == "Proposal");
+        ViewData["TotalNegotiation"] = await query.CountAsync(l => l.Stage == "Negotiation");
+        ViewData["TotalLost"] = await query.CountAsync(l => l.Stage == "Lost" || l.Stage == "Locked/Lost");
+        ViewData["TotalWon"] = await query.CountAsync(l => l.Stage == "Won");
+        ViewData["TotalValue"] = await query.SumAsync(l => (decimal?)l.EstimatedValue) ?? 0m;
+        ViewData["Search"] = search;
+        ViewData["StageFilter"] = stage;
+        ViewData["AssigneeFilter"] = assignee;
+
+        var leads = await PagedResult<CRMLeadModel>.CreateAsync(
+            query.OrderByDescending(l => l.CreatedAt),
+            page);
         return View(leads);
     }
 
@@ -39,43 +71,6 @@ public class CRMLeadController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Create()
-    {
-        ViewData["Customers"] = await _db.Customers.Where(c => c.Status == "Active").OrderBy(c => c.FullName).ToListAsync();
-        return View();
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(CRMLeadModel lead)
-    {
-        lead.CreatedAt = DateTime.Now;
-        ModelState.Remove(nameof(lead.Customer));
-        ModelState.Remove(nameof(lead.CustomerName));
-        if (ModelState.IsValid)
-        {
-            _db.CrmLeads.Add(lead);
-            await _db.SaveChangesAsync();
-
-            _db.Notifications.Add(new NotificationModel
-            {
-                Title = "New Lead Added",
-                Message = $"Lead \"{lead.LeadName}\" worth ₱{lead.EstimatedValue:N0} was added to the pipeline.",
-                Type = "Info",
-                IsRead = false,
-                TargetRole = "Sales / CRM Staff",
-                CreatedAt = DateTime.Now
-            });
-            await _db.SaveChangesAsync();
-
-            TempData["Success"] = $"Lead \"{lead.LeadName}\" created successfully.";
-            return RedirectToAction(nameof(Index));
-        }
-        ViewData["Customers"] = await _db.Customers.Where(c => c.Status == "Active").OrderBy(c => c.FullName).ToListAsync();
-        return View(lead);
-    }
-
-    [HttpGet]
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null) return NotFound();
@@ -87,7 +82,7 @@ public class CRMLeadController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, CRMLeadModel lead)
+    public async Task<IActionResult> Edit(int id, CRMLeadModel lead, string? returnUrl = null)
     {
         if (id != lead.Id) return NotFound();
         ModelState.Remove(nameof(lead.Customer));
@@ -111,7 +106,7 @@ public class CRMLeadController : Controller
                 _db.CrmLeads.Update(existing);
                 await _db.SaveChangesAsync();
                 TempData["Success"] = "Lead updated successfully.";
-                return RedirectToAction(nameof(Index));
+                return RedirectToIndex(returnUrl);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -125,7 +120,7 @@ public class CRMLeadController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateStage(int id, string stage)
+    public async Task<IActionResult> UpdateStage(int id, string stage, string? returnUrl = null)
     {
         var lead = await _db.CrmLeads.FindAsync(id);
         if (lead == null) return NotFound();
@@ -152,22 +147,22 @@ public class CRMLeadController : Controller
             _db.CrmLeads.Update(lead);
             await _db.SaveChangesAsync();
             TempData["Success"] = $"Lead marked as Won. Customer \"{customer.FullName}\" was created automatically.";
-            return RedirectToAction(nameof(Index));
+            return RedirectToIndex(returnUrl);
         }
 
         TempData["Success"] = $"Lead stage updated to \"{stage}\".";
-        return RedirectToAction(nameof(Edit), new { id });
+        return Url.IsLocalUrl(returnUrl) ? Redirect(returnUrl) : RedirectToAction(nameof(Edit), new { id });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int id, string? returnUrl = null)
     {
         var lead = await _db.CrmLeads.FindAsync(id);
         if (lead == null) return NotFound();
         _db.CrmLeads.Remove(lead);
         await _db.SaveChangesAsync();
         TempData["Success"] = "Lead deleted successfully.";
-        return RedirectToAction(nameof(Index));
+        return RedirectToIndex(returnUrl);
     }
 }

@@ -1,4 +1,4 @@
-@model IEnumerable<CustomerModel>
+@model PagedResult<CustomerModel>
 @{
     Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
     ViewData["Title"] = "Customers - Transaction";
@@ -8,7 +8,7 @@
 <div class="page-header-row">
     <div>
         <h1 class="page-header-title">Customer Transactions</h1>
-        <div class="page-header-sub">@Model.Count() total customers</div>
+        <div class="page-header-sub">@Model.TotalItems total customers</div>
     </div>
     <div>
         <a asp-action="Create" class="admin-btn-primary">
@@ -61,11 +61,11 @@
             </tr>
         </thead>
         <tbody>
-            @if (!Model.Any())
+            @if (Model.Items.Count == 0)
             {
                 <tr><td colspan="8" class="text-center text-muted py-4">No customers found.</td></tr>
             }
-            @foreach (var c in Model)
+            @foreach (var c in Model.Items)
             {
                 <tr>
                     <td class="fw-semibold">@c.FullName</td>
@@ -87,3 +87,5 @@
         </tbody>
     </table>
 </div>
+
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_Pagination.cshtml", Model)

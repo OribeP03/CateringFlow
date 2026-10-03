@@ -21,8 +21,12 @@ public class CateringFlowDbContext : DbContext
     public DbSet<InvoiceModel> Invoices => Set<InvoiceModel>();
     public DbSet<PaymentModel> Payments => Set<PaymentModel>();
     public DbSet<CRMLeadModel> CrmLeads => Set<CRMLeadModel>();
+    public DbSet<InquiryModel> Inquiries => Set<InquiryModel>();
     public DbSet<NotificationModel> Notifications => Set<NotificationModel>();
     public DbSet<SettingsModel> Settings => Set<SettingsModel>();
+    public DbSet<PaymentProofModel> PaymentProofs => Set<PaymentProofModel>();
+    public DbSet<PaymentMessageModel> PaymentMessages => Set<PaymentMessageModel>();
+    public DbSet<ActivityLogModel> ActivityLogs => Set<ActivityLogModel>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -59,6 +63,12 @@ public class CateringFlowDbContext : DbContext
             .HasForeignKey(l => l.CustomerId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<CustomerModel>()
+            .HasMany(c => c.PaymentProofs)
+            .WithOne(p => p.Customer)
+            .HasForeignKey(p => p.CustomerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         // Event relationships
         modelBuilder.Entity<EventModel>()
             .HasOne(e => e.Package)
@@ -89,6 +99,41 @@ public class CateringFlowDbContext : DbContext
             .HasMany(p => p.Quotations)
             .WithOne(q => q.Package)
             .HasForeignKey(q => q.PackageId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // Event -> PaymentProofs
+        modelBuilder.Entity<EventModel>()
+            .HasMany(e => e.PaymentProofs)
+            .WithOne(p => p.Event)
+            .HasForeignKey(p => p.EventId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // PaymentProof -> PaymentMessages
+        modelBuilder.Entity<PaymentProofModel>()
+            .HasMany(p => p.Messages)
+            .WithOne(m => m.PaymentProof)
+            .HasForeignKey(m => m.PaymentProofId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Website Inquiry -> CRM lead (an inquiry is forwarded into the pipeline)
+        modelBuilder.Entity<InquiryModel>()
+            .HasOne(i => i.CrmLead)
+            .WithMany()
+            .HasForeignKey(i => i.CrmLeadId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // Website Inquiry -> Menu package (the package they were interested in)
+        modelBuilder.Entity<InquiryModel>()
+            .HasOne(i => i.Package)
+            .WithMany()
+            .HasForeignKey(i => i.PackageId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // Customer -> Inquiries (a signed-in client's own inquiries)
+        modelBuilder.Entity<CustomerModel>()
+            .HasMany(c => c.Inquiries)
+            .WithOne(i => i.Customer)
+            .HasForeignKey(i => i.CustomerId)
             .OnDelete(DeleteBehavior.SetNull);
 
         // Supplier -> Inventory
@@ -137,5 +182,6 @@ public class CateringFlowDbContext : DbContext
         modelBuilder.Entity<InvoiceModel>().Property(i => i.AmountPaid).HasPrecision(18, 2);
         modelBuilder.Entity<PaymentModel>().Property(p => p.Amount).HasPrecision(18, 2);
         modelBuilder.Entity<CRMLeadModel>().Property(l => l.EstimatedValue).HasPrecision(18, 2);
+        modelBuilder.Entity<PaymentProofModel>().Property(p => p.Amount).HasPrecision(18, 2);
     }
 }

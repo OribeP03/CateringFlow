@@ -1,0 +1,142 @@
+@* Views/SuperAdmin/Components/_EventViewEditModals.cshtml *@
+@using cateringflow.Models
+<!-- Edit Event Modal -->
+<div id="editEventModal" class="admin-modal-backdrop">
+    <div class="admin-modal-dialog">
+        <div class="admin-modal-header">
+            <div>
+                <h5 class="admin-modal-title mb-1">Edit Event Booking</h5>
+                <p class="text-muted small mb-0">Update booking details, schedule, or status.</p>
+            </div>
+            <button type="button" class="admin-modal-close" onclick="closeAdminModal('editEventModal')">&times;</button>
+        </div>
+        <form asp-controller="Event" asp-action="Edit" method="post">
+            <input type="hidden" name="returnUrl" value="/SuperAdmin/Events" />
+            <input type="hidden" name="Id" id="editEventId" />
+            @Html.AntiForgeryToken()
+            <div class="admin-modal-body">
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Event Name *</label>
+                        <input type="text" name="EventName" id="editEventName" class="form-control" required />
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Customer *</label>
+                        <select name="CustomerId" id="editEventCustomer" class="form-select" required>
+                            @if (ViewData["Customers"] is List<CustomerModel> customers)
+                            {
+                                @foreach (var c in customers)
+                                {
+                                    <option value="@c.Id">@c.FullName</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Event Type</label>
+                        <select name="EventType" id="editEventType" class="form-select">
+                            <option value="Wedding">Wedding</option>
+                            <option value="Corporate">Corporate</option>
+                            <option value="Birthday">Birthday</option>
+                            <option value="Anniversary">Anniversary</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Event Date *</label>
+                        <input type="date" name="EventDate" id="editEventDate" class="form-control" required />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Venue</label>
+                        <input type="text" name="Venue" id="editEventVenue" class="form-control" />
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Guest Count *</label>
+                        <input type="number" name="PaxCount" id="editEventPax" class="form-control" min="1" required />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Menu Package</label>
+                        <select name="PackageId" id="editEventPackage" class="form-select">
+                            <option value="">No package</option>
+                            @if (ViewData["Packages"] is List<MenuPackageModel> packages)
+                            {
+                                @foreach (var p in packages)
+                                {
+                                    <option value="@p.Id">@p.PackageName (₱@p.PricePerPax.ToString("N0")/pax)</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Status</label>
+                        <select name="Status" id="editEventStatus" class="form-select">
+                            <option value="Upcoming">Upcoming</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="col-md-12 form-group-admin">
+                        <label>Notes</label>
+                        <textarea name="Notes" id="editEventNotes" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-modal-footer">
+                <button type="button" class="admin-btn-secondary" onclick="closeAdminModal('editEventModal')">Cancel</button>
+                <button type="submit" class="admin-btn-primary">
+                    <i class="bi bi-check-lg me-1"></i> Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- View Event Modal -->
+<div id="viewEventModal" class="admin-modal-backdrop">
+    <div class="admin-modal-dialog">
+        <div class="admin-modal-header">
+            <div>
+                <h5 class="admin-modal-title mb-1">Event Details</h5>
+                <p class="text-muted small mb-0">Booking specification and contract summary.</p>
+            </div>
+            <button type="button" class="admin-modal-close" onclick="closeAdminModal('viewEventModal')">&times;</button>
+        </div>
+        <div class="admin-modal-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-4 text-muted">Event Name</dt>
+                <dd class="col-sm-8" id="viewEventName"></dd>
+                <dt class="col-sm-4 text-muted">Customer</dt>
+                <dd class="col-sm-8" id="viewEventCustomer"></dd>
+                <dt class="col-sm-4 text-muted">Type</dt>
+                <dd class="col-sm-8" id="viewEventType"></dd>
+                <dt class="col-sm-4 text-muted">Date</dt>
+                <dd class="col-sm-8" id="viewEventDate"></dd>
+                <dt class="col-sm-4 text-muted">Venue</dt>
+                <dd class="col-sm-8" id="viewEventVenue"></dd>
+                <dt class="col-sm-4 text-muted">Pax</dt>
+                <dd class="col-sm-8" id="viewEventPax"></dd>
+                <dt class="col-sm-4 text-muted">Package</dt>
+                <dd class="col-sm-8" id="viewEventPackage"></dd>
+                <dt class="col-sm-4 text-muted">Amount</dt>
+                <dd class="col-sm-8" id="viewEventAmount"></dd>
+                <dt class="col-sm-4 text-muted">Status</dt>
+                <dd class="col-sm-8" id="viewEventStatus"></dd>
+                <dt class="col-sm-4 text-muted">Notes</dt>
+                <dd class="col-sm-8" id="viewEventNotes"></dd>
+            </dl>
+        </div>
+        <div class="admin-modal-footer">
+            <button type="button" class="admin-btn-secondary" onclick="closeAdminModal('viewEventModal')">Close</button>
+        </div>
+    </div>
+</div>

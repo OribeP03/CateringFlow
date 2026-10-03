@@ -6,47 +6,56 @@
                 <h5 class="admin-modal-title mb-1">Add New Customer Account</h5>
                 <p class="text-muted small mb-0">Create a client record for catering billing and history.</p>
             </div>
-            <button class="admin-modal-close" onclick="closeAdminModal('addCustomerModal')">&times;</button>
+            <button type="button" class="admin-modal-close" onclick="closeAdminModal('addCustomerModal')">&times;</button>
         </div>
-        <form onsubmit="event.preventDefault(); alert('Customer created successfully!'); closeAdminModal('addCustomerModal');">
+        <form asp-controller="Customer" asp-action="Create" method="post">
+            <input type="hidden" name="returnUrl" value="/SuperAdmin/Customers" />
+            @Html.AntiForgeryToken()
             <div class="admin-modal-body">
                 <div class="row">
-                    <div class="col-md-6 form-group-admin">
-                        <label>Customer Name *</label>
-                        <input type="text" class="form-control" placeholder="e.g. Gabriel Lopez" required />
-                    </div>
-                    <div class="col-md-6 form-group-admin">
-                        <label>Company / Affiliation</label>
-                        <input type="text" class="form-control" placeholder="e.g. Lopez Holdings" />
+                    <div class="col-md-12 form-group-admin">
+                        <label>Full Name *</label>
+                        <input type="text" name="FullName" class="form-control" placeholder="e.g. Gabriel Lopez" required />
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 form-group-admin">
                         <label>Email Address *</label>
-                        <input type="email" class="form-control" placeholder="glopez@domain.com" required />
+                        <input type="email" name="Email" class="form-control" placeholder="glopez@domain.com" required />
                     </div>
                     <div class="col-md-6 form-group-admin">
-                        <label>Phone Number *</label>
-                        <input type="tel" class="form-control" placeholder="0917-xxx-xxxx" required />
+                        <label>Phone Number</label>
+                        <input type="tel" name="Phone" class="form-control" placeholder="0917-xxx-xxxx" />
                     </div>
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6 form-group-admin">
+                    <div class="col-md-12 form-group-admin">
+                        <label>Address</label>
+                        <input type="text" name="Address" class="form-control" placeholder="Street, City" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 form-group-admin">
                         <label>Account Type</label>
-                        <select class="form-control">
+                        <select name="Type" class="form-select">
                             <option value="Individual">Individual</option>
-                            <option value="Corporate" selected>Corporate</option>
+                            <option value="Corporate">Corporate</option>
                             <option value="Government">Government</option>
                         </select>
                     </div>
-                    <div class="col-md-6 form-group-admin">
+                    <div class="col-md-4 form-group-admin">
                         <label>Initial Status</label>
-                        <select class="form-control">
-                            <option value="Active" selected>Active</option>
+                        <select name="Status" class="form-select">
+                            <option value="Active">Active</option>
                             <option value="Inactive">Inactive</option>
                         </select>
+                    </div>
+                    <div class="col-md-12 form-group-admin">
+                        <label>Notes</label>
+                        <textarea name="Notes" class="form-control" rows="2" placeholder="Optional notes..."></textarea>
                     </div>
                 </div>
             </div>

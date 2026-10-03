@@ -55,6 +55,7 @@ public class EventModel
     public ICollection<QuotationModel> Quotations { get; set; } = new List<QuotationModel>();
     public ICollection<InvoiceModel> Invoices { get; set; } = new List<InvoiceModel>();
     public ICollection<StaffAssignmentModel> StaffAssignments { get; set; } = new List<StaffAssignmentModel>();
+    public ICollection<PaymentProofModel> PaymentProofs { get; set; } = new List<PaymentProofModel>();
 
     [NotMapped]
     public string CustomerName => Customer?.FullName ?? (CustomerId > 0 ? $"Customer #{CustomerId}" : "N/A");

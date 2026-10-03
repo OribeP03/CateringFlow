@@ -22,6 +22,40 @@ namespace cateringflow.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("cateringflow.Models.ActivityLogModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("EntityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PerformedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ActivityLogs");
+                });
+
             modelBuilder.Entity("cateringflow.Models.CRMLeadModel", b =>
                 {
                     b.Property<int>("Id")
@@ -168,6 +202,91 @@ namespace cateringflow.Migrations
                     b.ToTable("Events");
                 });
 
+            modelBuilder.Entity("cateringflow.Models.InquiryModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AssignedTo")
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<string>("Company")
+                        .HasMaxLength(160)
+                        .HasColumnType("nvarchar(160)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CrmLeadId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("nvarchar(160)");
+
+                    b.Property<DateTime?>("EventDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EventType")
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int?>("PackageId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PaxCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Venue")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CrmLeadId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("PackageId");
+
+                    b.ToTable("Inquiries");
+                });
+
             modelBuilder.Entity("cateringflow.Models.InventoryModel", b =>
                 {
                     b.Property<int>("Id")
@@ -296,6 +415,15 @@ namespace cateringflow.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Features")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Highlight")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PackageName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -350,6 +478,42 @@ namespace cateringflow.Migrations
                     b.ToTable("Notifications");
                 });
 
+            modelBuilder.Entity("cateringflow.Models.PaymentMessageModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PaymentProofId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SenderName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SenderRole")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PaymentProofId");
+
+                    b.ToTable("PaymentMessages");
+                });
+
             modelBuilder.Entity("cateringflow.Models.PaymentModel", b =>
                 {
                     b.Property<int>("Id")
@@ -391,6 +555,53 @@ namespace cateringflow.Migrations
                     b.HasIndex("InvoiceId");
 
                     b.ToTable("Payments");
+                });
+
+            modelBuilder.Entity("cateringflow.Models.PaymentProofModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AdminNotes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProofImagePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReferenceNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("EventId");
+
+                    b.ToTable("PaymentProofs");
                 });
 
             modelBuilder.Entity("cateringflow.Models.QuotationModel", b =>
@@ -629,6 +840,30 @@ namespace cateringflow.Migrations
                     b.Navigation("Package");
                 });
 
+            modelBuilder.Entity("cateringflow.Models.InquiryModel", b =>
+                {
+                    b.HasOne("cateringflow.Models.CRMLeadModel", "CrmLead")
+                        .WithMany()
+                        .HasForeignKey("CrmLeadId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("cateringflow.Models.CustomerModel", "Customer")
+                        .WithMany("Inquiries")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("cateringflow.Models.MenuPackageModel", "Package")
+                        .WithMany()
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("CrmLead");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Package");
+                });
+
             modelBuilder.Entity("cateringflow.Models.InventoryModel", b =>
                 {
                     b.HasOne("cateringflow.Models.SupplierModel", "Supplier")
@@ -664,6 +899,17 @@ namespace cateringflow.Migrations
                     b.Navigation("Quotation");
                 });
 
+            modelBuilder.Entity("cateringflow.Models.PaymentMessageModel", b =>
+                {
+                    b.HasOne("cateringflow.Models.PaymentProofModel", "PaymentProof")
+                        .WithMany("Messages")
+                        .HasForeignKey("PaymentProofId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PaymentProof");
+                });
+
             modelBuilder.Entity("cateringflow.Models.PaymentModel", b =>
                 {
                     b.HasOne("cateringflow.Models.CustomerModel", "Customer")
@@ -680,6 +926,25 @@ namespace cateringflow.Migrations
                     b.Navigation("Customer");
 
                     b.Navigation("Invoice");
+                });
+
+            modelBuilder.Entity("cateringflow.Models.PaymentProofModel", b =>
+                {
+                    b.HasOne("cateringflow.Models.CustomerModel", "Customer")
+                        .WithMany("PaymentProofs")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("cateringflow.Models.EventModel", "Event")
+                        .WithMany("PaymentProofs")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Event");
                 });
 
             modelBuilder.Entity("cateringflow.Models.QuotationModel", b =>
@@ -732,7 +997,11 @@ namespace cateringflow.Migrations
 
                     b.Navigation("Events");
 
+                    b.Navigation("Inquiries");
+
                     b.Navigation("Invoices");
+
+                    b.Navigation("PaymentProofs");
 
                     b.Navigation("Payments");
 
@@ -742,6 +1011,8 @@ namespace cateringflow.Migrations
             modelBuilder.Entity("cateringflow.Models.EventModel", b =>
                 {
                     b.Navigation("Invoices");
+
+                    b.Navigation("PaymentProofs");
 
                     b.Navigation("Quotations");
 
@@ -758,6 +1029,11 @@ namespace cateringflow.Migrations
                     b.Navigation("Events");
 
                     b.Navigation("Quotations");
+                });
+
+            modelBuilder.Entity("cateringflow.Models.PaymentProofModel", b =>
+                {
+                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("cateringflow.Models.QuotationModel", b =>

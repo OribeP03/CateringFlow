@@ -18,40 +18,18 @@
     </div>
 </div>
 
-<!-- 4 Staff Status KPI Cards -->
-<div class="kpi-cards-grid four-cols">
-    <!-- Available -->
-    <div class="kpi-card" style="background: #f0fdf4; border-color: #bbf7d0;">
-        <div class="d-flex align-items-baseline gap-2 mb-1">
-            <div class="kpi-value text-success" style="font-size: 2rem;">6</div>
-        </div>
-        <div class="fw-semibold text-success small">Available</div>
-    </div>
-
-    <!-- Busy -->
-    <div class="kpi-card" style="background: #fffbeb; border-color: #fde68a;">
-        <div class="d-flex align-items-baseline gap-2 mb-1">
-            <div class="kpi-value" style="font-size: 2rem; color: #d97706;">1</div>
-        </div>
-        <div class="fw-semibold small" style="color: #d97706;">Busy</div>
-    </div>
-
-    <!-- On Leave -->
-    <div class="kpi-card" style="background: #fdf4ff; border-color: #f5d0fe;">
-        <div class="d-flex align-items-baseline gap-2 mb-1">
-            <div class="kpi-value" style="font-size: 2rem; color: #a855f7;">1</div>
-        </div>
-        <div class="fw-semibold small" style="color: #a855f7;">On Leave</div>
-    </div>
-
-    <!-- Full-time -->
-    <div class="kpi-card" style="background: #fffdf5; border-color: #fef08a;">
-        <div class="d-flex align-items-baseline gap-2 mb-1">
-            <div class="kpi-value" style="font-size: 2rem; color: #ca8a04;">6</div>
-        </div>
-        <div class="fw-semibold small" style="color: #ca8a04;">Full-time</div>
-    </div>
-</div>
+<!-- 4 Staff Status KPI Cards (incremental, largest value on right) -->
+@{
+    ViewData["KpiGridClass"] = "four-cols";
+    var staffCards = new List<KpiCardModel>
+    {
+        new() { Label = "Busy", Value = "1", SortValue = 1, ValueFirst = true, LabelClass = "fw-semibold small", FontSize = "2rem", Background = "#fffbeb", BorderColor = "#fde68a", Foreground = "#d97706" },
+        new() { Label = "On Leave", Value = "1", SortValue = 1, ValueFirst = true, LabelClass = "fw-semibold small", FontSize = "2rem", Background = "#fdf4ff", BorderColor = "#f5d0fe", Foreground = "#a855f7" },
+        new() { Label = "Available", Value = "6", SortValue = 6, ValueFirst = true, LabelClass = "fw-semibold small", FontSize = "2rem", Background = "#f0fdf4", BorderColor = "#bbf7d0", Foreground = "#198754" },
+        new() { Label = "Full-time", Value = "6", SortValue = 6, ValueFirst = true, LabelClass = "fw-semibold small", FontSize = "2rem", Background = "#fffdf5", BorderColor = "#fef08a", Foreground = "#ca8a04" }
+    };
+}
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_KpiCards.cshtml", staffCards)
 
 <!-- Search Toolbar -->
 <div class="filter-toolbar">

@@ -1,4 +1,4 @@
-@model IEnumerable<MenuPackageModel>
+@model PagedResult<MenuPackageModel>
 @{
     Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
     ViewData["Title"] = "Menu & Packages";
@@ -8,7 +8,7 @@
 <div class="page-header-row">
     <div>
         <h1 class="page-header-title">Menu & Packages</h1>
-        <div class="page-header-sub">@Model.Count() packages</div>
+        <div class="page-header-sub">@Model.TotalItems packages</div>
     </div>
     <div>
         <a asp-action="Create" class="admin-btn-primary">
@@ -28,11 +28,11 @@
             <tr><th>Package</th><th>Description</th><th>Price / Pax</th><th>Courses</th><th>Service Hours</th><th>Status</th><th>Booked Events</th><th>Actions</th></tr>
         </thead>
         <tbody>
-            @if (!Model.Any())
+            @if (Model.Items.Count == 0)
             {
                 <tr><td colspan="8" class="text-center text-muted py-4">No packages found.</td></tr>
             }
-            @foreach (var p in Model)
+            @foreach (var p in Model.Items)
             {
                 <tr>
                     <td class="fw-semibold text-primary">@p.PackageName</td>
@@ -53,3 +53,5 @@
         </tbody>
     </table>
 </div>
+
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_Pagination.cshtml", Model)

@@ -1,4 +1,4 @@
-@model IEnumerable<NotificationModel>
+@model PagedResult<NotificationModel>
 @{
     Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
     ViewData["Title"] = "Notifications";
@@ -6,7 +6,7 @@
 }
 
 @{
-    var unreadCount = Model.Count(n => !n.IsRead);
+    var unreadCount = (ViewData["UnreadCount"] as int?) ?? 0;
 }
 
 <div class="page-header-row">
@@ -29,16 +29,16 @@
 }
 
 <div class="notifications-tabs-row">
-    <button type="button" class="notif-tab-pill active" onclick="filterNotifs('all', this)">All (@Model.Count())</button>
+    <button type="button" class="notif-tab-pill active" onclick="filterNotifs('all', this)">All (@Model.TotalItems)</button>
     <button type="button" class="notif-tab-pill" onclick="filterNotifs('unread', this)">Unread (@unreadCount)</button>
 </div>
 
 <div class="notification-list-container">
-    @if (!Model.Any())
+    @if (Model.Items.Count == 0)
     {
         <div class="text-center text-muted py-4">No notifications.</div>
     }
-    @foreach (var n in Model)
+    @foreach (var n in Model.Items)
     {
         <div class="notification-row-card @(n.IsRead ? "" : "unread-notif")">
             <div class="flex-grow-1 d-flex gap-3 align-items-center">
@@ -75,6 +75,8 @@
         </div>
     }
 </div>
+
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_Pagination.cshtml", Model)
 
 @section Scripts {
     <script>

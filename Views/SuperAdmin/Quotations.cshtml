@@ -18,38 +18,19 @@
     </div>
 </div>
 
-<!-- 5 Quotation Status KPI Cards -->
-<div class="kpi-cards-grid">
-    <!-- Total -->
-    <div class="kpi-card">
-        <div class="kpi-value" style="font-size: 1.8rem;">6</div>
-        <div class="kpi-title">Total</div>
-    </div>
-
-    <!-- Draft -->
-    <div class="kpi-card" style="background: #f8fafc;">
-        <div class="kpi-value text-secondary" style="font-size: 1.8rem;">1</div>
-        <div class="kpi-title text-secondary">Draft</div>
-    </div>
-
-    <!-- Sent -->
-    <div class="kpi-card" style="background: #eff6ff; border-color: #bfdbfe;">
-        <div class="kpi-value text-primary" style="font-size: 1.8rem;">2</div>
-        <div class="kpi-title text-primary">Sent</div>
-    </div>
-
-    <!-- Approved -->
-    <div class="kpi-card" style="background: #ecfdf5; border-color: #a7f3d0;">
-        <div class="kpi-value text-success" style="font-size: 1.8rem;">2</div>
-        <div class="kpi-title text-success">Approved</div>
-    </div>
-
-    <!-- Rejected -->
-    <div class="kpi-card" style="background: #fef2f2; border-color: #fecaca;">
-        <div class="kpi-value text-danger" style="font-size: 1.8rem;">1</div>
-        <div class="kpi-title text-danger">Rejected</div>
-    </div>
-</div>
+<!-- 5 Quotation Status KPI Cards (incremental, largest value on right) -->
+@{
+    ViewData["KpiGridClass"] = "";
+    var quotationCards = new List<KpiCardModel>
+    {
+        new() { Label = "Draft", Value = "1", SortValue = 1, ValueFirst = true, FontSize = "1.8rem", Background = "#f8fafc", Foreground = "#6c757d" },
+        new() { Label = "Rejected", Value = "1", SortValue = 1, ValueFirst = true, FontSize = "1.8rem", Background = "#fef2f2", BorderColor = "#fecaca", Foreground = "#dc3545" },
+        new() { Label = "Sent", Value = "2", SortValue = 2, ValueFirst = true, FontSize = "1.8rem", Background = "#eff6ff", BorderColor = "#bfdbfe", Foreground = "#0d6efd" },
+        new() { Label = "Approved", Value = "2", SortValue = 2, ValueFirst = true, FontSize = "1.8rem", Background = "#ecfdf5", BorderColor = "#a7f3d0", Foreground = "#198754" },
+        new() { Label = "Total", Value = "6", SortValue = 6, ValueFirst = true, FontSize = "1.8rem" }
+    };
+}
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_KpiCards.cshtml", quotationCards)
 
 <!-- Search & Filter Toolbar -->
 <div class="filter-toolbar">

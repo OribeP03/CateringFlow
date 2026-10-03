@@ -3,11 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using cateringflow.Data;
 using cateringflow.Models;
+using cateringflow.Services;
 
 namespace cateringflow.Controllers;
 
 [Authorize]
-public class SupplierController : Controller
+public class SupplierController : AppController
 {
     private readonly CateringFlowDbContext _db;
 
@@ -16,7 +17,7 @@ public class SupplierController : Controller
         _db = db;
     }
 
-    public async Task<IActionResult> Index(string? search, string? category)
+    public async Task<IActionResult> Index(string? search, string? category, int? page)
     {
         var query = _db.Suppliers
             .Include(s => s.InventoryItems)
@@ -31,7 +32,9 @@ public class SupplierController : Controller
             query = query.Where(s => s.Category == category);
         }
 
-        var suppliers = await query.OrderByDescending(s => s.CreatedAt).ToListAsync();
+        var suppliers = await PagedResult<SupplierModel>.CreateAsync(
+            query.OrderByDescending(s => s.CreatedAt),
+            page);
         ViewData["Search"] = search;
         ViewData["CategoryFilter"] = category;
         return View(suppliers);
@@ -45,7 +48,7 @@ public class SupplierController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(SupplierModel supplier)
+    public async Task<IActionResult> Create(SupplierModel supplier, string? returnUrl = null)
     {
         supplier.CreatedAt = DateTime.Now;
         ModelState.Remove(nameof(supplier.InventoryItems));
@@ -53,8 +56,9 @@ public class SupplierController : Controller
         {
             _db.Suppliers.Add(supplier);
             await _db.SaveChangesAsync();
+            await ActivityLogger.LogAsync(_db, "Created", "Supplier", supplier.Id, $"Supplier \"{supplier.SupplierName}\" was added.", User.Identity?.Name);
             TempData["Success"] = $"Supplier \"{supplier.SupplierName}\" added successfully.";
-            return RedirectToAction(nameof(Index));
+            return RedirectToIndex(returnUrl);
         }
         return View(supplier);
     }
@@ -70,7 +74,7 @@ public class SupplierController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, SupplierModel supplier)
+    public async Task<IActionResult> Edit(int id, SupplierModel supplier, string? returnUrl = null)
     {
         if (id != supplier.Id) return NotFound();
         ModelState.Remove(nameof(supplier.InventoryItems));
@@ -89,8 +93,9 @@ public class SupplierController : Controller
                 existing.Status = supplier.Status;
                 _db.Suppliers.Update(existing);
                 await _db.SaveChangesAsync();
+                await ActivityLogger.LogAsync(_db, "Updated", "Supplier", existing.Id, $"Supplier \"{existing.SupplierName}\" was updated.", User.Identity?.Name);
                 TempData["Success"] = "Supplier updated successfully.";
-                return RedirectToAction(nameof(Index));
+                return RedirectToIndex(returnUrl);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -103,13 +108,14 @@ public class SupplierController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int id, string? returnUrl = null)
     {
         var supplier = await _db.Suppliers.FindAsync(id);
         if (supplier == null) return NotFound();
         _db.Suppliers.Remove(supplier);
         await _db.SaveChangesAsync();
+        await ActivityLogger.LogAsync(_db, "Deleted", "Supplier", id, $"Supplier \"{supplier.SupplierName}\" was deleted.", User.Identity?.Name);
         TempData["Success"] = "Supplier deleted successfully.";
-        return RedirectToAction(nameof(Index));
+        return RedirectToIndex(returnUrl);
     }
 }

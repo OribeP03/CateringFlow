@@ -1,72 +1,7 @@
 @* Views/SuperAdmin/Components/_DashboardKpiCards.cshtml *@
-<div class="kpi-cards-grid">
-    <!-- Total Revenue -->
-    <div class="kpi-card">
-        <div class="kpi-card-header">
-            <div class="kpi-icon-pill gold">
-                <i class="bi bi-graph-up-arrow"></i>
-            </div>
-            <div class="kpi-title">Total Revenue</div>
-        </div>
-        <div class="kpi-value">₱4.52M</div>
-        <div class="kpi-change positive">
-            <i class="bi bi-arrow-up-short"></i> 18% vs last month
-        </div>
-    </div>
-
-    <!-- Total Bookings -->
-    <div class="kpi-card">
-        <div class="kpi-card-header">
-            <div class="kpi-icon-pill blue">
-                <i class="bi bi-calendar-check"></i>
-            </div>
-            <div class="kpi-title">Total Bookings</div>
-        </div>
-        <div class="kpi-value">78</div>
-        <div class="kpi-change positive">
-            <i class="bi bi-arrow-up-short"></i> 12 new this month
-        </div>
-    </div>
-
-    <!-- Active Customers -->
-    <div class="kpi-card">
-        <div class="kpi-card-header">
-            <div class="kpi-icon-pill purple">
-                <i class="bi bi-people"></i>
-            </div>
-            <div class="kpi-title">Active Customers</div>
-        </div>
-        <div class="kpi-value">234</div>
-        <div class="kpi-change positive">
-            <i class="bi bi-arrow-up-short"></i> 8 this month
-        </div>
-    </div>
-
-    <!-- Pending Quotations -->
-    <div class="kpi-card">
-        <div class="kpi-card-header">
-            <div class="kpi-icon-pill amber">
-                <i class="bi bi-file-earmark-text"></i>
-            </div>
-            <div class="kpi-title">Pending Quotations</div>
-        </div>
-        <div class="kpi-value">8</div>
-        <div class="kpi-change warning">
-            3 expiring this week
-        </div>
-    </div>
-
-    <!-- Outstanding -->
-    <div class="kpi-card">
-        <div class="kpi-card-header">
-            <div class="kpi-icon-pill red">
-                <i class="bi bi-currency-dollar"></i>
-            </div>
-            <div class="kpi-title">Outstanding</div>
-        </div>
-        <div class="kpi-value">₱960K</div>
-        <div class="kpi-change danger">
-            <i class="bi bi-arrow-up-short"></i> Overdue invoice
-        </div>
-    </div>
-</div>
+@model IEnumerable<KpiCardModel>
+@using cateringflow.Models
+@{
+    ViewData["KpiGridClass"] = "dashboard-kpi-grid";
+}
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_KpiCards.cshtml", Model)

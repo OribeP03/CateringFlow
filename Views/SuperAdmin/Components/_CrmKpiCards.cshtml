@@ -1,26 +1,8 @@
 @* Views/SuperAdmin/Components/_CrmKpiCards.cshtml *@
-<div class="kpi-cards-grid four-cols">
-    <!-- Total Pipeline -->
-    <div class="kpi-card">
-        <div class="kpi-title mb-2">Total Pipeline</div>
-        <div class="kpi-value">₱2,255,000</div>
-    </div>
-
-    <!-- Converted Value -->
-    <div class="kpi-card">
-        <div class="kpi-title mb-2">Converted Value</div>
-        <div class="kpi-value text-success">₱200,000</div>
-    </div>
-
-    <!-- Active Leads -->
-    <div class="kpi-card">
-        <div class="kpi-title mb-2">Active Leads</div>
-        <div class="kpi-value">6</div>
-    </div>
-
-    <!-- Conversion Rate -->
-    <div class="kpi-card">
-        <div class="kpi-title mb-2">Conversion Rate</div>
-        <div class="kpi-value text-primary">13%</div>
-    </div>
-</div>
+@model cateringflow.Models.CrmBoardViewModel
+@using cateringflow.Models
+@{
+    ViewData["KpiGridClass"] = "four-cols";
+    var crmCards = CrmBoardViewModel.BuildKpiCards(Model);
+}
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_KpiCards.cshtml", crmCards)

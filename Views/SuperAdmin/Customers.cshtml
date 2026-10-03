@@ -1,4 +1,6 @@
 @* Views/SuperAdmin/Customers.cshtml *@
+@model cateringflow.Models.PagedResult<CustomerModel>
+@using cateringflow.Models
 @{
     Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
     ViewData["Title"] = "Customers";
@@ -9,40 +11,145 @@
 <div class="page-header-row">
     <div>
         <h1 class="page-header-title">Customers</h1>
-        <div class="page-header-sub">8 total customers</div>
+        <div class="page-header-sub">@Model.TotalItems total customers</div>
     </div>
-    <div>
+    <div class="d-flex gap-2">
+        <a asp-action="ExportCustomers" asp-route-search="@ViewData["Search"]" asp-route-type="@ViewData["TypeFilter"]" asp-route-status="@ViewData["StatusFilter"]" class="admin-btn-secondary">
+            <i class="bi bi-download"></i> Export CSV
+        </a>
         <button class="admin-btn-primary" onclick="openAdminModal('addCustomerModal')">
             <i class="bi bi-plus-lg"></i> + Add Customer
         </button>
     </div>
 </div>
 
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success d-flex align-items-center gap-2">
+        <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger d-flex align-items-center gap-2">
+        <i class="bi bi-x-circle-fill"></i> @TempData["Error"]
+    </div>
+}
+
 <!-- Filter Toolbar -->
-<div class="filter-toolbar">
+<form method="get" class="filter-toolbar">
     <div class="filter-search-wrap">
         <i class="bi bi-search"></i>
-        <input id="tableLiveSearch" type="text" placeholder="Search customers..." />
+        <input name="search" type="text" placeholder="Search customers..." value="@ViewData["Search"]" />
     </div>
-
     <div class="filter-selects-group">
-        <select id="tableTypeFilter" class="filter-select">
+        <select name="type" class="filter-select">
             <option value="All">All Types</option>
-            <option value="Individual">Individual</option>
-            <option value="Corporate">Corporate</option>
-            <option value="Government">Government</option>
+            <option value="Individual" selected="@(ViewData["TypeFilter"]?.ToString() == "Individual")">Individual</option>
+            <option value="Corporate" selected="@(ViewData["TypeFilter"]?.ToString() == "Corporate")">Corporate</option>
+            <option value="Government" selected="@(ViewData["TypeFilter"]?.ToString() == "Government")">Government</option>
         </select>
-
-        <select id="tableStatusFilter" class="filter-select">
+        <select name="status" class="filter-select">
             <option value="All">All Statuses</option>
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
+            <option value="Active" selected="@(ViewData["StatusFilter"]?.ToString() == "Active")">Active</option>
+            <option value="Inactive" selected="@(ViewData["StatusFilter"]?.ToString() == "Inactive")">Inactive</option>
         </select>
+        <button type="submit" class="admin-btn-secondary">Filter</button>
+        <a href="/SuperAdmin/Customers" class="admin-btn-secondary">Reset</a>
     </div>
+</form>
+
+<!-- Customers Table -->
+<div class="table-container-card">
+    <table class="admin-data-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Events</th>
+                <th>Created</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Items.Count == 0)
+            {
+                <tr><td colspan="8" class="text-center text-muted py-4">No customers found.</td></tr>
+            }
+            @foreach (var c in Model.Items)
+            {
+                <tr>
+                    <td class="fw-semibold">@c.FullName</td>
+                    <td>@c.Email</td>
+                    <td>@(c.Phone ?? "—")</td>
+                    <td><span class="status-pill @(c.Type == "Corporate" ? "upcoming" : c.Type == "Government" ? "expiring" : "completed")">@c.Type</span></td>
+                    <td><span class="status-pill @(c.Status == "Active" ? "completed" : "rejected")">@c.Status</span></td>
+                    <td>@(c.Events?.Count ?? 0)</td>
+                    <td>@c.CreatedAt.ToString("MMM dd, yyyy")</td>
+                    <td class="d-flex gap-1">
+                        <button type="button" class="btn btn-sm btn-outline-primary" title="View"
+                                data-id="@c.Id" data-name="@c.FullName" data-email="@c.Email"
+                                data-phone="@(c.Phone ?? "")" data-address="@(c.Address ?? "")"
+                                data-type="@c.Type" data-status="@c.Status"
+                                data-events="@(c.Events?.Count ?? 0)" data-created="@c.CreatedAt.ToString("MMM dd, yyyy")"
+                                onclick="openViewCustomerModal(this)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" title="Edit"
+                                data-id="@c.Id" data-name="@c.FullName" data-email="@c.Email"
+                                data-phone="@(c.Phone ?? "")" data-address="@(c.Address ?? "")"
+                                data-type="@c.Type" data-status="@c.Status" data-notes="@(c.Notes ?? "")"
+                                onclick="openEditCustomerModal(this)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <form asp-controller="Customer" asp-action="Delete" asp-route-returnUrl="/SuperAdmin/Customers"
+                              method="post" class="d-inline" onsubmit="return confirm('Delete customer @c.FullName? This will also remove linked records.');">
+                            <input type="hidden" name="id" value="@c.Id" />
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
 
-<!-- Customers Table Component -->
-@await Html.PartialAsync("~/Views/SuperAdmin/Components/_CustomersTable.cshtml")
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_Pagination.cshtml", Model)
 
-<!-- Add Customer Modal Component -->
+<!-- Customer Modals Component -->
 @await Html.PartialAsync("~/Views/SuperAdmin/Components/_AddCustomerModal.cshtml")
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_CustomerViewEditModals.cshtml")
+
+@section Scripts {
+    <script>
+        window.openViewCustomerModal = function (btn) {
+            const d = btn.dataset;
+            document.getElementById('viewCustomerName').textContent = d.name;
+            document.getElementById('viewCustomerEmail').textContent = d.email;
+            document.getElementById('viewCustomerPhone').textContent = d.phone || '—';
+            document.getElementById('viewCustomerAddress').textContent = d.address || '—';
+            document.getElementById('viewCustomerType').textContent = d.type;
+            document.getElementById('viewCustomerStatus').textContent = d.status;
+            document.getElementById('viewCustomerEvents').textContent = d.events + ' booking' + (d.events === '1' ? '' : 's');
+            document.getElementById('viewCustomerCreated').textContent = d.created;
+            openAdminModal('viewCustomerModal');
+        };
+
+        window.openEditCustomerModal = function (btn) {
+            const d = btn.dataset;
+            document.getElementById('editCustomerId').value = d.id;
+            document.getElementById('editFullName').value = d.name;
+            document.getElementById('editEmail').value = d.email;
+            document.getElementById('editPhone').value = d.phone;
+            document.getElementById('editAddress').value = d.address;
+            document.getElementById('editType').value = d.type;
+            document.getElementById('editStatus').value = d.status;
+            document.getElementById('editNotes').value = d.notes;
+            openAdminModal('editCustomerModal');
+        };
+    </script>
+}

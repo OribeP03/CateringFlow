@@ -1,0 +1,88 @@
+@* Views/Client/Components/_Services.cshtml *@
+@{
+    var services = new[]
+    {
+        new
+        {
+            Icon = "bi-heart-fill",
+            Title = "Wedding Catering",
+            Copy = "Full-service wedding catering from a grand buffet to plated dinners, with a dedicated banquet captain on the day.",
+            Includes = new[] { "Menu tasting with our chef", "Setup, linens & floral coordination", "Uniformed service team" }
+        },
+        new
+        {
+            Icon = "bi-briefcase-fill",
+            Title = "Corporate & Institutional",
+            Copy = "Conferences, town halls, product launches and government events — punctual service that keeps your program on schedule.",
+            Includes = new[] { "Buffet & plated options", "Dietary & allergen handling", "Invoicing for company accounts" }
+        },
+        new
+        {
+            Icon = "bi-balloon-fill",
+            Title = "Birthdays & Anniversaries",
+            Copy = "Intimate lunches, garden parties and surprise celebrations styled around your theme, from cake to cocktails.",
+            Includes = new[] { "Themed dessert table", "Custom cake & cupcake tiers", "Photogenic styling" }
+        },
+        new
+        {
+            Icon = "bi-buildings-fill",
+            Title = "Galas & Municipal Feasts",
+            Copy = "High-volume events from 500 to 2,000 guests — barrioy spills, civic dinners and provincial showcases handled end to end.",
+            Includes = new[] { "Bulk commissary kitchens", "Mobile steam & grill stations", "Timed service lines" }
+        },
+        new
+        {
+            Icon = "bi-fire",
+            Title = "Live Stations & Food Halls",
+            Copy = "Chef-attended stations — sukiyaki, lechon carving, pasta al dente, sashimi and grill bars — so guests eat fresh.",
+            Includes = new[] { "Live carving & grill", "Sushi & dim sum bars", "Dessert & gelato station" }
+        },
+        new
+        {
+            Icon = "bi-journal-richtext",
+            Title = "Kitchen Management",
+            Copy = "Our kitchen and event team runs the whole back of house for you: procurement, prep schedules, and service timing.",
+            Includes = new[] { "Menu costing & HACCP prep", "Equipment & rentals logistics", "Post-event cleanup" }
+        }
+    };
+}
+
+<section id="services" class="section-padding services-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-tag">What We Do</span>
+            <h2 class="section-heading">Catering services for every kind of celebration</h2>
+            <p class="section-lead mx-auto">
+                Six decades of kitchen craft, one team that can run an intimate dinner or a two-thousand
+                guest civic feast. Pick the service you need — our events team replies within one business day.
+            </p>
+        </div>
+
+        <div class="services-grid">
+            @foreach (var service in services)
+            {
+                var title = service.Title;
+                <div class="service-card">
+                    <div class="service-icon-box"><i class="bi @service.Icon"></i></div>
+                    <h3 class="service-title">@service.Title</h3>
+                    <p class="service-copy">@service.Copy</p>
+                    <ul class="service-includes">
+                        @foreach (var include in service.Includes)
+                        {
+                            <li><i class="bi bi-check2-circle"></i> @include</li>
+                        }
+                    </ul>
+                    <button type="button" class="service-link" onclick="openInquiryForm('@title')">
+                        Request this service <i class="bi bi-arrow-right ms-1"></i>
+                    </button>
+                </div>
+            }
+        </div>
+
+        <div class="services-footnote">
+            <i class="bi bi-patch-check-fill"></i>
+            Every service is handled by our own kitchen and staff — no third-party outsourcing — and comes with
+            a formal quotation, deposit schedule, and event-day timeline.
+        </div>
+    </div>
+</section>

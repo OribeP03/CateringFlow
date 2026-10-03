@@ -33,8 +33,8 @@
     <!-- 3. Event Types Stats Bar -->
     @await Html.PartialAsync("~/Views/Client/Components/_StatsBar.cshtml")
 
-    <!-- 4. Built for Catering Professionals Features Component -->
-    @await Html.PartialAsync("~/Views/Client/Components/_BuiltForPros.cshtml")
+    <!-- 4. Catering Services Component -->
+    @await Html.PartialAsync("~/Views/Client/Components/_Services.cshtml")
 
     <!-- 5. Ambience Quote Banner Component -->
     @await Html.PartialAsync("~/Views/Client/Components/_QuoteBanner.cshtml")
@@ -51,18 +51,22 @@
     <!-- 9. Testimonials Component -->
     @await Html.PartialAsync("~/Views/Client/Components/_Testimonials.cshtml")
 
-    <!-- 10. Call to Action Banner Component -->
+    <!-- 10. Contact & Request-a-Quote Component -->
+    @await Html.PartialAsync("~/Views/Client/Components/_ContactInquiry.cshtml")
+
+    <!-- 11. Call to Action Banner Component -->
     @await Html.PartialAsync("~/Views/Client/Components/_CtaBanner.cshtml")
 
-    <!-- 11. Footer Component -->
+    <!-- 12. Footer Component -->
     @await Html.PartialAsync("~/Views/Client/Components/_Footer.cshtml")
 
-    <!-- 12. Interactive Booking Modal (hidden overlay) -->
+    <!-- 13. Interactive Booking Modal (hidden overlay) -->
     @await Html.PartialAsync("~/Views/Client/Components/_BookingModal.cshtml")
 
     <!-- Scripts -->
     <script>
         window.__CATERINGFLOW_AUTH__ = '@(User.Identity?.IsAuthenticated == true ? "true" : "false")';
+        window.__CATERINGFLOW_INQUIRY_SOURCE__ = 'Website';
     </script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/client.js" asp-append-version="true"></script>

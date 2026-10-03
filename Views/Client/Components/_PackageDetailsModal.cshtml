@@ -1,0 +1,46 @@
+@* Views/Client/Components/_PackageDetailsModal.cshtml *@
+<div id="packageDetailsModal" class="admin-modal-backdrop">
+    <div class="admin-modal-dialog package-details-dialog">
+        <div class="admin-modal-header">
+            <div>
+                <h5 class="admin-modal-title mb-1" id="pkgDetailTitle">Package Details</h5>
+                <p class="text-muted small mb-0">Everything included in this package.</p>
+            </div>
+            <button class="admin-modal-close" onclick="closePackageDetails()">&times;</button>
+        </div>
+        <div class="pkg-detail-hero">
+            <img id="pkgDetailImg" src="" alt="Package preview" />
+            <div class="pkg-detail-hero-overlay">
+                <span class="package-popular-tag" id="pkgDetailHighlight" style="display:none;"></span>
+            </div>
+        </div>
+        <div class="admin-modal-body">
+            <div class="d-flex justify-content-between align-items-end mb-2">
+                <div>
+                    <h5 class="package-title mb-1" id="pkgDetailName">—</h5>
+                    <div class="package-subtitle mb-0" id="pkgDetailDesc">—</div>
+                </div>
+                <div class="text-end">
+                    <span class="package-price" id="pkgDetailPrice">—</span>
+                    <span class="package-period">/ guest</span>
+                </div>
+            </div>
+
+            <div class="d-flex gap-3 pkg-meta-row mb-3">
+                <div class="pkg-meta-chip"><i class="bi bi-egg-fried"></i> <span id="pkgDetailCourses"></span></div>
+                <div class="pkg-meta-chip"><i class="bi bi-clock"></i> <span id="pkgDetailHours"></span></div>
+                <div class="pkg-meta-chip"><i class="bi bi-stars"></i> <span id="pkgDetailHighlightChip"></span></div>
+            </div>
+
+            <h6 class="fw-bold mb-2"><i class="bi bi-check2-circle text-gold me-1"></i> What's Included</h6>
+            <ul class="pkg-included-list" id="pkgDetailFeatures"></ul>
+
+            <div class="mt-4 d-flex gap-2 flex-wrap">
+                <button class="admin-btn-primary flex-fill" id="pkgDetailBookBtn" onclick="bookFromPackageDetails()">
+                    <i class="bi bi-calendar-check me-1"></i> Book This Package
+                </button>
+                <button class="admin-btn-secondary" onclick="closePackageDetails()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,224 @@
+@* Views/SuperAdmin/Inquiries.cshtml *@
+@model cateringflow.Models.PagedResult<InquiryModel>
+@using cateringflow.Models
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Inquiry Inbox";
+    ViewData["ActivePage"] = "Inquiries";
+}
+
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Inquiry Inbox</h1>
+        <div class="page-header-sub">
+            @ViewData["TotalInquiries"] total website inquiries · @ViewData["TotalNew"] waiting for first contact
+        </div>
+    </div>
+    <div>
+        <a href="/SuperAdmin/CRM" class="admin-btn-secondary">
+            <i class="bi bi-funnel"></i> Open CRM pipeline
+        </a>
+    </div>
+</div>
+
+<!-- KPI strip -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-xl-2">
+        <div class="inquiry-kpi-card">
+            <span class="inquiry-kpi-label">New</span>
+            <span class="inquiry-kpi-value">@ViewData["TotalNew"]</span>
+        </div>
+    </div>
+    <div class="col-6 col-xl-2">
+        <div class="inquiry-kpi-card">
+            <span class="inquiry-kpi-label">Contacted</span>
+            <span class="inquiry-kpi-value">@ViewData["TotalContacted"]</span>
+        </div>
+    </div>
+    <div class="col-6 col-xl-2">
+        <div class="inquiry-kpi-card">
+            <span class="inquiry-kpi-label">Quoted</span>
+            <span class="inquiry-kpi-value">@ViewData["TotalQuoted"]</span>
+        </div>
+    </div>
+    <div class="col-6 col-xl-2">
+        <div class="inquiry-kpi-card inquiry-kpi-won">
+            <span class="inquiry-kpi-label">Won</span>
+            <span class="inquiry-kpi-value">@ViewData["TotalWon"]</span>
+        </div>
+    </div>
+    <div class="col-6 col-xl-2">
+        <div class="inquiry-kpi-card">
+            <span class="inquiry-kpi-label">Unassigned</span>
+            <span class="inquiry-kpi-value">@ViewData["TotalUnassigned"]</span>
+        </div>
+    </div>
+    <div class="col-6 col-xl-2 d-flex align-items-center">
+        <span class="inquiry-kpi-hint">
+            <i class="bi bi-info-circle"></i>
+            Inquiries arrive automatically from the website contact form and packages page.
+        </span>
+    </div>
+</div>
+
+<!-- Filter Toolbar -->
+<form method="get" class="filter-toolbar">
+    <div class="filter-search-wrap">
+        <i class="bi bi-search"></i>
+        <input name="search" type="text" placeholder="Search name, email, company or venue..." value="@ViewData["Search"]" />
+    </div>
+    <div class="filter-selects-group">
+        <select name="status" class="filter-select">
+            <option value="All">All Statuses</option>
+            @foreach (var status in InquiryStatuses.All)
+            {
+                <option value="@status" selected="@(ViewData["StatusFilter"]?.ToString() == status)">@status</option>
+            }
+        </select>
+        <select name="assignee" class="filter-select">
+            <option value="All">All Assignees</option>
+            <option value="" selected="@(ViewData["AssigneeFilter"]?.ToString() == "")">Unassigned</option>
+            @foreach (var owner in InquiryAssignees.All)
+            {
+                <option value="@owner" selected="@(ViewData["AssigneeFilter"]?.ToString() == owner)">@owner</option>
+            }
+        </select>
+        <button type="submit" class="admin-btn-secondary">Filter</button>
+        <a href="/SuperAdmin/Inquiries" class="admin-btn-secondary">Reset</a>
+    </div>
+</form>
+
+<!-- Inquiry Table -->
+<div class="table-container-card">
+    <table class="admin-data-table">
+        <thead>
+            <tr>
+                <th>Reference</th>
+                <th>Client</th>
+                <th>Event</th>
+                <th>Source</th>
+                <th>CRM Lead</th>
+                <th>Status</th>
+                <th>Assigned To</th>
+                <th>Received</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Items.Count == 0)
+            {
+                <tr>
+                    <td colspan="9" class="text-center text-muted py-4">
+                        No inquiries yet. They will appear here as soon as a client submits the contact form.
+                    </td>
+                </tr>
+            }
+            @foreach (var inquiry in Model.Items)
+            {
+                var statusClass = inquiry.Status switch
+                {
+                    InquiryStatuses.Won => "paid",
+                    InquiryStatuses.Lost => "rejected",
+                    InquiryStatuses.Quoted => "completed",
+                    InquiryStatuses.Contacted => "available",
+                    _ => "upcoming"
+                };
+                var returnUrl = Context.Request.Path + Context.Request.QueryString;
+
+                <tr>
+                    <td>
+                        <span class="fw-semibold">@inquiry.Reference</span>
+                    </td>
+                    <td>
+                        <div class="fw-semibold">@inquiry.FullName</div>
+                        <div class="small text-muted">@inquiry.Email</div>
+                        @if (!string.IsNullOrWhiteSpace(inquiry.Phone))
+                        {
+                            <div class="small text-muted">@inquiry.Phone</div>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(inquiry.Company))
+                        {
+                            <div class="small text-muted">@inquiry.Company</div>
+                        }
+                    </td>
+                    <td>
+                        <div>@inquiry.EventType</div>
+                        <div class="small text-muted">
+                            @(inquiry.EventDate.HasValue ? inquiry.EventDate.Value.ToString("MMM dd, yyyy") : "Date TBA")
+                            · @inquiry.PaxCount pax
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(inquiry.Venue))
+                        {
+                            <div class="small text-muted"><i class="bi bi-geo-alt"></i> @inquiry.Venue</div>
+                        }
+                        @if (inquiry.Package != null)
+                        {
+                            <div class="small text-muted"><i class="bi bi-journal-bookmark"></i> @inquiry.Package.PackageName</div>
+                        }
+                    </td>
+                    <td><span class="status-pill upcoming">@inquiry.Source</span></td>
+                    <td>
+                        @if (inquiry.CrmLeadId.HasValue)
+                        {
+                            <a href="/CRMLead/Details/@inquiry.CrmLeadId" class="fw-semibold">Lead #@inquiry.CrmLeadId</a>
+                            <div class="small text-muted">@(inquiry.CrmLead?.Stage ?? CRMLeadModelStages.New)</div>
+                        }
+                        else
+                        {
+                            <span class="text-muted small">Not linked</span>
+                        }
+                    </td>
+                    <td><span class="status-pill @statusClass">@inquiry.Status</span></td>
+                    <td>
+                        <form method="post" action="/Inquiry/Assign" class="inquiry-assign-form">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@inquiry.Id" />
+                            <input type="hidden" name="returnUrl" value="@returnUrl" />
+                            <select name="assignee" class="filter-select filter-select-sm" onchange="this.form.submit()">
+                                <option value="">Unassigned</option>
+                                @foreach (var owner in InquiryAssignees.All)
+                                {
+                                    <option value="@owner" selected="@(inquiry.AssignedTo == owner)">@owner</option>
+                                }
+                            </select>
+                        </form>
+                    </td>
+                    <td class="small text-muted">@inquiry.CreatedAt.ToString("MMM dd, yyyy · h:mm tt")</td>
+                    <td class="text-end">
+                        <form method="post" action="/Inquiry/UpdateStatus" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@inquiry.Id" />
+                            <input type="hidden" name="returnUrl" value="@returnUrl" />
+                            <select name="status" class="filter-select filter-select-sm" onchange="this.form.submit()">
+                                @foreach (var status in InquiryStatuses.All)
+                                {
+                                    <option value="@status" selected="@(inquiry.Status == status)">@status</option>
+                                }
+                            </select>
+                        </form>
+                        <form method="post" action="/Inquiry/Delete" class="d-inline"
+                              onsubmit="return confirm('Delete inquiry @inquiry.Reference? The CRM lead stays in the pipeline.');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@inquiry.Id" />
+                            <input type="hidden" name="returnUrl" value="@returnUrl" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete inquiry">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+
+                <tr class="inquiry-message-row">
+                    <td colspan="9">
+                        <div class="inquiry-message">
+                            <i class="bi bi-chat-left-text"></i>
+                            <span>@inquiry.Message</span>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_Pagination.cshtml", Model)

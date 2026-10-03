@@ -1,0 +1,33 @@
+@model IEnumerable<KpiCardModel>
+@using cateringflow.Models
+@using cateringflow.Services
+@{
+    var cards = StatCardOrdering.OrderIncremental(Model);
+    var gridClass = ViewData["KpiGridClass"]?.ToString() ?? "";
+    var gridStyle = ViewData["KpiGridStyle"]?.ToString() ?? "";
+}
+<div class="kpi-cards-grid @gridClass" style="@gridStyle">
+    @foreach (var card in cards)
+    {
+        var background = card.Background is null ? "" : $"background: {card.Background};";
+        var border = card.BorderColor is null ? "" : $"border-color: {card.BorderColor};";
+        var valueStyle = $"font-size:{(card.FontSize ?? "1.65rem")};" + (card.Foreground is null ? "" : $"color: {card.Foreground};");
+        var labelStyle = card.Foreground is null ? "" : $"color: {card.Foreground};";
+        var positionClass = card.GetValuePositionClass();
+        <div class="kpi-card @positionClass" style="@(background)@(border)">
+            <div class="kpi-card-body">
+                @if (!string.IsNullOrEmpty(card.Icon))
+                {
+                    <div class="kpi-icon-pill @card.IconPill"><i class="@card.Icon"></i></div>
+                }
+                <div class="@(card.LabelClass ?? "kpi-title")" style="@labelStyle">@card.Label</div>
+                @if (card.SubNote != null)
+                {
+                    var subClass = card.SubNoteClass is null ? "text-muted small" : $"kpi-change {card.SubNoteClass}";
+                    <div class="@subClass">@Html.Raw(card.SubNote)</div>
+                }
+            </div>
+            <div class="kpi-card-value" style="@valueStyle">@Html.Raw(card.Value)</div>
+        </div>
+    }
+</div>

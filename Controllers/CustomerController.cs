@@ -3,11 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using cateringflow.Data;
 using cateringflow.Models;
+using cateringflow.Services;
 
 namespace cateringflow.Controllers;
 
 [Authorize]
-public class CustomerController : Controller
+public class CustomerController : AppController
 {
     private readonly CateringFlowDbContext _db;
 
@@ -16,7 +17,7 @@ public class CustomerController : Controller
         _db = db;
     }
 
-    public async Task<IActionResult> Index(string? search, string? type, string? status)
+    public async Task<IActionResult> Index(string? search, string? type, string? status, int? page)
     {
         var query = _db.Customers
             .Include(c => c.Events)
@@ -35,9 +36,9 @@ public class CustomerController : Controller
             query = query.Where(c => c.Status == status);
         }
 
-        var customers = await query
-            .OrderByDescending(c => c.CreatedAt)
-            .ToListAsync();
+        var customers = await PagedResult<CustomerModel>.CreateAsync(
+            query.OrderByDescending(c => c.CreatedAt),
+            page);
 
         ViewData["Search"] = search;
         ViewData["TypeFilter"] = type;
@@ -68,7 +69,7 @@ public class CustomerController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(CustomerModel customer)
+    public async Task<IActionResult> Create(CustomerModel customer, string? returnUrl = null)
     {
         customer.CreatedAt = DateTime.Now;
         if (string.IsNullOrWhiteSpace(customer.Status)) customer.Status = "Active";
@@ -78,8 +79,9 @@ public class CustomerController : Controller
         {
             _db.Customers.Add(customer);
             await _db.SaveChangesAsync();
+            await ActivityLogger.LogAsync(_db, "Created", "Customer", customer.Id, $"Customer \"{customer.FullName}\" was created.", User.Identity?.Name);
             TempData["Success"] = $"Customer \"{customer.FullName}\" created successfully.";
-            return RedirectToAction(nameof(Index));
+            return RedirectToIndex(returnUrl);
         }
         return View(customer);
     }
@@ -95,7 +97,7 @@ public class CustomerController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, CustomerModel customer)
+    public async Task<IActionResult> Edit(int id, CustomerModel customer, string? returnUrl = null)
     {
         if (id != customer.Id) return NotFound();
         ModelState.Remove(nameof(customer.Events));
@@ -114,8 +116,9 @@ public class CustomerController : Controller
                 existing.Notes = customer.Notes;
                 _db.Customers.Update(existing);
                 await _db.SaveChangesAsync();
+                await ActivityLogger.LogAsync(_db, "Updated", "Customer", existing.Id, $"Customer \"{existing.FullName}\" was updated.", User.Identity?.Name);
                 TempData["Success"] = "Customer updated successfully.";
-                return RedirectToAction(nameof(Index));
+                return RedirectToIndex(returnUrl);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -128,13 +131,14 @@ public class CustomerController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int id, string? returnUrl = null)
     {
         var customer = await _db.Customers.FindAsync(id);
         if (customer == null) return NotFound();
         _db.Customers.Remove(customer);
         await _db.SaveChangesAsync();
+        await ActivityLogger.LogAsync(_db, "Deleted", "Customer", id, $"Customer \"{customer.FullName}\" was deleted.", User.Identity?.Name);
         TempData["Success"] = "Customer deleted successfully.";
-        return RedirectToAction(nameof(Index));
+        return RedirectToIndex(returnUrl);
     }
 }

@@ -1,0 +1,67 @@
+@* Views/SuperAdmin/Calendar.cshtml *@
+@model CalendarViewModel
+@using cateringflow.Models
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Event Calendar";
+    ViewData["ActivePage"] = "Calendar";
+}
+
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Event Calendar</h1>
+        <div class="page-header-sub">Browse scheduled events by month</div>
+    </div>
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+        <span class="calendar-stat"><i class="bi bi-calendar-check text-primary"></i> @Model.UpcomingCount upcoming</span>
+        <span class="calendar-stat"><i class="bi bi-currency-dollar text-success"></i> ₱@Model.MonthRevenue.ToString("N0") booked</span>
+    </div>
+</div>
+
+<!-- Calendar navigator -->
+<div class="calendar-nav">
+    <a class="admin-btn-secondary" href="/SuperAdmin/Calendar?year=@Model.PrevMonthDate.Year&amp;month=@Model.PrevMonthDate.Month">
+        <i class="bi bi-chevron-left"></i> @Model.PrevMonthDate.ToString("MMM yyyy")
+    </a>
+    <div class="calendar-title">
+        <h2>@Model.MonthName</h2>
+        <a class="small text-muted" href="/SuperAdmin/Calendar">Back to today</a>
+    </div>
+    <a class="admin-btn-secondary" href="/SuperAdmin/Calendar?year=@Model.NextMonthDate.Year&amp;month=@Model.NextMonthDate.Month">
+        @Model.NextMonthDate.ToString("MMM yyyy") <i class="bi bi-chevron-right"></i>
+    </a>
+</div>
+
+<!-- Month grid -->
+<div class="calendar-grid">
+    <div class="calendar-weekdays">
+        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+    </div>
+    <div class="calendar-cells">
+        @foreach (var day in Model.Days)
+        {
+            var dayClass = day.InMonth ? "calendar-day" : "calendar-day calendar-day--muted";
+            if (day.IsToday) dayClass += " calendar-day--today";
+            if (day.Events.Count > 0) dayClass += " calendar-day--has-events";
+            var typeClass = (string t) => t switch
+            {
+                "Corporate" => "upcoming",
+                "Birthday" => "expiring",
+                "Anniversary" => "available",
+                _ => "completed"
+            };
+            <div class="@dayClass">
+                <div class="calendar-day-number">@day.Date.Day</div>
+                <div class="calendar-day-events">
+                    @foreach (var e in day.Events)
+                    {
+                        <a href="/SuperAdmin/Events" class="calendar-event-pill @typeClass(e.EventType)" title="@e.EventName">
+                            <span class="calendar-event-time">@e.EventDate.ToString("HH:mm")</span>
+                            <span class="calendar-event-name">@e.EventName</span>
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>

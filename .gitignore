@@ -49,3 +49,10 @@ appsettings.Development.json
 *.coveragexml
 coverlet/coverage*.json
 coverage*.info
+
+# Runtime uploads (payment proofs, inquiry attachments) - never commit user files
+wwwroot/uploads/
+uploads/
+
+# Obsidian vault config (project docs are authored here)
+.obsidian/

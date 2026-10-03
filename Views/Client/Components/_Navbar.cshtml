@@ -14,7 +14,9 @@
 
         <ul class="nav-links" id="clientNavLinks">
             <li><a href="/" class="@(isHome ? "active" : "")">Home</a></li>
-            <li><a href="/#packages">Packages</a></li>
+            <li><a href="/#services">Services</a></li>
+            <li><a href="/Client/Packages">Packages</a></li>
+            <li><a href="/#contact">Contact</a></li>
             @if (User.Identity?.IsAuthenticated == true)
             {
                 <li><a href="/Client/MyBookings" class="@(isBookings ? "active" : "")">My Caterings</a></li>

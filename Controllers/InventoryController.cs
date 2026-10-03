@@ -3,11 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using cateringflow.Data;
 using cateringflow.Models;
+using cateringflow.Services;
 
 namespace cateringflow.Controllers;
 
 [Authorize]
-public class InventoryController : Controller
+public class InventoryController : AppController
 {
     private readonly CateringFlowDbContext _db;
 
@@ -16,7 +17,7 @@ public class InventoryController : Controller
         _db = db;
     }
 
-    public async Task<IActionResult> Index(string? search, string? category, string? stockStatus)
+    public async Task<IActionResult> Index(string? search, string? category, string? stockStatus, int? page)
     {
         var query = _db.InventoryItems
             .Include(i => i.Supplier)
@@ -35,7 +36,9 @@ public class InventoryController : Controller
             query = query.Where(i => i.StockStatus == stockStatus);
         }
 
-        var items = await query.OrderBy(i => i.ItemCode).ToListAsync();
+        var items = await PagedResult<InventoryModel>.CreateAsync(
+            query.OrderBy(i => i.ItemCode),
+            page);
         ViewData["Search"] = search;
         ViewData["CategoryFilter"] = category;
         ViewData["StockStatusFilter"] = stockStatus;
@@ -54,7 +57,7 @@ public class InventoryController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(InventoryModel item)
+    public async Task<IActionResult> Create(InventoryModel item, string? returnUrl = null)
     {
         item.LastUpdated = DateTime.Now;
         item.StockStatus = ComputeStockStatus(item);
@@ -64,8 +67,9 @@ public class InventoryController : Controller
         {
             _db.InventoryItems.Add(item);
             await _db.SaveChangesAsync();
+            await ActivityLogger.LogAsync(_db, "Created", "Inventory", item.Id, $"Inventory item \"{item.ItemName}\" added ({item.CurrentStock:0.##} {item.Unit}).", User.Identity?.Name);
             TempData["Success"] = $"Item \"{item.ItemName}\" added to inventory.";
-            return RedirectToAction(nameof(Index));
+            return RedirectToIndex(returnUrl);
         }
         ViewData["Suppliers"] = await _db.Suppliers.Where(s => s.Status == "Active").OrderBy(s => s.SupplierName).ToListAsync();
         return View(item);
@@ -83,7 +87,7 @@ public class InventoryController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, InventoryModel item)
+    public async Task<IActionResult> Edit(int id, InventoryModel item, string? returnUrl = null)
     {
         if (id != item.Id) return NotFound();
         ModelState.Remove(nameof(item.Supplier));
@@ -106,8 +110,9 @@ public class InventoryController : Controller
                 existing.LastUpdated = DateTime.Now;
                 _db.InventoryItems.Update(existing);
                 await _db.SaveChangesAsync();
+                await ActivityLogger.LogAsync(_db, "Updated", "Inventory", existing.Id, $"Inventory item \"{existing.ItemName}\" updated to {existing.CurrentStock:0.##} {existing.Unit} ({existing.StockStatus}).", User.Identity?.Name);
                 TempData["Success"] = "Inventory item updated successfully.";
-                return RedirectToAction(nameof(Index));
+                return RedirectToIndex(returnUrl);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -121,14 +126,15 @@ public class InventoryController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int id, string? returnUrl = null)
     {
         var item = await _db.InventoryItems.FindAsync(id);
         if (item == null) return NotFound();
         _db.InventoryItems.Remove(item);
         await _db.SaveChangesAsync();
+        await ActivityLogger.LogAsync(_db, "Deleted", "Inventory", id, $"Inventory item \"{item.ItemName}\" was deleted.", User.Identity?.Name);
         TempData["Success"] = "Inventory item deleted successfully.";
-        return RedirectToAction(nameof(Index));
+        return RedirectToIndex(returnUrl);
     }
 
     private static string ComputeStockStatus(InventoryModel item)

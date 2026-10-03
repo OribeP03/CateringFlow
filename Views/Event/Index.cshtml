@@ -1,4 +1,4 @@
-@model IEnumerable<EventModel>
+@model PagedResult<EventModel>
 @{
     Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
     ViewData["Title"] = "Events & Bookings";
@@ -8,7 +8,7 @@
 <div class="page-header-row">
     <div>
         <h1 class="page-header-title">Events & Bookings</h1>
-        <div class="page-header-sub">@Model.Count() total events</div>
+        <div class="page-header-sub">@Model.TotalItems total events</div>
     </div>
     <div>
         <a asp-controller="Event" asp-action="Create" class="admin-btn-primary">
@@ -52,11 +52,11 @@
             <tr><th>Event</th><th>Customer</th><th>Type</th><th>Date</th><th>Venue</th><th>Pax</th><th>Total</th><th>Status</th><th>Actions</th></tr>
         </thead>
         <tbody>
-            @if (!Model.Any())
+            @if (Model.Items.Count == 0)
             {
                 <tr><td colspan="9" class="text-center text-muted py-4">No events found.</td></tr>
             }
-            @foreach (var e in Model)
+            @foreach (var e in Model.Items)
             {
                 <tr>
                     <td class="fw-semibold text-primary">@e.EventName</td>
@@ -79,3 +79,5 @@
         </tbody>
     </table>
 </div>
+
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_Pagination.cshtml", Model)

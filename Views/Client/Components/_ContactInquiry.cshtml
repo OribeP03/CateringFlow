@@ -1,0 +1,171 @@
+@* Views/Client/Components/_ContactInquiry.cshtml *@
+@using cateringflow.Models
+@{
+    var packages = ViewData["Packages"] as List<MenuPackageModel> ?? new List<MenuPackageModel>();
+    var settings = ViewData["CompanySettings"] as SettingsModel;
+    var companyName = settings?.CompanyName ?? "CateringFlow";
+    var companyPhone = settings?.CompanyPhone ?? "(02) 8123-4567";
+    var companyEmail = settings?.CompanyEmail ?? "hello@cateringflow.ph";
+    var companyAddress = settings?.CompanyAddress ?? "Unit 12, Frontera Verde, Pasig City, Metro Manila, Philippines";
+}
+
+<section id="contact" class="section-padding contact-section">
+    <div class="container">
+        <div class="row g-5">
+            <!-- Contact details -->
+            <div class="col-lg-5">
+                <span class="section-tag">Contact & Inquiries</span>
+                <h2 class="section-heading">Tell us about your event</h2>
+                <p class="section-lead">
+                    Send an inquiry and it lands directly in our events team's inbox — you will get a
+                    reference number, a menu proposal, and a formal quotation. No account needed.
+                </p>
+
+                <ul class="contact-details">
+                    <li>
+                        <span class="contact-detail-icon"><i class="bi bi-geo-alt-fill"></i></span>
+                        <div>
+                            <strong>Kitchen &amp; Office</strong>
+                            <span>@companyAddress</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="contact-detail-icon"><i class="bi bi-telephone-fill"></i></span>
+                        <div>
+                            <strong>Call our events team</strong>
+                            <span>@companyPhone</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="contact-detail-icon"><i class="bi bi-envelope-fill"></i></span>
+                        <div>
+                            <strong>Email</strong>
+                            <span>@companyEmail</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="contact-detail-icon"><i class="bi bi-clock-fill"></i></span>
+                        <div>
+                            <strong>Business hours</strong>
+                            <span>Mon–Sat, 9:00 AM – 6:00 PM · Event days until 11:00 PM</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="contact-detail-icon"><i class="bi bi-lightning-charge-fill"></i></span>
+                        <div>
+                            <strong>Response time</strong>
+                            <span>Inquiries are answered within one business day.</span>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="contact-assurance">
+                    <i class="bi bi-shield-check"></i>
+                    <div>
+                        <strong>@companyName is HACCP-aligned.</strong>
+                        Allergen handling, halal-friendly options on request, and signed food-safety
+                        documentation for corporate and government clients.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inquiry form -->
+            <div class="col-lg-7">
+                <div class="inquiry-card">
+                    <div class="inquiry-card-head">
+                        <h3>Request a quote</h3>
+                        <p>Fields marked <span class="text-danger">*</span> are required.</p>
+                    </div>
+
+                    <div id="inquiryAlert" class="inquiry-alert d-none" role="alert"></div>
+
+                    <form id="inquiryForm" novalidate>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="inquiry-label" for="inquiryFullName">Full Name <span class="text-danger">*</span></label>
+                                <input type="text" id="inquiryFullName" name="fullName" class="form-control inquiry-input"
+                                       placeholder="Juan Dela Cruz" maxlength="120" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="inquiry-label" for="inquiryEmail">Email <span class="text-danger">*</span></label>
+                                <input type="email" id="inquiryEmail" name="email" class="form-control inquiry-input"
+                                       placeholder="you@company.com" maxlength="160" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="inquiry-label" for="inquiryPhone">Phone</label>
+                                <input type="tel" id="inquiryPhone" name="phone" class="form-control inquiry-input"
+                                       placeholder="0917-123-4567" maxlength="40" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="inquiry-label" for="inquiryCompany">Company / Organization</label>
+                                <input type="text" id="inquiryCompany" name="company" class="form-control inquiry-input"
+                                       placeholder="Optional" maxlength="160" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="inquiry-label" for="inquiryEventType">Event Type <span class="text-danger">*</span></label>
+                                <select id="inquiryEventType" name="eventType" class="form-select inquiry-input" required>
+                                    <option value="">Select an event type</option>
+                                    <option value="Wedding">Wedding</option>
+                                    <option value="Corporate">Corporate</option>
+                                    <option value="Government">Government / Municipal</option>
+                                    <option value="Birthday">Birthday</option>
+                                    <option value="Anniversary">Anniversary</option>
+                                    <option value="Birthday Party">Birthday Party</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="inquiry-label" for="inquiryEventDate">Event Date</label>
+                                <input type="date" id="inquiryEventDate" name="eventDate" class="form-control inquiry-input" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="inquiry-label" for="inquiryPax">Guests</label>
+                                <input type="number" id="inquiryPax" name="paxCount" class="form-control inquiry-input"
+                                       placeholder="150" min="1" max="100000" value="100" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="inquiry-label" for="inquiryVenue">Venue</label>
+                                <input type="text" id="inquiryVenue" name="venue" class="form-control inquiry-input"
+                                       placeholder="Venue or city (to be advised)" maxlength="200" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="inquiry-label" for="inquiryPackageId">Package of Interest</label>
+                                <select id="inquiryPackageId" name="packageId" class="form-select inquiry-input">
+                                    <option value="">Not sure yet — recommend one for me</option>
+                                    @foreach (var package in packages)
+                                    {
+                                        <option value="@package.Id">@package.PackageName — ₱@package.PricePerPax.ToString("N0")/pax</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="inquiry-label" for="inquiryMessage">Tell us about your event <span class="text-danger">*</span></label>
+                                <textarea id="inquiryMessage" name="message" rows="4" class="form-control inquiry-input"
+                                          placeholder="Menu preferences, dietary needs, schedule, budget range, and anything else we should know."
+                                          maxlength="2000" required></textarea>
+                                <div class="inquiry-hint">
+                                    <i class="bi bi-info-circle"></i>
+                                    Inquiries are handled manually by our events team — you will hear back within one business day.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="inquirySuccess" class="inquiry-success d-none">
+                            <i class="bi bi-send-check-fill"></i>
+                            <h4>Inquiry received</h4>
+                            <p>
+                                Thank you — your reference is <strong id="inquiryReference"></strong>.
+                                Our events team will contact you within one business day.
+                            </p>
+                            <button type="button" class="btn-inquiry-outline" onclick="resetInquiryForm()">Send another inquiry</button>
+                        </div>
+
+                        <button type="submit" id="inquirySubmitBtn" class="btn-inquiry-gold mt-4">
+                            <i class="bi bi-send-fill me-2"></i> Send Inquiry
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

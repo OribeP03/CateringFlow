@@ -10,6 +10,19 @@
         "cancelled" => "bg-danger",
         _ => "bg-warning text-dark"
     };
+    var proof = item?.PaymentProofs?.OrderByDescending(p => p.CreatedAt).FirstOrDefault();
+    var invoice = item?.Invoices?.OrderByDescending(i => i.CreatedAt).FirstOrDefault();
+
+    var isConfirmed = string.Equals(item?.Status, "Confirmed", StringComparison.OrdinalIgnoreCase);
+    var isCompleted = string.Equals(item?.Status, "Completed", StringComparison.OrdinalIgnoreCase);
+    var isCancelled = string.Equals(item?.Status, "Cancelled", StringComparison.OrdinalIgnoreCase);
+    var isPaymentApproved = proof != null && (string.Equals(proof.Status, "Approved", StringComparison.OrdinalIgnoreCase) || string.Equals(proof.Status, "Paid", StringComparison.OrdinalIgnoreCase));
+    var isPaymentPending = proof != null && string.Equals(proof.Status, "Pending", StringComparison.OrdinalIgnoreCase);
+
+    var step1Class = "completed";
+    var step2Class = isPaymentApproved ? "completed" : (isPaymentPending ? "active" : "");
+    var step3Class = (isConfirmed || isCompleted) ? "completed" : (isPaymentApproved ? "active" : "");
+    var step4Class = isCompleted ? "completed" : (isConfirmed ? "active" : "");
 }
 
 <!DOCTYPE html>
@@ -30,15 +43,28 @@
 
     <section class="client-section py-5">
         <div class="container">
+            <!-- Hero Header -->
             <div class="profile-hero py-4">
                 <div class="profile-hero-inner">
                     <span class="profile-logo-lg"><i class="bi bi-card-checklist"></i></span>
                     <div class="profile-hero-text">
-                        <h1 class="profile-title">@item?.EventName</h1>
-                        <p class="profile-subtitle mb-0">
+                        <h1 class="profile-title mb-1">@item?.EventName</h1>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
                             <span class="badge @statusClass">@item?.Status</span>
-                            Booked on @(item?.CreatedAt.ToString("MMMM d, yyyy") ?? "—")
-                        </p>
+                            @if (proof != null)
+                            {
+                                var proofClass = proof.Status.ToLower() switch
+                                {
+                                    "approved" or "paid" => "bg-success",
+                                    "rejected" => "bg-danger",
+                                    _ => "bg-warning text-dark"
+                                };
+                                <span class="badge @proofClass">Payment: @proof.Status</span>
+                            }
+                            <span class="text-white-50 small ms-1">
+                                <i class="bi bi-calendar3 me-1"></i> Booked on @(item?.CreatedAt.ToString("MMMM d, yyyy") ?? "—")
+                            </span>
+                        </div>
                     </div>
                     <div class="profile-hero-actions ms-sm-auto mt-3 mt-sm-0">
                         <a href="/Client/MyBookings" class="btn-luxury-outline">
@@ -51,27 +77,68 @@
                 </div>
             </div>
 
-            <div class="row g-4 mt-1">
-                <div class="col-lg-7">
+            <!-- Booking Progress Tracker -->
+            <div class="booking-tracker-card mb-4">
+                <div class="booking-tracker">
+                    <div class="tracker-step @step1Class">
+                        <div class="tracker-dot"><i class="bi bi-check-lg"></i></div>
+                        <span class="tracker-label">Request Submitted</span>
+                        <span class="tracker-time">@(item?.CreatedAt.ToString("MMM d, yyyy") ?? "Done")</span>
+                    </div>
+                    <div class="tracker-step @step2Class">
+                        <div class="tracker-dot">
+                            @if (isPaymentApproved) { <i class="bi bi-check-lg"></i> }
+                            else { <i class="bi bi-credit-card-2-front"></i> }
+                        </div>
+                        <span class="tracker-label">Payment Verification</span>
+                        <span class="tracker-time">@(proof != null ? proof.Status : "Pending Proof")</span>
+                    </div>
+                    <div class="tracker-step @step3Class">
+                        <div class="tracker-dot">
+                            @if (isConfirmed || isCompleted) { <i class="bi bi-check-lg"></i> }
+                            else { <i class="bi bi-shield-check"></i> }
+                        </div>
+                        <span class="tracker-label">Confirmed & Assigned</span>
+                        <span class="tracker-time">@(isConfirmed || isCompleted ? "Ready" : "In Review")</span>
+                    </div>
+                    <div class="tracker-step @step4Class">
+                        <div class="tracker-dot">
+                            @if (isCompleted) { <i class="bi bi-check-lg"></i> }
+                            else { <i class="bi bi-calendar-event"></i> }
+                        </div>
+                        <span class="tracker-label">Event Day</span>
+                        <span class="tracker-time">@(item?.EventDate.ToString("MMM d, yyyy") ?? "Scheduled")</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 align-items-start">
+                <!-- Left Column -->
+                <div class="col-lg-7 d-flex flex-column gap-4">
+                    <!-- Booking Details Card -->
                     <div class="client-card">
                         <div class="client-card-header">
-                            <i class="bi bi-calendar-event me-2"></i> Booking Details
+                            <i class="bi bi-calendar-event me-2"></i> Booking Specification
                         </div>
                         <div class="client-card-body">
+                            <div class="profile-row">
+                                <span class="profile-label">Event Name</span>
+                                <span class="profile-value">@item?.EventName</span>
+                            </div>
                             <div class="profile-row">
                                 <span class="profile-label">Event Type</span>
                                 <span class="profile-value">@item?.EventType</span>
                             </div>
                             <div class="profile-row">
                                 <span class="profile-label">Event Date</span>
-                                <span class="profile-value">@item?.EventDate.ToString("MMMM d, yyyy")</span>
+                                <span class="profile-value">@item?.EventDate.ToString("dddd, MMMM d, yyyy")</span>
                             </div>
                             <div class="profile-row">
                                 <span class="profile-label">Venue</span>
                                 <span class="profile-value">@(string.IsNullOrWhiteSpace(item?.Venue) ? "—" : item.Venue)</span>
                             </div>
                             <div class="profile-row">
-                                <span class="profile-label">Guests</span>
+                                <span class="profile-label">Guest Count</span>
                                 <span class="profile-value">@item?.PaxCount pax</span>
                             </div>
                             <div class="profile-row">
@@ -87,9 +154,77 @@
                             }
                         </div>
                     </div>
+
+                    <!-- Package Inclusions Card (if package selected) -->
+                    @if (item?.Package != null)
+                    {
+                        <div class="client-card">
+                            <div class="client-card-header">
+                                <i class="bi bi-stars me-2"></i> Package Inclusions — @item.Package.PackageName
+                            </div>
+                            <div class="client-card-body">
+                                @if (!string.IsNullOrWhiteSpace(item.Package.Description))
+                                {
+                                    <p class="text-muted small mb-3">@item.Package.Description</p>
+                                }
+
+                                <div class="d-flex gap-2 flex-wrap mb-3">
+                                    <span class="pkg-meta-chip">
+                                        <i class="bi bi-clock"></i> @item.Package.ServiceHours Hours Service
+                                    </span>
+                                    <span class="pkg-meta-chip">
+                                        <i class="bi bi-egg-fried"></i> @item.Package.CourseCount Courses
+                                    </span>
+                                    <span class="pkg-meta-chip">
+                                        <i class="bi bi-tag"></i> ₱@item.Package.PricePerPax.ToString("N2") / pax
+                                    </span>
+                                </div>
+
+                                @if (!string.IsNullOrWhiteSpace(item.Package.Features))
+                                {
+                                    var features = item.Package.Features.Split('|', StringSplitOptions.RemoveEmptyEntries);
+                                    <ul class="pkg-included-list mb-0">
+                                        @foreach (var feat in features)
+                                        {
+                                            <li>
+                                                <i class="bi bi-check-circle-fill"></i>
+                                                <span>@feat.Trim()</span>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Contact & Liaison Card -->
+                    @if (item?.Customer != null)
+                    {
+                        <div class="client-card">
+                            <div class="client-card-header">
+                                <i class="bi bi-person-lines-fill me-2"></i> Primary Contact Information
+                            </div>
+                            <div class="client-card-body">
+                                <div class="profile-row">
+                                    <span class="profile-label">Full Name</span>
+                                    <span class="profile-value">@item.Customer.FullName</span>
+                                </div>
+                                <div class="profile-row">
+                                    <span class="profile-label">Email Address</span>
+                                    <span class="profile-value">@item.Customer.Email</span>
+                                </div>
+                                <div class="profile-row">
+                                    <span class="profile-label">Phone Number</span>
+                                    <span class="profile-value">@(string.IsNullOrWhiteSpace(item.Customer.Phone) ? "Not provided" : item.Customer.Phone)</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
                 </div>
 
-                <div class="col-lg-5">
+                <!-- Right Column -->
+                <div class="col-lg-5 d-flex flex-column gap-4">
+                    <!-- Booking Summary Card -->
                     <div class="client-card">
                         <div class="client-card-header">
                             <i class="bi bi-receipt me-2"></i> Booking Summary
@@ -120,10 +255,103 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Payment Details Card -->
+                    @if (proof != null)
+                    {
+                        <div class="client-card">
+                            <div class="client-card-header">
+                                <i class="bi bi-credit-card me-2"></i> Payment Details
+                            </div>
+                            <div class="client-card-body">
+                                <div class="payment-proof-card mb-3">
+                                    <div>
+                                        <div class="fw-bold fs-6 text-dark">@proof.PaymentMethod</div>
+                                        @if (!string.IsNullOrWhiteSpace(proof.ReferenceNumber))
+                                        {
+                                            <div class="text-muted small">Ref #: @proof.ReferenceNumber</div>
+                                        }
+                                        <div class="text-muted small fw-semibold">₱ @proof.Amount.ToString("N2")</div>
+                                    </div>
+                                    <span class="badge @(proof.Status.ToLower() == "approved" || proof.Status.ToLower() == "paid" ? "bg-success" : proof.Status.ToLower() == "rejected" ? "bg-danger" : "bg-warning text-dark")">@proof.Status</span>
+                                </div>
+
+                                @if (!string.IsNullOrWhiteSpace(proof.ProofImagePath))
+                                {
+                                    <div class="mb-3">
+                                        <label class="fw-semibold small d-block mb-2 text-muted">Proof of Payment</label>
+                                        <a href="@proof.ProofImagePath" target="_blank" class="proof-preview-wrapper" title="Click to view full image">
+                                            <img src="@proof.ProofImagePath" alt="Payment proof" class="proof-preview-img" />
+                                            <div class="proof-preview-overlay">
+                                                <span><i class="bi bi-zoom-in me-1"></i> View Receipt</span>
+                                                <i class="bi bi-box-arrow-up-right"></i>
+                                            </div>
+                                        </a>
+                                    </div>
+                                }
+
+                                <button class="btn-luxury-gold w-100" data-open-proof-chat="@proof.Id">
+                                    <i class="bi bi-chat-dots me-1"></i> Chat about this Payment
+                                </button>
+                            </div>
+                        </div>
+                    }
+                    else if (invoice != null)
+                    {
+                        <div class="client-card">
+                            <div class="client-card-header">
+                                <i class="bi bi-credit-card me-2"></i> Invoice & Payment
+                            </div>
+                            <div class="client-card-body">
+                                <div class="payment-proof-card mb-3">
+                                    <div>
+                                        <div class="fw-bold fs-6 text-dark">Invoice #@invoice.InvoiceNumber</div>
+                                        <div class="text-muted small">Due: @invoice.DueDate.ToString("MMMM d, yyyy")</div>
+                                        <div class="text-muted small fw-semibold">₱ @invoice.TotalAmount.ToString("N2")</div>
+                                    </div>
+                                    <span class="badge bg-warning text-dark">@invoice.Status</span>
+                                </div>
+                                <p class="text-muted small mb-0">Our billing team has issued this invoice. If you made a payment or have questions, please reach out to our concierge below.</p>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Concierge Assistance Callout -->
+                    <div class="concierge-callout">
+                        <div class="concierge-icon">
+                            <i class="bi bi-headset"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1 fw-bold text-dark">Need Event Adjustments?</h6>
+                            <p class="text-muted small mb-0">
+                                Need to update your guest count or venue notes?
+                                Contact our catering concierge anytime.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
+
+    @* Payment Proof Chat (payment-only messaging) *@
+    <div id="paymentChatContainer" class="payment-chat-backdrop" data-proof-id="">
+        <div class="payment-chat-dialog">
+            <div class="payment-chat-header">
+                <div>
+                    <h5>Payment Discussion</h5>
+                    <span class="badge mt-1">@(proof?.PaymentMethod ?? "Payment") · Verification</span>
+                </div>
+                <button class="payment-chat-close" onclick="closePaymentChat()">&times;</button>
+            </div>
+            <div class="payment-chat-messages" id="paymentChatMessages"></div>
+            <div class="payment-chat-input-row">
+                @Html.AntiForgeryToken()
+                <input type="text" id="paymentChatInput" class="form-control" placeholder="Type your message about this payment..." />
+                <button class="admin-btn-primary" id="paymentChatSendBtn"><i class="bi bi-send"></i></button>
+            </div>
+        </div>
+    </div>
 
     @await Html.PartialAsync("~/Views/Client/Components/_BookingModal.cshtml")
     @await Html.PartialAsync("~/Views/Client/Components/_Footer.cshtml")

@@ -11,38 +11,27 @@
         <h1 class="page-header-title">Payments</h1>
         <div class="page-header-sub">All recorded payment transactions</div>
     </div>
-    <div>
+    <div class="d-flex gap-2">
+        <a asp-action="ExportPayments" class="admin-btn-secondary">
+            <i class="bi bi-download"></i> Export CSV
+        </a>
         <button class="admin-btn-primary" onclick="openAdminModal('recordPaymentModal')">
-            <i class="bi bi-plus-lg"></i> + Record Payment
+            <i class="bi bi-credit-card"></i> + Record Payment
         </button>
     </div>
 </div>
 
-<!-- 3 KPI Cards -->
-<div class="kpi-cards-grid" style="grid-template-columns: repeat(3, 1fr);">
-    <!-- Total Collected -->
-    <div class="kpi-card">
-        <div class="kpi-title mb-1">Total Collected</div>
-        <div class="kpi-value">₱591,750</div>
-        <div class="kpi-change positive">
-            <i class="bi bi-arrow-up-short"></i> from 4 transactions
-        </div>
-    </div>
-
-    <!-- This Month -->
-    <div class="kpi-card">
-        <div class="kpi-title mb-1">This Month</div>
-        <div class="kpi-value">₱591,750</div>
-        <div class="text-muted small">4 payments</div>
-    </div>
-
-    <!-- Most Used Method -->
-    <div class="kpi-card">
-        <div class="kpi-title mb-1">Most Used Method</div>
-        <div class="kpi-value" style="font-size: 1.5rem;">Bank Transfer</div>
-        <div class="text-muted small">2 transactions</div>
-    </div>
-</div>
+<!-- 3 KPI Cards (incremental, largest value on right) -->
+@{
+    ViewData["KpiGridClass"] = "three-cols";
+    var paymentCards = new List<KpiCardModel>
+    {
+        new() { Label = "Total Collected", Value = "₱591,750", SortValue = 591750, SubNote = "<i class=\"bi bi-arrow-up-short\"></i> from 4 transactions", SubNoteClass = "positive" },
+        new() { Label = "This Month", Value = "₱591,750", SortValue = 591750, SubNote = "4 payments" },
+        new() { Label = "Most Used Method", Value = "Bank Transfer", SortValue = double.MaxValue, FontSize = "1.5rem", SubNote = "2 transactions" }
+    };
+}
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_KpiCards.cshtml", paymentCards)
 
 <!-- Search & Filter Toolbar -->
 <div class="filter-toolbar">

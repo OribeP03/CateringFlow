@@ -7,7 +7,7 @@ using cateringflow.Models;
 namespace cateringflow.Controllers;
 
 [Authorize]
-public class StaffController : Controller
+public class StaffController : AppController
 {
     private readonly CateringFlowDbContext _db;
 
@@ -16,7 +16,7 @@ public class StaffController : Controller
         _db = db;
     }
 
-    public async Task<IActionResult> Index(string? search, string? availability, string? employmentType)
+    public async Task<IActionResult> Index(string? search, string? availability, string? employmentType, int? page)
     {
         var query = _db.Staff
             .Include(s => s.Assignments).ThenInclude(a => a.Event)
@@ -35,7 +35,15 @@ public class StaffController : Controller
             query = query.Where(s => s.EmploymentType == employmentType);
         }
 
-        var staff = await query.OrderByDescending(s => s.CreatedAt).ToListAsync();
+        ViewData["TotalStaff"] = await query.CountAsync();
+        ViewData["TotalAvailable"] = await query.CountAsync(s => s.Availability == "Available");
+        ViewData["TotalBusy"] = await query.CountAsync(s => s.Availability == "Busy");
+        ViewData["TotalOnLeave"] = await query.CountAsync(s => s.Availability == "On Leave");
+        ViewData["TotalFullTime"] = await query.CountAsync(s => s.EmploymentType == "Full-time");
+
+        var staff = await PagedResult<StaffModel>.CreateAsync(
+            query.OrderByDescending(s => s.CreatedAt),
+            page);
         ViewData["Search"] = search;
         ViewData["AvailabilityFilter"] = availability;
         ViewData["EmploymentFilter"] = employmentType;
@@ -61,7 +69,7 @@ public class StaffController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(StaffModel staff)
+    public async Task<IActionResult> Create(StaffModel staff, string? returnUrl = null)
     {
         staff.CreatedAt = DateTime.Now;
         ModelState.Remove(nameof(staff.Assignments));
@@ -70,7 +78,7 @@ public class StaffController : Controller
             _db.Staff.Add(staff);
             await _db.SaveChangesAsync();
             TempData["Success"] = $"Staff member \"{staff.FullName}\" added successfully.";
-            return RedirectToAction(nameof(Index));
+            return RedirectToIndex(returnUrl);
         }
         return View(staff);
     }
@@ -86,7 +94,7 @@ public class StaffController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, StaffModel staff)
+    public async Task<IActionResult> Edit(int id, StaffModel staff, string? returnUrl = null)
     {
         if (id != staff.Id) return NotFound();
         ModelState.Remove(nameof(staff.Assignments));
@@ -107,7 +115,7 @@ public class StaffController : Controller
                 _db.Staff.Update(existing);
                 await _db.SaveChangesAsync();
                 TempData["Success"] = "Staff member updated successfully.";
-                return RedirectToAction(nameof(Index));
+                return RedirectToIndex(returnUrl);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -120,13 +128,13 @@ public class StaffController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int id, string? returnUrl = null)
     {
         var staff = await _db.Staff.FindAsync(id);
         if (staff == null) return NotFound();
         _db.Staff.Remove(staff);
         await _db.SaveChangesAsync();
         TempData["Success"] = "Staff member deleted successfully.";
-        return RedirectToAction(nameof(Index));
+        return RedirectToIndex(returnUrl);
     }
 }

@@ -1,4 +1,4 @@
-@model IEnumerable<StaffModel>
+@model PagedResult<StaffModel>
 @{
     Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
     ViewData["Title"] = "Staff Management";
@@ -8,7 +8,7 @@
 <div class="page-header-row">
     <div>
         <h1 class="page-header-title">Staff Management</h1>
-        <div class="page-header-sub">@Model.Count() team members</div>
+        <div class="page-header-sub">@Model.TotalItems team members</div>
     </div>
     <div class="d-flex gap-2">
         <a asp-controller="StaffAssignment" asp-action="Index" class="admin-btn-secondary"><i class="bi bi-people"></i> Assignments</a>
@@ -23,33 +23,24 @@
     <div class="alert alert-success d-flex align-items-center gap-2"><i class="bi bi-check-circle-fill"></i> @TempData["Success"]</div>
 }
 
-<!-- 4 Staff Status KPI Cards -->
-<div class="kpi-cards-grid four-cols">
-    <div class="kpi-card" style="background: #f0fdf4; border-color: #bbf7d0;">
-        <div class="d-flex align-items-baseline gap-2 mb-1">
-            <div class="kpi-value text-success" style="font-size: 2rem;">@Model.Count(s => s.Availability == "Available")</div>
-        </div>
-        <div class="fw-semibold text-success small">Available</div>
-    </div>
-    <div class="kpi-card" style="background: #fffbeb; border-color: #fde68a;">
-        <div class="d-flex align-items-baseline gap-2 mb-1">
-            <div class="kpi-value" style="font-size: 2rem; color: #d97706;">@Model.Count(s => s.Availability == "Busy")</div>
-        </div>
-        <div class="fw-semibold small" style="color: #d97706;">Busy</div>
-    </div>
-    <div class="kpi-card" style="background: #fdf4ff; border-color: #f5d0fe;">
-        <div class="d-flex align-items-baseline gap-2 mb-1">
-            <div class="kpi-value" style="font-size: 2rem; color: #a855f7;">@Model.Count(s => s.Availability == "On Leave")</div>
-        </div>
-        <div class="fw-semibold small" style="color: #a855f7;">On Leave</div>
-    </div>
-    <div class="kpi-card" style="background: #fffdf5; border-color: #fef08a;">
-        <div class="d-flex align-items-baseline gap-2 mb-1">
-            <div class="kpi-value" style="font-size: 2rem; color: #ca8a04;">@Model.Count(s => s.EmploymentType == "Full-time")</div>
-        </div>
-        <div class="fw-semibold small" style="color: #ca8a04;">Full-time</div>
-    </div>
-</div>
+@{ 
+    var totalBusy = (ViewData["TotalBusy"] as int?) ?? 0;
+    var totalOnLeave = (ViewData["TotalOnLeave"] as int?) ?? 0;
+    var totalAvailable = (ViewData["TotalAvailable"] as int?) ?? 0;
+    var totalFullTime = (ViewData["TotalFullTime"] as int?) ?? 0;
+}
+<!-- 4 Staff Status KPI Cards (incremental, largest value on right) -->
+@{
+    ViewData["KpiGridClass"] = "four-cols";
+    var staffCards = new List<KpiCardModel>
+    {
+        new() { Label = "Busy", Value = @totalBusy.ToString(), SortValue = @totalBusy, ValueFirst = true, LabelClass = "fw-semibold small", FontSize = "2rem", Background = "#fffbeb", BorderColor = "#fde68a", Foreground = "#d97706" },
+        new() { Label = "On Leave", Value = @totalOnLeave.ToString(), SortValue = @totalOnLeave, ValueFirst = true, LabelClass = "fw-semibold small", FontSize = "2rem", Background = "#fdf4ff", BorderColor = "#f5d0fe", Foreground = "#a855f7" },
+        new() { Label = "Available", Value = @totalAvailable.ToString(), SortValue = @totalAvailable, ValueFirst = true, LabelClass = "fw-semibold small", FontSize = "2rem", Background = "#f0fdf4", BorderColor = "#bbf7d0", Foreground = "#198754" },
+        new() { Label = "Full-time", Value = @totalFullTime.ToString(), SortValue = @totalFullTime, ValueFirst = true, LabelClass = "fw-semibold small", FontSize = "2rem", Background = "#fffdf5", BorderColor = "#fef08a", Foreground = "#ca8a04" }
+    };
+}
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_KpiCards.cshtml", staffCards)
 
 <form method="get" class="filter-toolbar">
     <div class="filter-search-wrap">
@@ -80,11 +71,11 @@
             <tr><th>Name</th><th>Position</th><th>Email</th><th>Availability</th><th>Employment</th><th>Events</th><th>Actions</th></tr>
         </thead>
         <tbody>
-            @if (!Model.Any())
+            @if (Model.Items.Count == 0)
             {
                 <tr><td colspan="7" class="text-center text-muted py-4">No staff found.</td></tr>
             }
-            @foreach (var s in Model)
+            @foreach (var s in Model.Items)
             {
                 <tr>
                     <td class="fw-semibold">@s.FullName</td>
@@ -105,3 +96,5 @@
         </tbody>
     </table>
 </div>
+
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_Pagination.cshtml", Model)

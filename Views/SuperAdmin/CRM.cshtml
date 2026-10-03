@@ -1,4 +1,6 @@
 @* Views/SuperAdmin/CRM.cshtml *@
+@model cateringflow.Models.CrmBoardViewModel
+@using cateringflow.Models
 @{
     Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
     ViewData["Title"] = "CRM & Leads";
@@ -9,20 +11,145 @@
 <div class="page-header-row">
     <div>
         <h1 class="page-header-title">CRM & Leads</h1>
-        <div class="page-header-sub">Pipeline · 8 leads · ₱2,255,000 total value</div>
+        <div class="page-header-sub">
+            Pipeline · @Model.OpenLeads open leads of @Model.TotalLeads ·
+            ₱@Model.PipelineValue.ToString("N0") open pipeline value
+        </div>
     </div>
+    <div class="d-flex gap-2">
+        <a href="/SuperAdmin/Inquiries" class="admin-btn-secondary">
+            <i class="bi bi-inbox"></i> Inquiry Inbox (@Model.NewLeads new)
+        </a>
+        <a asp-controller="CRMLead" asp-action="Index" class="admin-btn-secondary">
+            <i class="bi bi-list-ul"></i> Lead Table
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success d-flex align-items-center gap-2">
+        <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+    </div>
+}
+
+<!-- Leads are never created by hand: every card below came from a website inquiry. -->
+<div class="alert alert-info d-flex align-items-start gap-2">
+    <i class="bi bi-info-circle-fill mt-1"></i>
     <div>
-        <button class="admin-btn-primary" onclick="openAdminModal('addLeadModal')">
-            <i class="bi bi-plus-lg"></i> + Add Lead
-        </button>
+        <strong>Leads arrive automatically.</strong>
+        No admin types a lead in — every card here was created from a client inquiry submitted on the
+        website (<a href="/#contact">Contact / Request a Quote</a>) or a booking. Qualify, assign,
+        and advance each lead; winning a lead auto-creates the customer record.
     </div>
 </div>
 
 <!-- CRM KPI Metrics Component -->
-@await Html.PartialAsync("~/Views/SuperAdmin/Components/_CrmKpiCards.cshtml")
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_CrmKpiCards.cshtml", Model)
 
 <!-- CRM Kanban Board Component -->
-@await Html.PartialAsync("~/Views/SuperAdmin/Components/_CrmKanbanBoard.cshtml")
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_CrmKanbanBoard.cshtml", Model)
 
-<!-- Add Lead Modal Component -->
-@await Html.PartialAsync("~/Views/SuperAdmin/Components/_AddLeadModal.cshtml")
+<!-- Pipeline Filter Toolbar -->
+<form method="get" class="filter-toolbar">
+    <div class="filter-search-wrap">
+        <i class="bi bi-search"></i>
+        <input name="search" type="text" placeholder="Search leads..." value="@Model.Search" />
+    </div>
+    <div class="filter-selects-group">
+        <select name="stage" class="filter-select">
+            <option value="All">All Stages</option>
+            @foreach (var p in CrmBoardViewModel.Pipeline)
+            {
+                <option value="@p.Stage" selected="@(Model.StageFilter == p.Stage)">@p.Label</option>
+            }
+        </select>
+        <select name="assignee" class="filter-select">
+            <option value="All">All Assignees</option>
+            @foreach (var a in Model.Assignees)
+            {
+                <option value="@a" selected="@(Model.AssigneeFilter == a)">@a</option>
+            }
+        </select>
+        <button type="submit" class="admin-btn-secondary">Filter</button>
+        <a href="/SuperAdmin/CRM" class="admin-btn-secondary">Reset</a>
+    </div>
+</form>
+
+<!-- Pipeline Leads Table (stage transitions + conversion) -->
+<div class="table-container-card">
+    <table class="admin-data-table">
+        <thead>
+            <tr>
+                <th>Lead</th>
+                <th>Contact</th>
+                <th>Value</th>
+                <th>Stage</th>
+                <th>Advance To</th>
+                <th>Assigned To</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Leads.TotalItems == 0)
+            {
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4">
+                        No leads yet — they appear here as soon as a client submits an inquiry.
+                    </td>
+                </tr>
+            }
+            @{
+                var leads = Model.Leads is PagedResult<CRMLeadModel> paged ? paged.Items : Array.Empty<CRMLeadModel>();
+            }
+            @foreach (var lead in leads)
+            {
+                var normalized = CrmBoardViewModel.NormalizeStage(lead.Stage);
+                var nextStage = normalized switch
+                {
+                    CrmBoardViewModel.StageNew => CrmBoardViewModel.StageContacted,
+                    CrmBoardViewModel.StageContacted => CrmBoardViewModel.StageQualified,
+                    CrmBoardViewModel.StageQualified => CrmBoardViewModel.StageProposal,
+                    CrmBoardViewModel.StageProposal => CrmBoardViewModel.StageNegotiation,
+                    CrmBoardViewModel.StageNegotiation => CrmBoardViewModel.StageWon,
+                    _ => null
+                };
+                <tr>
+                    <td class="fw-semibold">@lead.LeadName</td>
+                    <td class="small">@(lead.Email ?? "—")<br />@(lead.Phone ?? "")</td>
+                    <td class="fw-semibold">₱@lead.EstimatedValue.ToString("N0")</td>
+                    <td><span class="status-pill @(normalized == CrmBoardViewModel.StageWon ? "completed" : normalized == CrmBoardViewModel.StageLost ? "rejected" : "upcoming")">@lead.Stage</span></td>
+                    <td>
+                        @if (nextStage != null)
+                        {
+                            <form asp-controller="CRMLead" asp-action="UpdateStage" asp-route-returnUrl="/SuperAdmin/CRM" method="post" class="d-flex gap-1">
+                                <input type="hidden" name="id" value="@lead.Id" />
+                                <input type="hidden" name="stage" value="@nextStage" />
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-outline-primary" title="Move to @nextStage">
+                                    <i class="bi bi-arrow-right-circle"></i> @nextStage
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span class="text-muted small">—</span>
+                        }
+                    </td>
+                    <td>@(lead.AssignedTo ?? "Unassigned")</td>
+                    <td class="d-flex gap-1">
+                        <a asp-controller="CRMLead" asp-action="Details" asp-route-id="@lead.Id" class="btn btn-sm btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+                        <a asp-controller="CRMLead" asp-action="Edit" asp-route-id="@lead.Id" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
+                        <form asp-controller="CRMLead" asp-action="Delete" asp-route-returnUrl="/SuperAdmin/CRM" method="post" class="d-inline" onsubmit="return confirm('Remove lead @lead.LeadName from the pipeline?');">
+                            <input type="hidden" name="id" value="@lead.Id" />
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_Pagination.cshtml", Model.Leads)

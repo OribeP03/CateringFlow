@@ -61,12 +61,25 @@
                             "cancelled" => "bg-danger",
                             _ => "bg-warning text-dark"
                         };
+
+                        var proof = b.PaymentProofs?.OrderByDescending(p => p.CreatedAt).FirstOrDefault();
+                        var paymentStatus = proof?.Status ?? (b.Invoices?.Any() == true ? b.Invoices.First().Status : "No Payment");
+                        var payClass = (paymentStatus ?? "").ToLower() switch
+                        {
+                            "paid" => "bg-success",
+                            "approved" => "bg-success",
+                            "rejected" => "bg-danger",
+                            "pending" => "bg-warning text-dark",
+                            "unpaid" => "bg-secondary",
+                            _ => "bg-light text-dark border"
+                        };
                         <div class="col-md-6 col-lg-4">
                             <div class="booking-card">
                                 <div class="booking-card-top">
                                     <div>
                                         <h5 class="booking-card-title">@b.EventName</h5>
                                         <span class="badge @statusClass">@b.Status</span>
+                                        <span class="badge @payClass ms-1">Payment: @paymentStatus</span>
                                     </div>
                                     <i class="bi bi-calendar-event booking-card-icon"></i>
                                 </div>
@@ -92,6 +105,13 @@
                                         <div class="booking-detail">
                                             <i class="bi bi-geo-alt"></i>
                                             <span>@b.Venue</span>
+                                        </div>
+                                    }
+                                    @if (proof != null)
+                                    {
+                                        <div class="booking-detail">
+                                            <i class="bi bi-credit-card"></i>
+                                            <span>@proof.PaymentMethod · Ref #@(proof.ReferenceNumber ?? "—")</span>
                                         </div>
                                     }
                                 </div>

@@ -8,10 +8,17 @@ document.addEventListener('DOMContentLoaded', () => {
   initViewTogglers();
 });
 
-// 1. Dashboard Charts (Chart.js)
+// 1. Dashboard & Reports Charts (Chart.js, data comes from canvas data-* attributes)
 function initDashboardCharts() {
+  if (typeof Chart === 'undefined') return;
+
+  // Monthly revenue line chart (values in pesos -> shown in thousands)
   const revCtx = document.getElementById('monthlyRevenueChart');
-  if (revCtx && typeof Chart !== 'undefined') {
+  if (revCtx) {
+    const labels = JSON.parse(revCtx.dataset.labels || '[]');
+    const raw = JSON.parse(revCtx.dataset.values || '[]');
+    const values = raw.map(v => Math.round((v / 1000) * 100) / 100);
+
     const gradient = revCtx.getContext('2d').createLinearGradient(0, 0, 0, 220);
     gradient.addColorStop(0, 'rgba(184, 115, 51, 0.35)');
     gradient.addColorStop(1, 'rgba(184, 115, 51, 0.01)');
@@ -19,10 +26,10 @@ function initDashboardCharts() {
     new Chart(revCtx, {
       type: 'line',
       data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+        labels: labels,
         datasets: [{
           label: 'Revenue',
-          data: [220, 250, 310, 305, 420, 920, 600, 520, 440],
+          data: values,
           borderColor: '#b87333',
           borderWidth: 3,
           tension: 0.4,
@@ -45,28 +52,28 @@ function initDashboardCharts() {
           }
         },
         scales: {
-          x: {
-            grid: { display: false }
-          },
+          x: { grid: { display: false } },
           y: {
             grid: { color: '#f0ebe2' },
-            ticks: {
-              callback: (val) => `₱${val}k`
-            }
+            ticks: { callback: (val) => `₱${val}k` }
           }
         }
       }
     });
   }
 
+  // Events by type horizontal bar
   const eventsCtx = document.getElementById('eventsByTypeChart');
-  if (eventsCtx && typeof Chart !== 'undefined') {
+  if (eventsCtx) {
+    const labels = JSON.parse(eventsCtx.dataset.labels || '[]');
+    const values = JSON.parse(eventsCtx.dataset.values || '[]');
+
     new Chart(eventsCtx, {
       type: 'bar',
       data: {
-        labels: ['Wedding', 'Corporate', 'Birthday', 'Anniversary', 'Other'],
+        labels: labels,
         datasets: [{
-          data: [20, 34, 18, 11, 8],
+          data: values,
           backgroundColor: '#b87333',
           borderRadius: 6,
           barThickness: 16
@@ -85,9 +92,13 @@ function initDashboardCharts() {
     });
   }
 
-  // Reports Page Charts
+  // Reports Page: Revenue Overview (same dataset-driven pattern)
   const reportRevCtx = document.getElementById('reportRevenueOverviewChart');
-  if (reportRevCtx && typeof Chart !== 'undefined') {
+  if (reportRevCtx) {
+    const labels = JSON.parse(reportRevCtx.dataset.labels || '[]');
+    const raw = JSON.parse(reportRevCtx.dataset.values || '[]');
+    const values = raw.map(v => Math.round((v / 1000) * 100) / 100);
+
     const gradient = reportRevCtx.getContext('2d').createLinearGradient(0, 0, 0, 220);
     gradient.addColorStop(0, 'rgba(184, 115, 51, 0.35)');
     gradient.addColorStop(1, 'rgba(184, 115, 51, 0.01)');
@@ -95,10 +106,10 @@ function initDashboardCharts() {
     new Chart(reportRevCtx, {
       type: 'line',
       data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+        labels: labels,
         datasets: [{
           label: 'Revenue (₱k)',
-          data: [220, 250, 310, 305, 420, 920, 600, 520, 440],
+          data: values,
           borderColor: '#b87333',
           borderWidth: 3,
           tension: 0.4,
@@ -123,14 +134,18 @@ function initDashboardCharts() {
     });
   }
 
+  // Reports Page: Events by type
   const reportEventsCtx = document.getElementById('reportEventsByTypeChart');
-  if (reportEventsCtx && typeof Chart !== 'undefined') {
+  if (reportEventsCtx) {
+    const labels = JSON.parse(reportEventsCtx.dataset.labels || '[]');
+    const values = JSON.parse(reportEventsCtx.dataset.values || '[]');
+
     new Chart(reportEventsCtx, {
       type: 'bar',
       data: {
-        labels: ['Wedding', 'Corporate', 'Birthday', 'Anniversary', 'Other'],
+        labels: labels,
         datasets: [{
-          data: [18, 34, 13, 8, 5],
+          data: values,
           backgroundColor: '#b87333',
           borderRadius: 6,
           barThickness: 28

@@ -1,0 +1,108 @@
+@* Views/SuperAdmin/Components/_CustomerViewEditModals.cshtml *@
+<!-- Edit Customer Modal -->
+<div id="editCustomerModal" class="admin-modal-backdrop">
+    <div class="admin-modal-dialog">
+        <div class="admin-modal-header">
+            <div>
+                <h5 class="admin-modal-title mb-1">Edit Customer</h5>
+                <p class="text-muted small mb-0">Update the customer's account details.</p>
+            </div>
+            <button type="button" class="admin-modal-close" onclick="closeAdminModal('editCustomerModal')">&times;</button>
+        </div>
+        <form asp-controller="Customer" asp-action="Edit" method="post">
+            <input type="hidden" name="returnUrl" value="/SuperAdmin/Customers" />
+            <input type="hidden" name="Id" id="editCustomerId" />
+            @Html.AntiForgeryToken()
+            <div class="admin-modal-body">
+                <div class="row">
+                    <div class="col-md-12 form-group-admin">
+                        <label>Full Name *</label>
+                        <input type="text" name="FullName" id="editFullName" class="form-control" required />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group-admin">
+                        <label>Email Address *</label>
+                        <input type="email" name="Email" id="editEmail" class="form-control" required />
+                    </div>
+                    <div class="col-md-6 form-group-admin">
+                        <label>Phone Number</label>
+                        <input type="tel" name="Phone" id="editPhone" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 form-group-admin">
+                        <label>Address</label>
+                        <input type="text" name="Address" id="editAddress" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 form-group-admin">
+                        <label>Account Type</label>
+                        <select name="Type" id="editType" class="form-select">
+                            <option value="Individual">Individual</option>
+                            <option value="Corporate">Corporate</option>
+                            <option value="Government">Government</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 form-group-admin">
+                        <label>Status</label>
+                        <select name="Status" id="editStatus" class="form-select">
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <div class="col-md-12 form-group-admin">
+                        <label>Notes</label>
+                        <textarea name="Notes" id="editNotes" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-modal-footer">
+                <button type="button" class="admin-btn-secondary" onclick="closeAdminModal('editCustomerModal')">Cancel</button>
+                <button type="submit" class="admin-btn-primary">
+                    <i class="bi bi-check-lg me-1"></i> Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- View Customer Modal -->
+<div id="viewCustomerModal" class="admin-modal-backdrop">
+    <div class="admin-modal-dialog">
+        <div class="admin-modal-header">
+            <div>
+                <h5 class="admin-modal-title mb-1">Customer Details</h5>
+                <p class="text-muted small mb-0">Read-only customer information.</p>
+            </div>
+            <button type="button" class="admin-modal-close" onclick="closeAdminModal('viewCustomerModal')">&times;</button>
+        </div>
+        <div class="admin-modal-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-4 text-muted">Full Name</dt>
+                <dd class="col-sm-8" id="viewCustomerName"></dd>
+                <dt class="col-sm-4 text-muted">Email</dt>
+                <dd class="col-sm-8" id="viewCustomerEmail"></dd>
+                <dt class="col-sm-4 text-muted">Phone</dt>
+                <dd class="col-sm-8" id="viewCustomerPhone"></dd>
+                <dt class="col-sm-4 text-muted">Address</dt>
+                <dd class="col-sm-8" id="viewCustomerAddress"></dd>
+                <dt class="col-sm-4 text-muted">Type</dt>
+                <dd class="col-sm-8" id="viewCustomerType"></dd>
+                <dt class="col-sm-4 text-muted">Status</dt>
+                <dd class="col-sm-8" id="viewCustomerStatus"></dd>
+                <dt class="col-sm-4 text-muted">Events</dt>
+                <dd class="col-sm-8" id="viewCustomerEvents"></dd>
+                <dt class="col-sm-4 text-muted">Created</dt>
+                <dd class="col-sm-8" id="viewCustomerCreated"></dd>
+            </dl>
+        </div>
+        <div class="admin-modal-footer">
+            <button type="button" class="admin-btn-secondary" onclick="closeAdminModal('viewCustomerModal')">Close</button>
+        </div>
+    </div>
+</div>

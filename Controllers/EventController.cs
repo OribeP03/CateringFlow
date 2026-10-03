@@ -3,11 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using cateringflow.Data;
 using cateringflow.Models;
+using cateringflow.Services;
 
 namespace cateringflow.Controllers;
 
 [Authorize]
-public class EventController : Controller
+public class EventController : AppController
 {
     private readonly CateringFlowDbContext _db;
 
@@ -16,7 +17,7 @@ public class EventController : Controller
         _db = db;
     }
 
-    public async Task<IActionResult> Index(string? search, string? type, string? status)
+    public async Task<IActionResult> Index(string? search, string? type, string? status, int? page)
     {
         var query = _db.Events
             .Include(e => e.Customer)
@@ -36,9 +37,9 @@ public class EventController : Controller
             query = query.Where(e => e.Status == status);
         }
 
-        var events = await query
-            .OrderBy(e => e.EventDate)
-            .ToListAsync();
+        var events = await PagedResult<EventModel>.CreateAsync(
+            query.OrderBy(e => e.EventDate),
+            page);
 
         ViewData["Search"] = search;
         ViewData["TypeFilter"] = type;
@@ -70,7 +71,7 @@ public class EventController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(EventModel item)
+    public async Task<IActionResult> Create(EventModel item, string? returnUrl = null)
     {
         item.CreatedAt = DateTime.Now;
         ModelState.Remove(nameof(item.Customer));
@@ -100,9 +101,10 @@ public class EventController : Controller
                 CreatedAt = DateTime.Now
             });
             await _db.SaveChangesAsync();
+            await ActivityLogger.LogAsync(_db, "Created", "Event", item.Id, $"Event \"{item.EventName}\" was created ({item.PaxCount} pax, ₱{item.TotalAmount:N0}).", User.Identity?.Name);
 
             TempData["Success"] = $"Event \"{item.EventName}\" created successfully.";
-            return RedirectToAction(nameof(Index));
+            return RedirectToIndex(returnUrl);
         }
         ViewData["Customers"] = await _db.Customers.Where(c => c.Status == "Active").OrderBy(c => c.FullName).ToListAsync();
         ViewData["Packages"] = await _db.MenuPackages.Where(p => p.Status == "Active").OrderBy(p => p.PackageName).ToListAsync();
@@ -122,7 +124,7 @@ public class EventController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, EventModel item)
+    public async Task<IActionResult> Edit(int id, EventModel item, string? returnUrl = null)
     {
         if (id != item.Id) return NotFound();
         ModelState.Remove(nameof(item.Customer));
@@ -154,8 +156,9 @@ public class EventController : Controller
                 }
                 _db.Events.Update(existing);
                 await _db.SaveChangesAsync();
+                await ActivityLogger.LogAsync(_db, "Updated", "Event", existing.Id, $"Event \"{existing.EventName}\" was updated.", User.Identity?.Name);
                 TempData["Success"] = "Event updated successfully.";
-                return RedirectToAction(nameof(Index));
+                return RedirectToIndex(returnUrl);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -170,26 +173,35 @@ public class EventController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int id, string? returnUrl = null)
     {
         var item = await _db.Events.FindAsync(id);
         if (item == null) return NotFound();
+
+        var proofs = await _db.PaymentProofs.Where(p => p.EventId == id).ToListAsync();
+        if (proofs.Count > 0)
+        {
+            _db.PaymentProofs.RemoveRange(proofs);
+        }
+
         _db.Events.Remove(item);
         await _db.SaveChangesAsync();
+        await ActivityLogger.LogAsync(_db, "Deleted", "Event", id, $"Event \"{item.EventName}\" was deleted.", User.Identity?.Name);
         TempData["Success"] = "Event deleted successfully.";
-        return RedirectToAction(nameof(Index));
+        return RedirectToIndex(returnUrl);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateStatus(int id, string status)
+    public async Task<IActionResult> UpdateStatus(int id, string status, string? returnUrl = null)
     {
         var item = await _db.Events.FindAsync(id);
         if (item == null) return NotFound();
         item.Status = status;
         _db.Events.Update(item);
         await _db.SaveChangesAsync();
+        await ActivityLogger.LogAsync(_db, "Updated", "Event", item.Id, $"Event \"{item.EventName}\" status changed to \"{status}\".", User.Identity?.Name);
         TempData["Success"] = $"Event status updated to \"{status}\".";
-        return RedirectToAction(nameof(Details), new { id });
+        return RedirectToDetails(returnUrl, nameof(Details), new { id });
     }
 }

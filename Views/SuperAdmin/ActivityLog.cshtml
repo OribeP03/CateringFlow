@@ -1,0 +1,94 @@
+@* Views/SuperAdmin/ActivityLog.cshtml *@
+@model cateringflow.Models.PagedResult<ActivityLogModel>
+@using cateringflow.Models
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Activity Log";
+    ViewData["ActivePage"] = "ActivityLog";
+}
+
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Activity Log</h1>
+        <div class="page-header-sub">@ViewData["TotalEntries"] total actions tracked</div>
+    </div>
+</div>
+
+<!-- Filter Toolbar -->
+<form method="get" class="filter-toolbar">
+    <div class="filter-search-wrap">
+        <i class="bi bi-search"></i>
+        <input name="search" type="text" placeholder="Search description or user..." value="@ViewData["Search"]" />
+    </div>
+    <div class="filter-selects-group">
+        <select name="entityType" class="filter-select">
+            <option value="All">All Modules</option>
+            <option value="Customer" selected="@(ViewData["EntityTypeFilter"]?.ToString() == "Customer")">Customer</option>
+            <option value="Event" selected="@(ViewData["EntityTypeFilter"]?.ToString() == "Event")">Event</option>
+            <option value="Inventory" selected="@(ViewData["EntityTypeFilter"]?.ToString() == "Inventory")">Inventory</option>
+            <option value="Supplier" selected="@(ViewData["EntityTypeFilter"]?.ToString() == "Supplier")">Supplier</option>
+            <option value="Quotation" selected="@(ViewData["EntityTypeFilter"]?.ToString() == "Quotation")">Quotation</option>
+            <option value="Invoice" selected="@(ViewData["EntityTypeFilter"]?.ToString() == "Invoice")">Invoice</option>
+            <option value="Payment" selected="@(ViewData["EntityTypeFilter"]?.ToString() == "Payment")">Payment</option>
+            <option value="PaymentProof" selected="@(ViewData["EntityTypeFilter"]?.ToString() == "PaymentProof")">Payment Proof</option>
+        </select>
+        <select name="action" class="filter-select">
+            <option value="All">All Actions</option>
+            <option value="Created" selected="@(ViewData["ActionFilter"]?.ToString() == "Created")">Created</option>
+            <option value="Updated" selected="@(ViewData["ActionFilter"]?.ToString() == "Updated")">Updated</option>
+            <option value="Deleted" selected="@(ViewData["ActionFilter"]?.ToString() == "Deleted")">Deleted</option>
+            <option value="Approved" selected="@(ViewData["ActionFilter"]?.ToString() == "Approved")">Approved</option>
+            <option value="Rejected" selected="@(ViewData["ActionFilter"]?.ToString() == "Rejected")">Rejected</option>
+        </select>
+        <button type="submit" class="admin-btn-secondary">Filter</button>
+        <a href="/SuperAdmin/ActivityLog" class="admin-btn-secondary">Reset</a>
+    </div>
+</form>
+
+<!-- Log Table -->
+<div class="table-container-card">
+    <table class="admin-data-table">
+        <thead>
+            <tr>
+                <th>Action</th>
+                <th>Module</th>
+                <th>Description</th>
+                <th>Performed By</th>
+                <th>When</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Items.Count == 0)
+            {
+                <tr><td colspan="5" class="text-center text-muted py-4">No activity logged yet.</td></tr>
+            }
+            @foreach (var log in Model.Items)
+            {
+                var actionClass = log.Action switch
+                {
+                    "Created" => "completed",
+                    "Updated" => "available",
+                    "Deleted" => "rejected",
+                    "Approved" => "paid",
+                    "Rejected" => "rejected",
+                    _ => "upcoming"
+                };
+                <tr>
+                    <td><span class="status-pill @actionClass">@log.Action</span></td>
+                    <td>
+                        <span class="fw-semibold">@log.EntityType</span>
+                        @if (log.EntityId.HasValue)
+                        {
+                            <span class="text-muted small">#@log.EntityId</span>
+                        }
+                    </td>
+                    <td class="small">@log.Description</td>
+                    <td class="small">@(log.PerformedBy ?? "—")</td>
+                    <td class="small text-muted">@log.CreatedAt.ToString("MMM dd, yyyy · h:mm tt")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_Pagination.cshtml", Model)

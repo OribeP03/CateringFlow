@@ -1,0 +1,133 @@
+@using cateringflow.Models
+@model IEnumerable<PaymentProofModel>
+@{
+    Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
+    ViewData["Title"] = "Payment Proofs";
+    ViewData["ActivePage"] = "PaymentProofs";
+}
+
+<div class="page-header-row">
+    <div>
+        <h1 class="page-header-title">Payment Proofs</h1>
+        <div class="page-header-sub">Verify client-submitted payment evidence and approve pending bookings</div>
+    </div>
+    <div>
+        <a href="/SuperAdmin/Payments" class="admin-btn-primary">
+            <i class="bi bi-credit-card"></i> Payments
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success d-flex align-items-center gap-2"><i class="bi bi-check-circle-fill"></i> @TempData["Success"]</div>
+}
+
+<!-- 3 KPI Cards (incremental, largest value on right) -->
+@{
+    ViewData["KpiGridClass"] = "three-cols";
+    var proofCards = new List<KpiCardModel>
+    {
+        new() { Label = "Pending Verification", Value = @Model.Count(p => p.Status == "Pending").ToString(), SortValue = @Model.Count(p => p.Status == "Pending"), FontSize = "1.9rem", SubNote = "awaiting review" },
+        new() { Label = "Approved", Value = @Model.Count(p => p.Status == "Approved").ToString(), SortValue = @Model.Count(p => p.Status == "Approved"), FontSize = "1.9rem", SubNote = "verified & settled" },
+        new() { Label = "Total Proofs Submitted", Value = @Model.Count().ToString(), SortValue = @Model.Count(), FontSize = "1.9rem", SubNote = "all time" }
+    };
+}
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_KpiCards.cshtml", proofCards)
+
+<div class="table-container-card mt-4">
+    <table class="admin-data-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Customer</th>
+                <th>Booking</th>
+                <th>Method</th>
+                <th>Ref #</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Submitted</th>
+                <th>Chat</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr><td colspan="10" class="text-center text-muted py-4">No payment proofs yet. Client bookings with payment evidence will appear here.</td></tr>
+            }
+            @foreach (var p in Model)
+            {
+                var statusClass = p.Status.ToLower() switch
+                {
+                    "approved" or "paid" => "paid",
+                    "rejected" => "cancelled",
+                    _ => "upcoming"
+                };
+                <tr>
+                    <td>#@p.Id</td>
+                    <td class="fw-semibold">@p.CustomerName</td>
+                    <td>@(p.Event?.EventName ?? "—")</td>
+                    <td><span class="status-pill upcoming">@p.PaymentMethod</span></td>
+                    <td>@(p.ReferenceNumber ?? "—")</td>
+                    <td class="fw-semibold">₱@p.Amount.ToString("N2")</td>
+                    <td><span class="status-pill @statusClass">@p.Status</span></td>
+                    <td>@p.CreatedAt.ToString("MMM dd, yyyy")</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="openAdminProofChat(@p.Id)">
+                            <i class="bi bi-chat-dots"></i> <span class="badge bg-primary ms-1">@p.Messages.Count</span>
+                        </button>
+                    </td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            @if (p.Status != "Approved")
+                            {
+                                <form asp-action="ApprovePaymentProof" asp-route-id="@p.Id" method="post" onsubmit="return confirm('Approve this proof and record the payment?');" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-success" title="Approve & Mark Paid"><i class="bi bi-check-lg"></i></button>
+                                </form>
+                            }
+                            @if (p.Status != "Rejected" && p.Status != "Approved")
+                            {
+                                <form asp-action="RejectPaymentProof" asp-route-id="@p.Id" method="post" onsubmit="return confirm('Reject this payment proof?');" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Reject"><i class="bi bi-x-lg"></i></button>
+                                </form>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(p.ProofImagePath))
+                            {
+                                <a href="@p.ProofImagePath" target="_blank" class="btn btn-sm btn-outline-secondary" title="View proof image"><i class="bi bi-image"></i></a>
+                            }
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@* Admin payment-proof chat modal *@
+<div id="proofChatModal" class="admin-modal-backdrop">
+    <div class="admin-modal-dialog proof-chat-dialog">
+        <div class="admin-modal-header">
+            <div>
+                <h5 class="admin-modal-title mb-1" id="proofChatTitle">Payment Chat</h5>
+                <p class="text-muted small mb-0" id="proofChatMeta">—</p>
+            </div>
+            <button class="admin-modal-close" onclick="closeAdminProofChat()">&times;</button>
+        </div>
+        <div class="proof-chat-body" id="proofChatMessages"></div>
+        <div class="admin-modal-footer">
+            <div class="d-flex gap-2 w-100">
+                <input type="text" id="proofChatInput" class="form-control" placeholder="Reply to the client about their payment..." />
+                <button class="admin-btn-primary" id="proofChatSendBtn">
+                    <i class="bi bi-send-fill me-1"></i> Send
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/adminproof.js" asp-append-version="true"></script>
+}

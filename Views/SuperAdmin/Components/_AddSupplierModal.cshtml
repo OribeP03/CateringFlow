@@ -1,28 +1,30 @@
 @* Views/SuperAdmin/Components/_AddSupplierModal.cshtml *@
-<div id="addSupplierModal" class="admin-modal-backdrop">
+<div id="newSupplierModal" class="admin-modal-backdrop">
     <div class="admin-modal-dialog">
         <div class="admin-modal-header">
             <div>
-                <h5 class="admin-modal-title mb-1">Register New Supplier</h5>
-                <p class="text-muted small mb-0">Record vendor info for kitchen ingredient orders and contracts.</p>
+                <h5 class="admin-modal-title mb-1">Add New Supplier</h5>
+                <p class="text-muted small mb-0">Register a vendor partner for ingredient sourcing.</p>
             </div>
-            <button class="admin-modal-close" onclick="closeAdminModal('addSupplierModal')">&times;</button>
+            <button type="button" class="admin-modal-close" onclick="closeAdminModal('newSupplierModal')">&times;</button>
         </div>
-        <form onsubmit="event.preventDefault(); alert('Supplier registered successfully!'); closeAdminModal('addSupplierModal');">
+        <form asp-controller="Supplier" asp-action="Create" method="post">
+            <input type="hidden" name="returnUrl" value="/SuperAdmin/Suppliers" />
+            @Html.AntiForgeryToken()
             <div class="admin-modal-body">
                 <div class="row">
                     <div class="col-md-6 form-group-admin">
-                        <label>Company / Vendor Name *</label>
-                        <input type="text" class="form-control" placeholder="e.g. Pacific Dairy Imports" required />
+                        <label>Supplier Name *</label>
+                        <input type="text" name="SupplierName" class="form-control" placeholder="e.g. S&R Fresh Market" required />
                     </div>
                     <div class="col-md-6 form-group-admin">
                         <label>Category *</label>
-                        <select class="form-control">
+                        <select name="Category" class="form-select" required>
                             <option value="Meats & Poultry">Meats & Poultry</option>
                             <option value="Seafood">Seafood</option>
-                            <option value="Fresh Produce">Fresh Produce</option>
-                            <option value="Dairy & Bakery">Dairy & Bakery</option>
-                            <option value="Beverages & Wine">Beverages & Wine</option>
+                            <option value="Produce">Produce</option>
+                            <option value="Grains">Grains</option>
+                            <option value="Beverages">Beverages</option>
                             <option value="Hardware & Linens">Hardware & Linens</option>
                         </select>
                     </div>
@@ -30,24 +32,37 @@
 
                 <div class="row">
                     <div class="col-md-6 form-group-admin">
-                        <label>Contact Person *</label>
-                        <input type="text" class="form-control" placeholder="e.g. Eduardo Santos" required />
+                        <label>Contact Person</label>
+                        <input type="text" name="ContactPerson" class="form-control" placeholder="e.g. Maria Santos" />
                     </div>
                     <div class="col-md-6 form-group-admin">
-                        <label>Phone Number *</label>
-                        <input type="tel" class="form-control" placeholder="0917-xxx-xxxx" required />
+                        <label>Phone</label>
+                        <input type="text" name="Phone" class="form-control" placeholder="e.g. 0917 555 1234" />
                     </div>
                 </div>
 
-                <div class="form-group-admin mb-0">
+                <div class="form-group-admin">
                     <label>Email Address *</label>
-                    <input type="email" class="form-control" placeholder="orders@vendor.ph" required />
+                    <input type="email" name="Email" class="form-control" placeholder="accounts@supplier.ph" required />
+                </div>
+
+                <div class="form-group-admin">
+                    <label>Address</label>
+                    <input type="text" name="Address" class="form-control" placeholder="Unit, Building, Street, City" />
+                </div>
+
+                <div class="form-group-admin">
+                    <label>Status</label>
+                    <select name="Status" class="form-select">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
                 </div>
             </div>
             <div class="admin-modal-footer">
-                <button type="button" class="admin-btn-secondary" onclick="closeAdminModal('addSupplierModal')">Cancel</button>
+                <button type="button" class="admin-btn-secondary" onclick="closeAdminModal('newSupplierModal')">Cancel</button>
                 <button type="submit" class="admin-btn-primary">
-                    <i class="bi bi-truck me-1"></i> Register Supplier
+                    <i class="bi bi-check-lg me-1"></i> Save Supplier
                 </button>
             </div>
         </form>

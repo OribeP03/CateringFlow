@@ -1,44 +1,82 @@
 @* Views/SuperAdmin/Reports.cshtml *@
+@model ReportsViewModel
+@using cateringflow.Models
+@using System.Text.Json
 @{
     Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
     ViewData["Title"] = "Reports";
     ViewData["ActivePage"] = "Reports";
+
+    var trendLabels = JsonSerializer.Serialize(Model.RevenueTrend.Select(m => m.Month));
+    var trendValues = JsonSerializer.Serialize(Model.RevenueTrend.Select(m => m.Amount));
+    var typeLabels = JsonSerializer.Serialize(Model.EventsByType.Select(t => t.Type));
+    var typeValues = JsonSerializer.Serialize(Model.EventsByType.Select(t => t.Count));
+
+    var isUp = Model.RevenueChangePercent >= 0;
+    var deltaClass = isUp ? "text-success" : "text-danger";
+    var deltaIcon = isUp ? "bi-arrow-up-short" : "bi-arrow-down-short";
 }
 
 <!-- Page Header Row -->
 <div class="page-header-row">
     <div>
         <h1 class="page-header-title">Reports</h1>
-        <div class="page-header-sub">Generate and export business reports</div>
+        <div class="page-header-sub">Live business analytics from your data</div>
     </div>
     <div class="d-flex align-items-center gap-2 flex-wrap">
-        <div class="d-flex align-items-center gap-2 bg-white px-3 py-1 rounded border">
-            <input type="text" class="border-0 small text-center" style="width: 85px; outline:none;" value="01/01/2025" />
-            <i class="bi bi-calendar3 text-muted small"></i>
-            <span class="text-muted small">to</span>
-            <input type="text" class="border-0 small text-center" style="width: 85px; outline:none;" value="09/30/2025" />
-            <i class="bi bi-calendar3 text-muted small"></i>
+        <div class="reports-period-badge">
+            <i class="bi bi-calendar3"></i>
+            @Model.RevenueTrend.FirstOrDefault()?.Month – @Model.RevenueTrend.LastOrDefault()?.Month
         </div>
-
         <button class="admin-btn-secondary" onclick="alert('Exporting PDF Report package...');">
             <i class="bi bi-download"></i> Export PDF
         </button>
-
         <button class="admin-btn-secondary" onclick="alert('Exporting Excel Workbook (.xlsx)...');">
             <i class="bi bi-file-earmark-spreadsheet"></i> Export Excel
         </button>
     </div>
 </div>
 
-<!-- 2 Top Analytics Charts -->
-<div class="dashboard-charts-row mb-4">
+<!-- Month-over-month summary strip -->
+<div class="reports-mom-strip">
+    <div class="mom-stat">
+        <div class="mom-label">Revenue This Month</div>
+        <div class="mom-value">₱@Model.CurrentMonthRevenue.ToString("N0")</div>
+        <div class="mom-sub">Paid &amp; verified payments</div>
+    </div>
+    <div class="mom-stat">
+        <div class="mom-label">vs Last Month</div>
+        <div class="mom-value">₱@Model.PreviousMonthRevenue.ToString("N0")</div>
+        <div class="mom-sub @deltaClass">
+            <i class="bi @deltaIcon"></i> @Model.RevenueChangePercent.ToString("N1")% change
+        </div>
+    </div>
+    <div class="mom-stat">
+        <div class="mom-label">Pending Quotations</div>
+        <div class="mom-value">@Model.PendingQuotations.ToString("N0")</div>
+        <div class="mom-sub">Draft / sent, not yet approved</div>
+    </div>
+    <div class="mom-stat">
+        <div class="mom-label">Low Stock Items</div>
+        <div class="mom-value">@Model.LowStockItems.ToString("N0")</div>
+        <div class="mom-sub">At or below reorder level</div>
+    </div>
+</div>
+
+<!-- 1. Reports KPI Cards -->
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_KpiCards.cshtml", Model.ReportKpis, new ViewDataDictionary(ViewData) { { "KpiGridClass", "dashboard-kpi-grid mt-3" } })
+
+<!-- 2 Top Analytics Charts (live) -->
+<div class="dashboard-charts-row mt-4">
     <!-- Revenue Overview -->
     <div class="chart-card">
         <div class="chart-header">
-            <div class="chart-title">Revenue Overview (Jan-Sep 2025)</div>
+            <div class="chart-title">Revenue Overview</div>
+            <div class="chart-subtitle">Last 6 months (₱ thousands)</div>
+            <span class="chart-tag">Live</span>
         </div>
         <div class="chart-canvas-wrap">
-            <canvas id="reportRevenueOverviewChart"></canvas>
+            <canvas id="reportRevenueOverviewChart" data-labels="@trendLabels" data-values="@trendValues"></canvas>
         </div>
     </div>
 
@@ -46,12 +84,13 @@
     <div class="chart-card">
         <div class="chart-header">
             <div class="chart-title">Events by Type</div>
+            <div class="chart-subtitle">Distribution from @Model.TotalEvents bookings</div>
         </div>
         <div class="chart-canvas-wrap">
-            <canvas id="reportEventsByTypeChart"></canvas>
+            <canvas id="reportEventsByTypeChart" data-labels="@typeLabels" data-values="@typeValues"></canvas>
         </div>
     </div>
 </div>
 
-<!-- Reports Hub Component -->
-@await Html.PartialAsync("~/Views/SuperAdmin/Components/_ReportsHub.cshtml")
+<!-- 3. Reports Hub Component (live) -->
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_ReportsHub.cshtml", Model)

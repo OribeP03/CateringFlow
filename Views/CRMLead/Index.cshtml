@@ -1,4 +1,4 @@
-@model IEnumerable<CRMLeadModel>
+@model PagedResult<CRMLeadModel>
 @{
     Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
     ViewData["Title"] = "CRM & Leads";
@@ -8,12 +8,24 @@
 <div class="page-header-row">
     <div>
         <h1 class="page-header-title">CRM & Leads</h1>
-        <div class="page-header-sub">Pipeline · @Model.Count() leads · ₱@((ViewData["TotalValue"] as decimal?) ?? 0m).ToString("N0") total value</div>
+        <div class="page-header-sub">Pipeline · @Model.TotalItems leads · ₱@((ViewData["TotalValue"] as decimal?) ?? 0m).ToString("N0") total value</div>
     </div>
-    <div>
-        <a asp-action="Create" class="admin-btn-primary">
-            <i class="bi bi-plus-lg"></i> + Add Lead
+    <div class="d-flex gap-2">
+        <a href="/SuperAdmin/CRM" class="admin-btn-secondary">
+            <i class="bi bi-kanban"></i> Pipeline Board
         </a>
+        <a href="/SuperAdmin/Inquiries" class="admin-btn-secondary">
+            <i class="bi bi-inbox"></i> Inquiry Inbox
+        </a>
+    </div>
+</div>
+
+<div class="alert alert-info d-flex align-items-start gap-2">
+    <i class="bi bi-info-circle-fill mt-1"></i>
+    <div>
+        Leads are created automatically from client inquiries submitted on the website — there is no
+        manual lead-entry form here. Use <strong>Edit</strong> to qualify or reassign, and the pipeline board
+        to advance a lead to the next stage.
     </div>
 </div>
 
@@ -22,15 +34,53 @@
     <div class="alert alert-success d-flex align-items-center gap-2"><i class="bi bi-check-circle-fill"></i> @TempData["Success"]</div>
 }
 
-<!-- Pipeline by Stage -->
-<div class="kpi-cards-grid">
-    <div class="kpi-card"><div class="kpi-value" style="font-size: 1.8rem;">@Model.Count(l => l.Stage == "New")</div><div class="kpi-title">New</div></div>
-    <div class="kpi-card"><div class="kpi-value" style="font-size: 1.8rem;">@Model.Count(l => l.Stage == "Contacted")</div><div class="kpi-title">Contacted</div></div>
-    <div class="kpi-card"><div class="kpi-value" style="font-size: 1.8rem;">@Model.Count(l => l.Stage == "Proposal")</div><div class="kpi-title">Proposal</div></div>
-    <div class="kpi-card"><div class="kpi-value" style="font-size: 1.8rem;">@Model.Count(l => l.Stage == "Negotiation")</div><div class="kpi-title">Negotiation</div></div>
-    <div class="kpi-card" style="background: #ecfdf5; border-color: #a7f3d0;"><div class="kpi-value text-success" style="font-size: 1.8rem;">@Model.Count(l => l.Stage == "Won")</div><div class="kpi-title text-success">Won</div></div>
-    <div class="kpi-card" style="background: #fef2f2; border-color: #fecaca;"><div class="kpi-value text-danger" style="font-size: 1.8rem;">@Model.Count(l => l.Stage == "Lost" || l.Stage == "Locked/Lost")</div><div class="kpi-title text-danger">Lost</div></div>
-</div>
+<!-- Pipeline by Stage (incremental, largest value on right) -->
+@{
+    var totalNew = (ViewData["TotalNew"] as int?) ?? 0;
+    var totalContacted = (ViewData["TotalContacted"] as int?) ?? 0;
+    var totalProposal = (ViewData["TotalProposal"] as int?) ?? 0;
+    var totalNegotiation = (ViewData["TotalNegotiation"] as int?) ?? 0;
+    var totalLost = (ViewData["TotalLost"] as int?) ?? 0;
+    var totalWon = (ViewData["TotalWon"] as int?) ?? 0;
+    ViewData["KpiGridClass"] = "";
+    var leadCards = new List<KpiCardModel>
+    {
+        new() { Label = "New", Value = @totalNew.ToString(), SortValue = @totalNew, ValueFirst = true, FontSize = "1.8rem" },
+        new() { Label = "Contacted", Value = @totalContacted.ToString(), SortValue = @totalContacted, ValueFirst = true, FontSize = "1.8rem" },
+        new() { Label = "Proposal", Value = @totalProposal.ToString(), SortValue = @totalProposal, ValueFirst = true, FontSize = "1.8rem" },
+        new() { Label = "Negotiation", Value = @totalNegotiation.ToString(), SortValue = @totalNegotiation, ValueFirst = true, FontSize = "1.8rem" },
+        new() { Label = "Lost", Value = @totalLost.ToString(), SortValue = @totalLost, ValueFirst = true, FontSize = "1.8rem", Background = "#fef2f2", BorderColor = "#fecaca", Foreground = "#dc3545" },
+        new() { Label = "Won", Value = @totalWon.ToString(), SortValue = @totalWon, ValueFirst = true, FontSize = "1.8rem", Background = "#ecfdf5", BorderColor = "#a7f3d0", Foreground = "#198754" }
+    };
+}
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_KpiCards.cshtml", leadCards)
+
+<!-- Pipeline Filter Toolbar -->
+<form method="get" class="filter-toolbar">
+    <div class="filter-search-wrap">
+        <i class="bi bi-search"></i>
+        <input name="search" type="text" placeholder="Search leads..." value="@ViewData["Search"]" />
+    </div>
+    <div class="filter-selects-group">
+        <select name="stage" class="filter-select">
+            <option value="All">All Stages</option>
+            <option value="New" selected="@(ViewData["StageFilter"]?.ToString() == "New")">New</option>
+            <option value="Contacted" selected="@(ViewData["StageFilter"]?.ToString() == "Contacted")">Contacted</option>
+            <option value="Qualified" selected="@(ViewData["StageFilter"]?.ToString() == "Qualified")">Qualified</option>
+            <option value="Proposal" selected="@(ViewData["StageFilter"]?.ToString() == "Proposal")">Proposal</option>
+            <option value="Negotiation" selected="@(ViewData["StageFilter"]?.ToString() == "Negotiation")">Negotiation</option>
+            <option value="Won" selected="@(ViewData["StageFilter"]?.ToString() == "Won")">Won</option>
+            <option value="Lost" selected="@(ViewData["StageFilter"]?.ToString() == "Lost")">Lost</option>
+        </select>
+        <select name="assignee" class="filter-select">
+            <option value="All">All Assignees</option>
+            <option value="Carlo Aquino" selected="@(ViewData["AssigneeFilter"]?.ToString() == "Carlo Aquino")">Carlo Aquino</option>
+            <option value="Diana Reyes" selected="@(ViewData["AssigneeFilter"]?.ToString() == "Diana Reyes")">Diana Reyes</option>
+        </select>
+        <button type="submit" class="admin-btn-secondary">Filter</button>
+        <a href="/CRMLead" class="admin-btn-secondary">Reset</a>
+    </div>
+</form>
 
 <div class="table-container-card">
     <table class="admin-data-table">
@@ -38,11 +88,11 @@
             <tr><th>Lead</th><th>Company</th><th>Contact</th><th>Value</th><th>Stage</th><th>Assigned To</th><th>Last Contact</th><th>Actions</th></tr>
         </thead>
         <tbody>
-            @if (!Model.Any())
+            @if (Model.Items.Count == 0)
             {
                 <tr><td colspan="8" class="text-center text-muted py-4">No leads found.</td></tr>
             }
-            @foreach (var l in Model)
+            @foreach (var l in Model.Items)
             {
                 <tr>
                     <td class="fw-semibold">@l.LeadName</td>
@@ -61,3 +111,5 @@
         </tbody>
     </table>
 </div>
+
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_Pagination.cshtml", Model)

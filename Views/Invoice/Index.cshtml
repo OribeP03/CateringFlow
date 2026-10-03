@@ -1,4 +1,4 @@
-@model IEnumerable<InvoiceModel>
+@model PagedResult<InvoiceModel>
 @{
     Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
     ViewData["Title"] = "Invoices";
@@ -8,7 +8,7 @@
 <div class="page-header-row">
     <div>
         <h1 class="page-header-title">Invoices</h1>
-        <div class="page-header-sub">@Model.Count() total invoices</div>
+        <div class="page-header-sub">@Model.TotalItems total invoices</div>
     </div>
     <div>
         <a asp-action="Create" class="admin-btn-primary">
@@ -22,35 +22,30 @@
     <div class="alert alert-success d-flex align-items-center gap-2"><i class="bi bi-check-circle-fill"></i> @TempData["Success"]</div>
 }
 
-<!-- Invoice Status KPI Cards -->
-<div class="kpi-cards-grid">
-    <div class="kpi-card">
-        <div class="kpi-value" style="font-size: 1.8rem;">@Model.Count()</div>
-        <div class="kpi-title">Total</div>
-    </div>
-    <div class="kpi-card" style="background: #ecfdf5; border-color: #a7f3d0;">
-        <div class="kpi-value text-success" style="font-size: 1.8rem;">@Model.Count(i => i.Status == "Paid")</div>
-        <div class="kpi-title text-success">Paid</div>
-    </div>
-    <div class="kpi-card" style="background: #fefce8; border-color: #fef08a;">
-        <div class="kpi-value" style="font-size: 1.8rem; color: #ca8a04;">@Model.Count(i => i.Status == "Partial")</div>
-        <div class="kpi-title" style="color: #ca8a04;">Partial</div>
-    </div>
-    <div class="kpi-card" style="background: #eff6ff; border-color: #bfdbfe;">
-        <div class="kpi-value text-primary" style="font-size: 1.8rem;">@Model.Count(i => i.Status == "Unpaid")</div>
-        <div class="kpi-title text-primary">Unpaid</div>
-    </div>
-    <div class="kpi-card" style="background: #fef2f2; border-color: #fecaca;">
-        <div class="kpi-value text-danger" style="font-size: 1.8rem;">@Model.Count(i => i.Status == "Overdue")</div>
-        <div class="kpi-title text-danger">Overdue</div>
-    </div>
-</div>
+<!-- Invoice Status KPI Cards (incremental, largest value on right) -->
+@{
+    var totalPartial = (ViewData["TotalPartial"] as int?) ?? 0;
+    var totalUnpaid = (ViewData["TotalUnpaid"] as int?) ?? 0;
+    var totalOverdue = (ViewData["TotalOverdue"] as int?) ?? 0;
+    var totalPaid = (ViewData["TotalPaid"] as int?) ?? 0;
+    var totalInvoices = (ViewData["TotalInvoices"] as int?) ?? 0;
+    ViewData["KpiGridClass"] = "";
+    var invoiceCards = new List<KpiCardModel>
+    {
+        new() { Label = "Partial", Value = @totalPartial.ToString(), SortValue = @totalPartial, ValueFirst = true, FontSize = "1.8rem", Background = "#fefce8", BorderColor = "#fef08a", Foreground = "#ca8a04" },
+        new() { Label = "Unpaid", Value = @totalUnpaid.ToString(), SortValue = @totalUnpaid, ValueFirst = true, FontSize = "1.8rem", Background = "#eff6ff", BorderColor = "#bfdbfe", Foreground = "#0d6efd" },
+        new() { Label = "Overdue", Value = @totalOverdue.ToString(), SortValue = @totalOverdue, ValueFirst = true, FontSize = "1.8rem", Background = "#fef2f2", BorderColor = "#fecaca", Foreground = "#dc3545" },
+        new() { Label = "Paid", Value = @totalPaid.ToString(), SortValue = @totalPaid, ValueFirst = true, FontSize = "1.8rem", Background = "#ecfdf5", BorderColor = "#a7f3d0", Foreground = "#198754" },
+        new() { Label = "Total", Value = @totalInvoices.ToString(), SortValue = @totalInvoices, ValueFirst = true, FontSize = "1.8rem" }
+    };
+}
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_KpiCards.cshtml", invoiceCards)
 
-@if (Model.Any(i => i.Status == "Overdue"))
+@if (totalOverdue > 0)
 {
     <div class="admin-alert-banner">
         <i class="bi bi-exclamation-triangle-fill"></i>
-        <span>@Model.Count(i => i.Status == "Overdue") overdue invoice(s) require immediate follow-up.</span>
+        <span>@totalOverdue overdue invoice(s) require immediate follow-up.</span>
     </div>
 }
 
@@ -78,11 +73,11 @@
             <tr><th>Number</th><th>Customer</th><th>Issue Date</th><th>Due Date</th><th>Total</th><th>Paid</th><th>Balance</th><th>Status</th><th>Actions</th></tr>
         </thead>
         <tbody>
-            @if (!Model.Any())
+            @if (Model.Items.Count == 0)
             {
                 <tr><td colspan="9" class="text-center text-muted py-4">No invoices found.</td></tr>
             }
-            @foreach (var i in Model)
+            @foreach (var i in Model.Items)
             {
                 <tr>
                     <td class="fw-semibold text-primary">@i.InvoiceNumber</td>
@@ -104,3 +99,5 @@
         </tbody>
     </table>
 </div>
+
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_Pagination.cshtml", Model)

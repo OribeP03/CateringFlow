@@ -1,24 +1,46 @@
 @* Views/SuperAdmin/Components/_ReportsHub.cshtml *@
+@model ReportsViewModel
+@using cateringflow.Models
+@{
+    var statusClass = (string status) => status switch
+    {
+        "Paid" => "paid",
+        "Partially Paid" => "partial",
+        "Overdue" => "overdue",
+        "Cancelled" => "rejected",
+        _ => "upcoming"
+    };
+}
 <div class="reports-hub-grid">
     <!-- 1. Sales Reports -->
     <div class="report-category-card">
         <div class="report-card-header sales">
             <i class="bi bi-graph-up-arrow"></i>
-            <span>Sales Reports</span>
+            <span>Top Menu Packages</span>
         </div>
         <div class="report-items-list">
-            <a href="#" class="report-item-link" onclick="alert('Generating Revenue Report PDF...'); return false;">
-                <div class="report-item-title">Revenue Report</div>
-                <div class="report-item-desc">Monthly and yearly revenue breakdown</div>
-            </a>
-            <a href="#" class="report-item-link" onclick="alert('Generating Booking Report PDF...'); return false;">
-                <div class="report-item-title">Booking Report</div>
-                <div class="report-item-desc">All bookings with status and amounts</div>
-            </a>
-            <a href="#" class="report-item-link" onclick="alert('Generating Customer Report PDF...'); return false;">
-                <div class="report-item-title">Customer Report</div>
-                <div class="report-item-desc">Customer acquisition and activity</div>
-            </a>
+            @if (Model.TopPackages.Count == 0)
+            {
+                <div class="report-item-desc p-2">No package bookings yet.</div>
+            }
+            @for (var i = 0; i < Model.TopPackages.Count; i++)
+            {
+                var p = Model.TopPackages[i];
+<div class="report-row">
+                <div class="report-row-main">
+                    <span class="rank-badge">@(i + 1)</span>
+                    <div>
+                        <div class="report-item-title">@p.PackageName</div>
+                        <div class="report-item-desc">@p.Count @(p.Count == 1 ? "booking" : "bookings")</div>
+                    </div>
+                </div>
+                <div class="report-row-value">₱@p.Revenue.ToString("N0")</div>
+            </div>
+            }
+        </div>
+        <div class="report-card-footer">
+            <a href="/SuperAdmin/Events">View all events →</a>
+            <a href="/SuperAdmin/ActivityLog">Activity log →</a>
         </div>
     </div>
 
@@ -26,21 +48,26 @@
     <div class="report-category-card">
         <div class="report-card-header finance">
             <i class="bi bi-wallet2"></i>
-            <span>Finance Reports</span>
+            <span>Invoice Status</span>
         </div>
         <div class="report-items-list">
-            <a href="#" class="report-item-link" onclick="alert('Generating Payment Report PDF...'); return false;">
-                <div class="report-item-title">Payment Report</div>
-                <div class="report-item-desc">All payment transactions</div>
-            </a>
-            <a href="#" class="report-item-link" onclick="alert('Generating Invoice Report PDF...'); return false;">
-                <div class="report-item-title">Invoice Report</div>
-                <div class="report-item-desc">Invoice status and aging</div>
-            </a>
-            <a href="#" class="report-item-link" onclick="alert('Generating Outstanding Balance Report PDF...'); return false;">
-                <div class="report-item-title">Outstanding Balance</div>
-                <div class="report-item-desc">Unpaid and overdue balances</div>
-            </a>
+            @if (Model.InvoiceBuckets.Count == 0)
+            {
+                <div class="report-item-desc p-2">No invoices yet.</div>
+            }
+            @foreach (var b in Model.InvoiceBuckets)
+            {
+                <div class="report-row">
+                    <div class="report-row-main">
+                        <span class="status-pill @statusClass(b.Status)">@b.Status</span>
+                        <div class="report-item-desc">@b.Count @(b.Count == 1 ? "invoice" : "invoices")</div>
+                    </div>
+                    <div class="report-row-value">₱@b.TotalAmount.ToString("N0")</div>
+                </div>
+            }
+        </div>
+        <div class="report-card-footer">
+            <a href="/Invoices">View invoices →</a>
         </div>
     </div>
 
@@ -48,25 +75,27 @@
     <div class="report-category-card">
         <div class="report-card-header inventory">
             <i class="bi bi-box-seam"></i>
-            <span>Inventory Reports</span>
+            <span>Payment Methods</span>
         </div>
         <div class="report-items-list">
-            <a href="#" class="report-item-link" onclick="alert('Generating Stock Level Report...'); return false;">
-                <div class="report-item-title">Stock Report</div>
-                <div class="report-item-desc">Current stock levels</div>
-            </a>
-            <a href="#" class="report-item-link" onclick="alert('Generating Stock Movement Report...'); return false;">
-                <div class="report-item-title">Stock Movement</div>
-                <div class="report-item-desc">In/out movements history</div>
-            </a>
-            <a href="#" class="report-item-link" onclick="alert('Generating Low Stock Report...'); return false;">
-                <div class="report-item-title">Low Stock Report</div>
-                <div class="report-item-desc">Items below reorder level</div>
-            </a>
-            <a href="#" class="report-item-link" onclick="alert('Generating Expiring Ingredients Report...'); return false;">
-                <div class="report-item-title">Expiring Ingredients</div>
-                <div class="report-item-desc">Items expiring soon</div>
-            </a>
+            @if (Model.PaymentMethods.Count == 0)
+            {
+                <div class="report-item-desc p-2">No payments recorded yet.</div>
+            }
+            @foreach (var m in Model.PaymentMethods)
+            {
+                <div class="report-row">
+                    <div class="report-row-main">
+                        <span class="method-badge">@m.Method</span>
+                        <div class="report-item-desc">@m.Count @(m.Count == 1 ? "transaction" : "transactions")</div>
+                    </div>
+                    <div class="report-row-value">₱@m.TotalAmount.ToString("N0")</div>
+                </div>
+            }
+        </div>
+        <div class="report-card-footer">
+            <span class="text-muted small">@Model.LowStockItems item(s) at/below reorder level</span>
+            <a href="/SuperAdmin/Inventory">View inventory →</a>
         </div>
     </div>
 
@@ -74,39 +103,33 @@
     <div class="report-category-card">
         <div class="report-card-header event">
             <i class="bi bi-calendar2-range"></i>
-            <span>Event Reports</span>
+            <span>Event Status</span>
         </div>
         <div class="report-items-list">
-            <a href="#" class="report-item-link" onclick="alert('Generating Upcoming Events Report...'); return false;">
-                <div class="report-item-title">Upcoming Events</div>
-                <div class="report-item-desc">All scheduled events</div>
-            </a>
-            <a href="#" class="report-item-link" onclick="alert('Generating Completed Events Report...'); return false;">
-                <div class="report-item-title">Completed Events</div>
-                <div class="report-item-desc">Past events summary</div>
-            </a>
-            <a href="#" class="report-item-link" onclick="alert('Generating Cancelled Events Analysis...'); return false;">
-                <div class="report-item-title">Cancelled Events</div>
-                <div class="report-item-desc">Cancelled bookings analysis</div>
-            </a>
+            <div class="report-row">
+                <div class="report-row-main">
+                    <span class="status-pill upcoming">Upcoming</span>
+                    <div class="report-item-desc">Scheduled events</div>
+                </div>
+                <div class="report-row-value">@(Model.TotalEvents - Model.CompletedEvents - Model.CancelledEvents)</div>
+            </div>
+            <div class="report-row">
+                <div class="report-row-main">
+                    <span class="status-pill paid">Completed</span>
+                    <div class="report-item-desc">Delivered events</div>
+                </div>
+                <div class="report-row-value">@Model.CompletedEvents</div>
+            </div>
+            <div class="report-row">
+                <div class="report-row-main">
+                    <span class="status-pill rejected">Cancelled</span>
+                    <div class="report-item-desc">Cancelled bookings</div>
+                </div>
+                <div class="report-row-value">@Model.CancelledEvents</div>
+            </div>
         </div>
-    </div>
-
-    <!-- 5. Staff Reports -->
-    <div class="report-category-card">
-        <div class="report-card-header staff">
-            <i class="bi bi-person-lines-fill"></i>
-            <span>Staff Reports</span>
-        </div>
-        <div class="report-items-list">
-            <a href="#" class="report-item-link" onclick="alert('Generating Staff Schedule Report...'); return false;">
-                <div class="report-item-title">Staff Schedule</div>
-                <div class="report-item-desc">Staff assignments by period</div>
-            </a>
-            <a href="#" class="report-item-link" onclick="alert('Generating Staff Assignments Mapping...'); return false;">
-                <div class="report-item-title">Staff Assignments</div>
-                <div class="report-item-desc">Event-to-staff mapping</div>
-            </a>
+        <div class="report-card-footer">
+            <a href="/SuperAdmin/Events">View all events →</a>
         </div>
     </div>
 </div>

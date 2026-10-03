@@ -1,245 +1,157 @@
 @* Views/SuperAdmin/Components/_DashboardLists.cshtml *@
+@model DashboardViewModel
+@using cateringflow.Models
+@functions {
+    static string TimeAgo(DateTime dt)
+    {
+        var span = DateTime.Now - dt;
+        if (span.TotalMinutes < 1) return "just now";
+        if (span.TotalMinutes < 60) return $"{(int)span.TotalMinutes} minute{(span.TotalMinutes < 2 ? "" : "s")} ago";
+        if (span.TotalHours < 24) return $"{(int)span.TotalHours} hour{(span.TotalHours < 2 ? "" : "s")} ago";
+        if (span.TotalDays < 30) return $"{(int)span.TotalDays} day{(span.TotalDays < 2 ? "" : "s")} ago";
+        return dt.ToString("MMM d, yyyy");
+    }
+}
 <div class="dashboard-widgets-grid">
-    <!-- 1. Upcoming Events -->
+    <!-- 1. Upcoming Events (live) -->
     <div class="widget-card">
         <div class="widget-header">
             <div class="widget-title-wrap">
                 <i class="bi bi-calendar-event text-primary"></i>
                 <div class="widget-title">Upcoming Events</div>
             </div>
-            <span class="widget-counter">5 total</span>
+            <span class="widget-counter">@Model.UpcomingEvents.Count shown</span>
         </div>
         <div class="widget-list">
-            <div class="widget-list-item">
-                <div class="item-left">
-                    <div class="item-icon-box"><i class="bi bi-gift"></i></div>
-                    <div>
-                        <div class="item-title">Santos Wedding Reception</div>
-                        <div class="item-sub">2025-09-15 · 250 guests</div>
+            @if (Model.UpcomingEvents.Count == 0)
+            {
+                <div class="text-muted small p-3">No upcoming events scheduled.</div>
+            }
+            @foreach (var e in Model.UpcomingEvents)
+            {
+                var icon = e.EventType switch
+                {
+                    "Wedding" => "bi bi-gift",
+                    "Corporate" => "bi bi-building",
+                    "Birthday" => "bi bi-balloon-heart",
+                    "Anniversary" => "bi bi-heart",
+                    _ => "bi bi-calendar-event"
+                };
+                <div class="widget-list-item">
+                    <div class="item-left">
+                        <div class="item-icon-box"><i class="@icon"></i></div>
+                        <div>
+                            <div class="item-title">@e.EventName</div>
+                            <div class="item-sub">@e.EventDate.ToString("MMM dd, yyyy") · @e.PaxCount guests</div>
+                        </div>
+                    </div>
+                    <div class="item-right">
+                        <div class="item-amount">₱@e.TotalAmount.ToString("N0")</div>
+                        <span class="status-pill upcoming">@e.Status</span>
                     </div>
                 </div>
-                <div class="item-right">
-                    <div class="item-amount">₱187,500</div>
-                    <span class="status-pill upcoming">Upcoming</span>
-                </div>
-            </div>
-
-            <div class="widget-list-item">
-                <div class="item-left">
-                    <div class="item-icon-box"><i class="bi bi-building"></i></div>
-                    <div>
-                        <div class="item-title">TechCorp Annual Gala</div>
-                        <div class="item-sub">2025-08-30 · 400 guests</div>
-                    </div>
-                </div>
-                <div class="item-right">
-                    <div class="item-amount">₱360,000</div>
-                    <span class="status-pill upcoming">Upcoming</span>
-                </div>
-            </div>
-
-            <div class="widget-list-item">
-                <div class="item-left">
-                    <div class="item-icon-box"><i class="bi bi-heart"></i></div>
-                    <div>
-                        <div class="item-title">Reyes-Cruz Wedding</div>
-                        <div class="item-sub">2025-10-05 · 180 guests</div>
-                    </div>
-                </div>
-                <div class="item-right">
-                    <div class="item-amount">₱135,000</div>
-                    <span class="status-pill upcoming">Upcoming</span>
-                </div>
-            </div>
-
-            <div class="widget-list-item">
-                <div class="item-left">
-                    <div class="item-icon-box"><i class="bi bi-stars"></i></div>
-                    <div>
-                        <div class="item-title">Mendoza Anniversary</div>
-                        <div class="item-sub">2025-09-28 · 120 guests</div>
-                    </div>
-                </div>
-                <div class="item-right">
-                    <div class="item-amount">₱108,000</div>
-                    <span class="status-pill upcoming">Upcoming</span>
-                </div>
-            </div>
+            }
         </div>
     </div>
 
-    <!-- 2. Recent Payments -->
+    <!-- 2. Recent Payments (live) -->
     <div class="widget-card">
         <div class="widget-header">
             <div class="widget-title-wrap">
                 <i class="bi bi-credit-card text-success"></i>
                 <div class="widget-title">Recent Payments</div>
             </div>
-            <span class="widget-counter">4 total</span>
+            <span class="widget-counter">@Model.RecentPayments.Count shown</span>
         </div>
         <div class="widget-list">
-            <div class="widget-list-item">
-                <div class="item-left">
-                    <div class="item-icon-box text-success"><i class="bi bi-check-circle-fill text-success"></i></div>
-                    <div>
-                        <div class="item-title">TechCorp Philippines</div>
-                        <div class="item-sub">2025-08-18 · Bank Transfer</div>
+            @if (Model.RecentPayments.Count == 0)
+            {
+                <div class="text-muted small p-3">No payments recorded yet.</div>
+            }
+            @foreach (var p in Model.RecentPayments)
+            {
+                <div class="widget-list-item">
+                    <div class="item-left">
+                        <div class="item-icon-box text-success"><i class="bi bi-check-circle-fill text-success"></i></div>
+                        <div>
+                            <div class="item-title">@(p.Customer?.FullName ?? "—")</div>
+                            <div class="item-sub">@p.PaymentDate.ToString("MMM dd, yyyy") · @p.PaymentMethod</div>
+                        </div>
+                    </div>
+                    <div class="item-right">
+                        <div class="item-amount text-success">₱@p.Amount.ToString("N0")</div>
                     </div>
                 </div>
-                <div class="item-right">
-                    <div class="item-amount text-success">₱360,000</div>
-                </div>
-            </div>
-
-            <div class="widget-list-item">
-                <div class="item-left">
-                    <div class="item-icon-box text-success"><i class="bi bi-check-circle-fill text-success"></i></div>
-                    <div>
-                        <div class="item-title">Juan dela Cruz</div>
-                        <div class="item-sub">2025-08-10 · GCash</div>
-                    </div>
-                </div>
-                <div class="item-right">
-                    <div class="item-amount text-success">₱48,000</div>
-                </div>
-            </div>
-
-            <div class="widget-list-item">
-                <div class="item-left">
-                    <div class="item-icon-box text-success"><i class="bi bi-check-circle-fill text-success"></i></div>
-                    <div>
-                        <div class="item-title">Maria Santos</div>
-                        <div class="item-sub">2025-08-01 · Bank Transfer</div>
-                    </div>
-                </div>
-                <div class="item-right">
-                    <div class="item-amount text-success">₱93,750</div>
-                </div>
-            </div>
-
-            <div class="widget-list-item">
-                <div class="item-left">
-                    <div class="item-icon-box text-success"><i class="bi bi-check-circle-fill text-success"></i></div>
-                    <div>
-                        <div class="item-title">BPO Global Services</div>
-                        <div class="item-sub">2025-08-14 · Card</div>
-                    </div>
-                </div>
-                <div class="item-right">
-                    <div class="item-amount text-success">₱90,000</div>
-                </div>
-            </div>
+            }
         </div>
     </div>
 
-    <!-- 3. Stock Alerts -->
+    <!-- 3. Stock Alerts (live: at/below reorder level) -->
     <div class="widget-card">
         <div class="widget-header">
             <div class="widget-title-wrap">
                 <i class="bi bi-exclamation-triangle-fill text-warning"></i>
                 <div class="widget-title">Stock Alerts</div>
             </div>
-            <span class="widget-counter">4 items</span>
+            <span class="widget-counter">@Model.StockAlerts.Count items</span>
         </div>
         <div class="widget-list">
-            <div class="widget-list-item">
-                <div class="item-left">
-                    <div class="item-icon-box"><i class="bi bi-box-seam"></i></div>
-                    <div>
-                        <div class="item-title">Pork Belly</div>
-                        <div class="item-sub">12 kg remaining</div>
+            @if (Model.StockAlerts.Count == 0)
+            {
+                <div class="text-muted small p-3">All stock levels are adequate.</div>
+            }
+            @foreach (var i in Model.StockAlerts)
+            {
+                var stockClass = i.StockStatus == "Out of Stock" ? "out-of-stock" : "low-stock";
+                <div class="widget-list-item">
+                    <div class="item-left">
+                        <div class="item-icon-box"><i class="bi bi-box-seam"></i></div>
+                        <div>
+                            <div class="item-title">@i.ItemName</div>
+                            <div class="item-sub">@i.CurrentStock @i.Unit remaining (reorder @i.MinReorderLevel @i.Unit)</div>
+                        </div>
+                    </div>
+                    <div class="item-right">
+                        <span class="status-pill @stockClass">@i.StockStatus</span>
                     </div>
                 </div>
-                <div class="item-right">
-                    <span class="status-pill low-stock">Low Stock</span>
-                </div>
-            </div>
-
-            <div class="widget-list-item">
-                <div class="item-left">
-                    <div class="item-icon-box"><i class="bi bi-box-seam"></i></div>
-                    <div>
-                        <div class="item-title">Fresh Shrimp</div>
-                        <div class="item-sub">8 kg remaining</div>
-                    </div>
-                </div>
-                <div class="item-right">
-                    <span class="status-pill expiring">Expiring Soon</span>
-                </div>
-            </div>
-
-            <div class="widget-list-item">
-                <div class="item-left">
-                    <div class="item-icon-box"><i class="bi bi-box-seam"></i></div>
-                    <div>
-                        <div class="item-title">Beef Sirloin</div>
-                        <div class="item-sub">0 kg remaining</div>
-                    </div>
-                </div>
-                <div class="item-right">
-                    <span class="status-pill out-of-stock">Out of Stock</span>
-                </div>
-            </div>
-
-            <div class="widget-list-item">
-                <div class="item-left">
-                    <div class="item-icon-box"><i class="bi bi-box-seam"></i></div>
-                    <div>
-                        <div class="item-title">Onions</div>
-                        <div class="item-sub">4 kg remaining</div>
-                    </div>
-                </div>
-                <div class="item-right">
-                    <span class="status-pill low-stock">Low Stock</span>
-                </div>
-            </div>
+            }
         </div>
     </div>
 
-    <!-- 4. Recent Activity Timeline -->
+    <!-- 4. Recent Activity (live: latest bookings) -->
     <div class="widget-card">
         <div class="widget-header">
             <div class="widget-title-wrap">
                 <i class="bi bi-clock-history text-secondary"></i>
                 <div class="widget-title">Recent Activity</div>
             </div>
+            <span class="widget-counter">@Model.RecentActivity.Count shown</span>
         </div>
         <div class="activity-timeline">
-            <div class="timeline-entry">
-                <span class="timeline-dot"></span>
-                <div class="timeline-content">
-                    <div class="timeline-action">New Booking</div>
-                    <div class="timeline-detail">New booking confirmed: Ana Reyes – Reyes-Cruz Wedding (Oct 5, 2025)</div>
-                    <div class="timeline-time">2 hours ago</div>
+            @if (Model.RecentActivity.Count == 0)
+            {
+                <div class="text-muted small p-3">No recent activity.</div>
+            }
+            @foreach (var e in Model.RecentActivity)
+            {
+                var statusClass = e.Status switch
+                {
+                    "Completed" => "completed",
+                    "In Progress" => "busy",
+                    "Cancelled" => "rejected",
+                    _ => "upcoming"
+                };
+                <div class="timeline-entry">
+                    <span class="timeline-dot"></span>
+                    <div class="timeline-content">
+                        <div class="timeline-action">@e.Status booking</div>
+                        <div class="timeline-detail">@e.EventName · ₱@e.TotalAmount.ToString("N0") · @e.PaxCount pax</div>
+                        <div class="timeline-time">@TimeAgo(e.CreatedAt)</div>
+                    </div>
+                    <span class="status-pill @statusClass">@e.Status</span>
                 </div>
-            </div>
-
-            <div class="timeline-entry">
-                <span class="timeline-dot"></span>
-                <div class="timeline-content">
-                    <div class="timeline-action">Quotation Approved</div>
-                    <div class="timeline-detail">Quotation QT-2025-001 approved by Maria Santos</div>
-                    <div class="timeline-time">5 hours ago</div>
-                </div>
-            </div>
-
-            <div class="timeline-entry">
-                <span class="timeline-dot"></span>
-                <div class="timeline-content">
-                    <div class="timeline-action">Payment Received</div>
-                    <div class="timeline-detail">Payment received from TechCorp Philippines – ₱360,000</div>
-                    <div class="timeline-time">1 day ago</div>
-                </div>
-            </div>
-
-            <div class="timeline-entry">
-                <span class="timeline-dot"></span>
-                <div class="timeline-content">
-                    <div class="timeline-action">Invoice Overdue</div>
-                    <div class="timeline-detail">Invoice INV-2025-004 for City Government of Manila is now overdue</div>
-                    <div class="timeline-time">2 days ago</div>
-                </div>
-            </div>
+            }
         </div>
     </div>
 </div>

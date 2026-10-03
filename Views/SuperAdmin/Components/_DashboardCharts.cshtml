@@ -1,16 +1,25 @@
 @* Views/SuperAdmin/Components/_DashboardCharts.cshtml *@
+@model DashboardViewModel
+@using cateringflow.Models
+@using System.Text.Json
+@{
+    var revLabels = JsonSerializer.Serialize(Model.MonthlyRevenue.Select(m => m.Month));
+    var revValues = JsonSerializer.Serialize(Model.MonthlyRevenue.Select(m => m.Amount));
+    var typeLabels = JsonSerializer.Serialize(Model.EventsByType.Select(t => t.Type));
+    var typeValues = JsonSerializer.Serialize(Model.EventsByType.Select(t => t.Count));
+}
 <div class="dashboard-charts-row">
     <!-- Monthly Revenue Line Chart -->
     <div class="chart-card">
         <div class="chart-header">
             <div>
                 <div class="chart-title">Monthly Revenue</div>
-                <div class="chart-subtitle">2025 performance</div>
+                <div class="chart-subtitle">Last 6 months (₱ thousands)</div>
             </div>
-            <span class="chart-tag">This Year</span>
+            <span class="chart-tag">Live</span>
         </div>
         <div class="chart-canvas-wrap">
-            <canvas id="monthlyRevenueChart"></canvas>
+            <canvas id="monthlyRevenueChart" data-labels="@revLabels" data-values="@revValues"></canvas>
         </div>
     </div>
 
@@ -19,11 +28,11 @@
         <div class="chart-header">
             <div>
                 <div class="chart-title">Events by Type</div>
-                <div class="chart-subtitle">Distribution</div>
+                <div class="chart-subtitle">Distribution from bookings</div>
             </div>
         </div>
         <div class="chart-canvas-wrap">
-            <canvas id="eventsByTypeChart"></canvas>
+            <canvas id="eventsByTypeChart" data-labels="@typeLabels" data-values="@typeValues"></canvas>
         </div>
     </div>
 </div>

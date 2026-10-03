@@ -1,42 +1,151 @@
 @* Views/SuperAdmin/Suppliers.cshtml *@
+@model cateringflow.Models.PagedResult<SupplierModel>
+@using cateringflow.Models
 @{
     Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
     ViewData["Title"] = "Suppliers";
     ViewData["ActivePage"] = "Suppliers";
 }
 
-<!-- Page Header Row -->
 <div class="page-header-row">
     <div>
-        <h1 class="page-header-title">Supplier Management</h1>
-        <div class="page-header-sub">4 verified food and banquet equipment vendors</div>
+        <h1 class="page-header-title">Suppliers</h1>
+        <div class="page-header-sub">@Model.TotalItems approved partners</div>
     </div>
     <div>
-        <button class="admin-btn-primary" onclick="openAdminModal('addSupplierModal')">
+        <button class="admin-btn-primary" onclick="openAdminModal('newSupplierModal')">
             <i class="bi bi-plus-lg"></i> + Add Supplier
         </button>
     </div>
 </div>
 
-<!-- Search & Filter Toolbar -->
-<div class="filter-toolbar">
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success d-flex align-items-center gap-2">
+        <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger d-flex align-items-center gap-2">
+        <i class="bi bi-x-circle-fill"></i> @TempData["Error"]
+    </div>
+}
+
+<!-- Filter Toolbar -->
+<form method="get" class="filter-toolbar">
     <div class="filter-search-wrap">
         <i class="bi bi-search"></i>
-        <input id="tableLiveSearch" type="text" placeholder="Search suppliers..." />
+        <input name="search" type="text" placeholder="Search suppliers..." value="@ViewData["Search"]" />
     </div>
     <div class="filter-selects-group">
-        <select id="tableTypeFilter" class="filter-select">
+        <select name="category" class="filter-select">
             <option value="All">All Categories</option>
-            <option value="Meats">Meats & Poultry</option>
-            <option value="Seafood">Seafood</option>
-            <option value="Produce">Produce</option>
-            <option value="Beverages">Beverages</option>
+            <option value="Meats & Poultry" selected="@(ViewData["CategoryFilter"]?.ToString() == "Meats & Poultry")">Meats & Poultry</option>
+            <option value="Seafood" selected="@(ViewData["CategoryFilter"]?.ToString() == "Seafood")">Seafood</option>
+            <option value="Produce" selected="@(ViewData["CategoryFilter"]?.ToString() == "Produce")">Produce</option>
+            <option value="Grains" selected="@(ViewData["CategoryFilter"]?.ToString() == "Grains")">Grains</option>
+            <option value="Beverages" selected="@(ViewData["CategoryFilter"]?.ToString() == "Beverages")">Beverages</option>
+            <option value="Hardware & Linens" selected="@(ViewData["CategoryFilter"]?.ToString() == "Hardware & Linens")">Hardware & Linens</option>
         </select>
+        <button type="submit" class="admin-btn-secondary">Filter</button>
+        <a href="/SuperAdmin/Suppliers" class="admin-btn-secondary">Reset</a>
     </div>
+</form>
+
+<div class="table-container-card">
+    <table class="admin-data-table">
+        <thead>
+            <tr>
+                <th>Supplier</th>
+                <th>Contact Person</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Category</th>
+                <th>Items</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Items.Count == 0)
+            {
+                <tr><td colspan="8" class="text-center text-muted py-4">No suppliers found.</td></tr>
+            }
+            @foreach (var s in Model.Items)
+            {
+                <tr>
+                    <td class="fw-semibold">@s.SupplierName</td>
+                    <td>@(s.ContactPerson ?? "—")</td>
+                    <td><a href="mailto:@s.Email">@s.Email</a></td>
+                    <td>@(s.Phone ?? "—")</td>
+                    <td><span class="status-pill available">@s.Category</span></td>
+                    <td>@(s.InventoryItems?.Count ?? 0)</td>
+                    <td>
+                        <span class="status-pill @(s.Status == "Active" ? "completed" : "draft")">@s.Status</span>
+                    </td>
+                    <td class="d-flex gap-1">
+                        <button type="button" class="btn btn-sm btn-outline-primary" title="View"
+                                data-name="@s.SupplierName" data-contact="@(s.ContactPerson ?? "")"
+                                data-email="@s.Email" data-phone="@(s.Phone ?? "")"
+                                data-address="@(s.Address ?? "")" data-category="@s.Category"
+                                data-status="@s.Status" data-items="@(s.InventoryItems?.Count ?? 0)"
+                                onclick="openViewSupplierModal(this)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" title="Edit"
+                                data-id="@s.Id" data-name="@s.SupplierName" data-contact="@(s.ContactPerson ?? "")"
+                                data-email="@s.Email" data-phone="@(s.Phone ?? "")"
+                                data-address="@(s.Address ?? "")" data-category="@s.Category"
+                                data-status="@s.Status"
+                                onclick="openEditSupplierModal(this)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <form asp-controller="Supplier" asp-action="Delete" asp-route-returnUrl="/SuperAdmin/Suppliers"
+                              method="post" class="d-inline" onsubmit="return confirm('Delete supplier @s.SupplierName?');">
+                            <input type="hidden" name="id" value="@s.Id" />
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
 
-<!-- Suppliers Table Component -->
-@await Html.PartialAsync("~/Views/SuperAdmin/Components/_SuppliersTable.cshtml")
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_Pagination.cshtml", Model)
 
-<!-- Add Supplier Modal Component -->
+<!-- Supplier Modals Component -->
 @await Html.PartialAsync("~/Views/SuperAdmin/Components/_AddSupplierModal.cshtml")
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_SupplierViewEditModals.cshtml")
+
+@section Scripts {
+    <script>
+        window.openViewSupplierModal = function (btn) {
+            const d = btn.dataset;
+            document.getElementById('viewSupplierName').textContent = d.name;
+            document.getElementById('viewSupplierContact').textContent = d.contact || '—';
+            document.getElementById('viewSupplierEmail').textContent = d.email;
+            document.getElementById('viewSupplierPhone').textContent = d.phone || '—';
+            document.getElementById('viewSupplierAddress').textContent = d.address || '—';
+            document.getElementById('viewSupplierCategory').textContent = d.category;
+            document.getElementById('viewSupplierStatus').textContent = d.status;
+            document.getElementById('viewSupplierItems').textContent = d.items;
+            openAdminModal('viewSupplierModal');
+        };
+
+        window.openEditSupplierModal = function (btn) {
+            const d = btn.dataset;
+            document.getElementById('editSupplierId').value = d.id;
+            document.getElementById('editSupplierName').value = d.name;
+            document.getElementById('editSupplierContact').value = d.contact;
+            document.getElementById('editSupplierEmail').value = d.email;
+            document.getElementById('editSupplierPhone').value = d.phone;
+            document.getElementById('editSupplierAddress').value = d.address;
+            document.getElementById('editSupplierCategory').value = d.category;
+            document.getElementById('editSupplierStatus').value = d.status;
+            openAdminModal('editSupplierModal');
+        };
+    </script>
+}

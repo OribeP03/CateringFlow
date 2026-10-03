@@ -1,74 +1,286 @@
+@using cateringflow.Models
 @* Views/Client/Components/_BookingModal.cshtml *@
+@{
+    var packages = (ViewData["Packages"] as List<MenuPackageModel>) ?? new List<MenuPackageModel>();
+}
+
 <div id="bookingModal" class="admin-modal-backdrop">
-    <div class="admin-modal-dialog">
+    <div class="admin-modal-dialog booking-wizard-dialog">
         <div class="admin-modal-header">
             <div>
                 <h5 class="admin-modal-title mb-1">Book Your Catering Experience</h5>
-                <p class="text-muted small mb-0">Fill out event details for a customized tasting proposal.</p>
+                <p class="text-muted small mb-0 booking-wizard-step-label">Step 1 of 4 — Your Details</p>
             </div>
             <button class="admin-modal-close" onclick="closeBookingModal()">&times;</button>
         </div>
+
+        <!-- Wizard progress -->
+        <div class="booking-wizard-progress">
+            <div class="wizard-step active" data-wz-step="1">
+                <div class="wizard-step-dot"><i class="bi bi-person"></i></div>
+                <span>Details</span>
+            </div>
+            <div class="wizard-step" data-wz-step="2">
+                <div class="wizard-step-dot"><i class="bi bi-credit-card-2-front"></i></div>
+                <span>Payment</span>
+            </div>
+            <div class="wizard-step" data-wz-step="3">
+                <div class="wizard-step-dot"><i class="bi bi-receipt"></i></div>
+                <span>Proof</span>
+            </div>
+            <div class="wizard-step" data-wz-step="4">
+                <div class="wizard-step-dot"><i class="bi bi-chat-dots"></i></div>
+                <span>Confirm</span>
+            </div>
+        </div>
+
         <form id="clientBookingForm">
             @Html.AntiForgeryToken()
             <div class="admin-modal-body">
-                <div class="row">
-                    <div class="col-md-6 form-group-admin">
-                        <label>Full Name *</label>
-                        <input type="text" id="bookingFullName" name="fullName" class="form-control" placeholder="e.g. Maria Santos" required />
+                <!-- ============ STEP 1: YOUR DETAILS ============ -->
+                <div class="booking-wizard-panel" data-wz-panel="1">
+                    <div class="row">
+                        <div class="col-md-6 form-group-admin">
+                            <label>Full Name *</label>
+                            <input type="text" id="bookingFullName" name="fullName" class="form-control" placeholder="e.g. Maria Santos" required />
+                        </div>
+                        <div class="col-md-6 form-group-admin">
+                            <label>Phone Number *</label>
+                            <input type="tel" id="bookingPhone" name="phone" class="form-control" placeholder="0917-xxx-xxxx" required />
+                        </div>
                     </div>
-                    <div class="col-md-6 form-group-admin">
-                        <label>Phone Number *</label>
-                        <input type="tel" id="bookingPhone" name="phone" class="form-control" placeholder="0917-xxx-xxxx" required />
-                    </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-md-6 form-group-admin">
-                        <label>Event Type</label>
-                        <select id="bookingEventType" name="eventType" class="form-control">
-                            <option value="Wedding">Wedding Reception</option>
-                            <option value="Corporate">Corporate Summit / Gala</option>
-                            <option value="Birthday">Birthday Celebration</option>
-                            <option value="Anniversary">Anniversary</option>
-                            <option value="Private Dining">Private Intimate Dinner</option>
+                    <div class="form-group-admin">
+                        <label>Email (linked to your account)</label>
+                        <input type="email" id="bookingEmail" class="form-control" readonly />
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group-admin">
+                            <label>Event Type</label>
+                            <select id="bookingEventType" name="eventType" class="form-control">
+                                <option value="Wedding">Wedding Reception</option>
+                                <option value="Corporate">Corporate Summit / Gala</option>
+                                <option value="Birthday">Birthday Celebration</option>
+                                <option value="Anniversary">Anniversary</option>
+                                <option value="Private Dining">Private Intimate Dinner</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 form-group-admin">
+                            <label>Target Date</label>
+                            <input type="date" id="bookingDate" name="eventDate" class="form-control" required />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group-admin">
+                            <label>Estimated Guest Count</label>
+                            <input type="number" id="bookingPax" name="paxCount" class="form-control" placeholder="e.g. 150" min="1" required />
+                        </div>
+                        <div class="col-md-6 form-group-admin">
+                            <label>Venue</label>
+                            <input type="text" id="bookingVenue" name="venue" class="form-control" placeholder="e.g. Plaza Garden, Manila" />
+                        </div>
+                    </div>
+
+                    <div class="form-group-admin">
+                        <label>Preferred Package</label>
+                        <select id="bookingPackageId" name="packageId" class="form-control">
+                            @foreach (var p in packages)
+                            {
+                                <option value="@p.Id" data-price="@p.PricePerPax">@p.PackageName — ₱@p.PricePerPax.ToString("N0")/pax</option>
+                            }
                         </select>
                     </div>
-                    <div class="col-md-6 form-group-admin">
-                        <label>Target Date</label>
-                        <input type="date" id="bookingDate" name="eventDate" class="form-control" required />
+
+                    <div class="form-group-admin mb-0">
+                        <label>Special Requests / Dietary Notes</label>
+                        <textarea id="bookingNotes" name="notes" class="form-control" rows="3" placeholder="Tell us about dietary preferences (halal, vegan, allergen-free), and themes..."></textarea>
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-6 form-group-admin">
-                        <label>Estimated Guest Count</label>
-                        <input type="number" id="bookingPax" name="paxCount" class="form-control" placeholder="e.g. 150" min="20" required />
+                <!-- ============ STEP 2: PAYMENT METHOD ============ -->
+                <div class="booking-wizard-panel d-none" data-wz-panel="2">
+                    <div class="booking-summary-strip mb-3">
+                        <span class="booking-summary-label">Package</span>
+                        <span class="booking-summary-value" id="summaryPackage">—</span>
+                        <span class="booking-summary-label">Guests</span>
+                        <span class="booking-summary-value" id="summaryPax">0</span>
+                        <span class="booking-summary-label">Estimated Total</span>
+                        <span class="booking-summary-value text-gold fw-bold" id="summaryTotal">₱0.00</span>
                     </div>
-                    <div class="col-md-6 form-group-admin">
-                        <label>Venue</label>
-                        <input type="text" id="bookingVenue" name="venue" class="form-control" placeholder="e.g. Plaza Garden, Manila" />
+
+                    <label class="form-label fw-semibold">Choose your payment method</label>
+                    <div class="pm-methods-row">
+                        <label class="pm-card" data-pm="GCash">
+                            <input type="radio" name="paymentMethod" value="GCash" class="d-none" />
+                            <i class="bi bi-phone"></i>
+                            <span>GCash</span>
+                            <small>Instant mobile wallet</small>
+                        </label>
+                        <label class="pm-card" data-pm="PayMaya">
+                            <input type="radio" name="paymentMethod" value="PayMaya" class="d-none" />
+                            <i class="bi bi-wallet2"></i>
+                            <span>PayMaya</span>
+                            <small>Digital wallet / card</small>
+                        </label>
+                        <label class="pm-card" data-pm="Credit Card">
+                            <input type="radio" name="paymentMethod" value="Credit Card" class="d-none" />
+                            <i class="bi bi-credit-card-2-front"></i>
+                            <span>Credit Card</span>
+                            <small>Visa / Mastercard / Amex</small>
+                        </label>
+                    </div>
+
+                    <!-- GCash QR -->
+                    <div class="pm-qr-panel d-none" id="qrPanel-GCash">
+                        <div class="pm-qr-inner">
+                            <div class="pm-qr-code">@await Html.PartialAsync("~/Views/Client/Components/_FakeQr.cshtml")<span class="pm-qr-brand">GCash</span></div>
+                            <div class="pm-qr-details">
+                                <h6>Scan to pay with GCash</h6>
+                                <p class="text-muted small mb-2">Open your GCash app and scan the QR or send to the number below.</p>
+                                <div class="pm-account-row">
+                                    <span>Account Name</span>
+                                    <strong>CateringFlow PH</strong>
+                                </div>
+                                <div class="pm-account-row">
+                                    <span>GCash Number</span>
+                                    <strong>0917-000-1234</strong>
+                                </div>
+                                <div class="pm-account-row total">
+                                    <span>Amount</span>
+                                    <strong id="qrAmountGcash">₱0.00</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PayMaya QR -->
+                    <div class="pm-qr-panel d-none" id="qrPanel-PayMaya">
+                        <div class="pm-qr-inner">
+                            <div class="pm-qr-code">@await Html.PartialAsync("~/Views/Client/Components/_FakeQr.cshtml")<span class="pm-qr-brand pm-brand-maya">PayMaya</span></div>
+                            <div class="pm-qr-details">
+                                <h6>Scan to pay with PayMaya</h6>
+                                <p class="text-muted small mb-2">Open your PayMaya app and scan the QR or send to the number below.</p>
+                                <div class="pm-account-row">
+                                    <span>Account Name</span>
+                                    <strong>CateringFlow PH</strong>
+                                </div>
+                                <div class="pm-account-row">
+                                    <span>Maya Number</span>
+                                    <strong>0918-000-5678</strong>
+                                </div>
+                                <div class="pm-account-row total">
+                                    <span>Amount</span>
+                                    <strong id="qrAmountMaya">₱0.00</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Credit Card -->
+                    <div class="pm-qr-panel d-none" id="qrPanel-CreditCard">
+                        <div class="credit-card-preview">
+                            <div class="cc-brand"><i class="bi bi-credit-card-2-front"></i> CateringFlow · Online Payment</div>
+                            <div class="cc-body">
+                                <div class="cc-details text-muted small mb-2">
+                                    Pay securely with your Visa / Mastercard / Amex. Card details are processed on our secure
+                                    payment gateway and are never stored.
+                                </div>
+                                <div class="cc-fields">
+                                    <input type="text" class="form-control mb-2" placeholder="Card number (4242 4242 4242 4242)" inputmode="numeric" />
+                                    <div class="row g-2">
+                                        <div class="col-6"><input type="text" class="form-control" placeholder="MM / YY" /></div>
+                                        <div class="col-6"><input type="text" class="form-control" placeholder="CVC" /></div>
+                                    </div>
+                                </div>
+                                <div class="pm-account-row total mt-3">
+                                    <span>Amount</span>
+                                    <strong id="qrAmountCard">₱0.00</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group-admin mt-3 mb-0">
+                        <label>Reference Number <span class="text-muted fst-normal small">(from your payment receipt / message)</span></label>
+                        <input type="text" id="bookingRefNumber" name="referenceNumber" class="form-control" placeholder="e.g. GC-123456 / Maya-7890 / Transaction ID" />
                     </div>
                 </div>
 
-                <div class="form-group-admin">
-                    <label>Preferred Package</label>
-                    <select id="bookingPackageSelect" name="packageSelect" class="form-control">
-                        <option value="Classic Package - ₱450/pax">Classic Package - ₱450/pax</option>
-                        <option value="Premium Package - ₱750/pax" selected>Premium Package - ₱750/pax (Recommended)</option>
-                        <option value="Grand Package - ₱1,500/pax">Grand Executive Package - ₱1,500/pax</option>
-                        <option value="Custom Tasting Menu">Custom Bespoke Menu</option>
-                    </select>
+                <!-- ============ STEP 3: PROOF OF PAYMENT ============ -->
+                <div class="booking-wizard-panel d-none" data-wz-panel="3">
+                    <div class="text-center mb-3">
+                        <div class="step-icon-circle"><i class="bi bi-camera"></i></div>
+                        <h5 class="mt-2 mb-1">Send proof of your payment</h5>
+                        <p class="text-muted small mb-0">Upload a screenshot of your GCash / PayMaya / credit card transaction so the admin can verify it.</p>
+                    </div>
+
+                    <div class="upload-dropzone" id="proofDropzone">
+                        <input type="file" id="bookingProofImage" name="proofImage" accept="image/*" class="d-none" />
+                        <i class="bi bi-cloud-arrow-up-fill"></i>
+                        <div class="upload-dropzone-text">Click to upload or drag & drop</div>
+                        <div class="text-muted small">PNG, JPG up to 5MB</div>
+                        <img id="proofPreview" alt="Preview" class="d-none mt-2" style="max-height:200px;border-radius:10px;border:2px solid var(--light-border);" />
+                    </div>
+
+                    <div class="form-group-admin mt-3">
+                        <label>Progress reference number</label>
+                        <input type="text" id="bookingRefNumber2" class="form-control" placeholder="e.g. GC-123456" />
+                    </div>
+
+                    <div class="form-group-admin mb-0">
+                        <label>Message to our team about this payment</label>
+                        <textarea id="bookingInitialMessage" name="initialMessage" class="form-control" rows="3" placeholder="e.g. Hi! Here is the proof of my 50% down payment via GCash. Please verify. Thank you!"></textarea>
+                    </div>
                 </div>
 
-                <div class="form-group-admin mb-0">
-                    <label>Special Requests / Dietary Notes</label>
-                    <textarea id="bookingNotes" name="notes" class="form-control" rows="3" placeholder="Tell us about dietary preferences (halal, vegan, allergen-free), and themes..."></textarea>
+                <!-- ============ STEP 4: REVIEW & CONFIRM ============ -->
+                <div class="booking-wizard-panel d-none" data-wz-panel="4">
+                    <div class="text-center mb-3">
+                        <h5 class="mb-1">Almost there! Review your booking</h5>
+                        <p class="text-muted small mb-0">Once confirmed, the booking will be marked as <strong>Pending</strong> until your payment is verified. You can chat with our team from your booking page.</p>
+                    </div>
+
+                    <div class="review-card">
+                        <div class="review-card-header"><i class="bi bi-calendar-heart me-2"></i> Event Details</div>
+                        <div class="review-card-body">
+                            <div class="profile-row"><span class="profile-label">Client</span><span class="profile-value" id="reviewName">—</span></div>
+                            <div class="profile-row"><span class="profile-label">Event</span><span class="profile-value" id="reviewEvent">—</span></div>
+                            <div class="profile-row"><span class="profile-label">Date</span><span class="profile-value" id="reviewDate">—</span></div>
+                            <div class="profile-row"><span class="profile-label">Guests</span><span class="profile-value" id="reviewPax">—</span></div>
+                            <div class="profile-row"><span class="profile-label">Package</span><span class="profile-value" id="reviewPackage">—</span></div>
+                            <div class="profile-row"><span class="profile-label">Venue</span><span class="profile-value" id="reviewVenue">—</span></div>
+                        </div>
+                    </div>
+
+                    <div class="review-card mt-3">
+                        <div class="review-card-header"><i class="bi bi-credit-card me-2"></i> Payment</div>
+                        <div class="review-card-body">
+                            <div class="profile-row"><span class="profile-label">Method</span><span class="profile-value" id="reviewMethod">—</span></div>
+                            <div class="profile-row"><span class="profile-label">Reference No.</span><span class="profile-value" id="reviewRef">—</span></div>
+                            <div class="profile-row"><span class="profile-label">Proof Attached</span><span class="profile-value" id="reviewProof">—</span></div>
+                            <div class="profile-row"><span class="profile-label">Status</span><span class="profile-value"><span class="badge bg-warning text-dark">Pending Verification</span></span></div>
+                            <div class="profile-row"><span class="profile-label">Total</span><span class="profile-value fw-bold text-gold" id="reviewTotal">₱0.00</span></div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-light border small mt-3 mb-0">
+                        <i class="bi bi-info-circle me-1"></i>
+                        By confirming, you agree that your booking will be <strong>pending payment verification</strong>.
+                        Our admin will review your proof and mark it as paid within 24 hours.
+                    </div>
                 </div>
             </div>
+
             <div class="admin-modal-footer">
+                <button type="button" class="admin-btn-secondary" id="wizardBackBtn" onclick="wizardGoTo(currentWizardStep - 1)" style="display:none;">
+                    <i class="bi bi-arrow-left"></i> Back
+                </button>
                 <button type="button" class="admin-btn-secondary" onclick="closeBookingModal()">Cancel</button>
-                <button type="submit" class="admin-btn-primary">
-                    <i class="bi bi-send-fill me-1"></i> Submit Booking Request
+                <button type="button" class="admin-btn-primary" id="wizardNextBtn" onclick="wizardNext()">Continue <i class="bi bi-arrow-right"></i></button>
+                <button type="submit" class="admin-btn-primary" id="wizardSubmitBtn" style="display:none;">
+                    <i class="bi bi-send-fill me-1"></i> Confirm Booking
                 </button>
             </div>
         </form>

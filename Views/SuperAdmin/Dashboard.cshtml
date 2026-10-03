@@ -1,4 +1,6 @@
 @* Views/SuperAdmin/Dashboard.cshtml *@
+@model DashboardViewModel
+@using cateringflow.Models
 @{
     Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
     ViewData["Title"] = "Dashboard";
@@ -18,11 +20,11 @@
     </div>
 </div>
 
-<!-- 1. KPI Metrics Cards Component -->
-@await Html.PartialAsync("~/Views/SuperAdmin/Components/_DashboardKpiCards.cshtml")
+<!-- 1. KPI Metrics Cards Component (live DB numbers, stat-card rule: ascending value, largest right) -->
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_DashboardKpiCards.cshtml", Model.KpiCards)
 
-<!-- 2. Charts Row Component (Line & Bar) -->
-@await Html.PartialAsync("~/Views/SuperAdmin/Components/_DashboardCharts.cshtml")
+<!-- 2. Charts Row Component (live from DB) -->
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_DashboardCharts.cshtml", Model)
 
-<!-- 3. Dashboard 4-Grid Lists Component (Upcoming, Payments, Stock Alerts, Activity) -->
-@await Html.PartialAsync("~/Views/SuperAdmin/Components/_DashboardLists.cshtml")
+<!-- 3. Dashboard 4-Grid Lists Component (live: Upcoming, Payments, Stock Alerts, Activity) -->
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_DashboardLists.cshtml", Model)

@@ -37,4 +37,6 @@ public class CustomerModel
     public ICollection<InvoiceModel>? Invoices { get; set; }
     public ICollection<PaymentModel>? Payments { get; set; }
     public ICollection<CRMLeadModel>? CrmLeads { get; set; }
+    public ICollection<InquiryModel>? Inquiries { get; set; }
+    public ICollection<PaymentProofModel>? PaymentProofs { get; set; }
 }

@@ -7,7 +7,7 @@ using cateringflow.Models;
 namespace cateringflow.Controllers;
 
 [Authorize]
-public class QuotationController : Controller
+public class QuotationController : AppController
 {
     private readonly CateringFlowDbContext _db;
 
@@ -16,7 +16,7 @@ public class QuotationController : Controller
         _db = db;
     }
 
-    public async Task<IActionResult> Index(string? search, string? status)
+    public async Task<IActionResult> Index(string? search, string? status, int? page)
     {
         var query = _db.Quotations
             .Include(q => q.Customer)
@@ -33,9 +33,15 @@ public class QuotationController : Controller
             query = query.Where(q => q.Status == status);
         }
 
-        var quotations = await query
-            .OrderByDescending(q => q.CreatedAt)
-            .ToListAsync();
+        ViewData["TotalQuotations"] = await query.CountAsync();
+        ViewData["TotalDraft"] = await query.CountAsync(q => q.Status == "Draft");
+        ViewData["TotalRejected"] = await query.CountAsync(q => q.Status == "Rejected");
+        ViewData["TotalSent"] = await query.CountAsync(q => q.Status == "Sent");
+        ViewData["TotalApproved"] = await query.CountAsync(q => q.Status == "Approved");
+
+        var quotations = await PagedResult<QuotationModel>.CreateAsync(
+            query.OrderByDescending(q => q.CreatedAt),
+            page);
 
         ViewData["Search"] = search;
         ViewData["StatusFilter"] = status;
@@ -69,7 +75,7 @@ public class QuotationController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(QuotationModel quotation)
+    public async Task<IActionResult> Create(QuotationModel quotation, string? returnUrl = null)
     {
         quotation.CreatedAt = DateTime.Now;
         ModelState.Remove(nameof(quotation.Customer));
@@ -91,7 +97,7 @@ public class QuotationController : Controller
             _db.Quotations.Add(quotation);
             await _db.SaveChangesAsync();
             TempData["Success"] = $"Quotation {quotation.QuotationNumber} created successfully.";
-            return RedirectToAction(nameof(Index));
+            return RedirectToIndex(returnUrl);
         }
         ViewData["Customers"] = await _db.Customers.Where(c => c.Status == "Active").OrderBy(c => c.FullName).ToListAsync();
         ViewData["Events"] = await _db.Events.OrderByDescending(e => e.EventDate).ToListAsync();
@@ -101,7 +107,7 @@ public class QuotationController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateStatus(int id, string status)
+    public async Task<IActionResult> UpdateStatus(int id, string status, string? returnUrl = null)
     {
         var quotation = await _db.Quotations.FindAsync(id);
         if (quotation == null) return NotFound();
@@ -127,22 +133,22 @@ public class QuotationController : Controller
             _db.Invoices.Add(invoice);
             await _db.SaveChangesAsync();
             TempData["Success"] = $"Quotation approved. Invoice {invoice.InvoiceNumber} auto-generated.";
-            return RedirectToAction(nameof(Details), new { id });
+            return RedirectToDetails(returnUrl, nameof(Details), new { id });
         }
 
         TempData["Success"] = $"Quotation status updated to \"{status}\".";
-        return RedirectToAction(nameof(Details), new { id });
+        return RedirectToDetails(returnUrl, nameof(Details), new { id });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int id, string? returnUrl = null)
     {
         var quotation = await _db.Quotations.FindAsync(id);
         if (quotation == null) return NotFound();
         _db.Quotations.Remove(quotation);
         await _db.SaveChangesAsync();
         TempData["Success"] = "Quotation deleted successfully.";
-        return RedirectToAction(nameof(Index));
+        return RedirectToIndex(returnUrl);
     }
 }

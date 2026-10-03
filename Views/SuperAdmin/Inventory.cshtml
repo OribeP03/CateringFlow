@@ -1,4 +1,6 @@
 @* Views/SuperAdmin/Inventory.cshtml *@
+@model cateringflow.Models.PagedResult<InventoryModel>
+@using cateringflow.Models
 @{
     Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
     ViewData["Title"] = "Inventory & Stock";
@@ -8,14 +10,57 @@
 <div class="page-header-row">
     <div>
         <h1 class="page-header-title">Kitchen Inventory & Stock</h1>
-        <div class="page-header-sub">Track perishable ingredients, buffet hardware, and supplier reorders.</div>
+        <div class="page-header-sub">@Model.TotalItems tracked items</div>
     </div>
-    <div>
-        <button class="admin-btn-primary" onclick="alert('Stock item entry modal');">
+    <div class="d-flex gap-2">
+        <a asp-action="ExportInventory" asp-route-category="@ViewData["CategoryFilter"]" asp-route-stockStatus="@ViewData["StockStatusFilter"]" class="admin-btn-secondary">
+            <i class="bi bi-download"></i> Export CSV
+        </a>
+        <button class="admin-btn-primary" onclick="openAdminModal('addInventoryModal')">
             <i class="bi bi-plus-lg"></i> + Add Item
         </button>
     </div>
 </div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success d-flex align-items-center gap-2">
+        <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger d-flex align-items-center gap-2">
+        <i class="bi bi-x-circle-fill"></i> @TempData["Error"]
+    </div>
+}
+
+<!-- Filter Toolbar -->
+<form method="get" class="filter-toolbar">
+    <div class="filter-search-wrap">
+        <i class="bi bi-search"></i>
+        <input name="search" type="text" placeholder="Search items..." value="@ViewData["Search"]" />
+    </div>
+    <div class="filter-selects-group">
+        <select name="category" class="filter-select">
+            <option value="All">All Categories</option>
+            <option value="Meats & Poultry" selected="@(ViewData["CategoryFilter"]?.ToString() == "Meats & Poultry")">Meats & Poultry</option>
+            <option value="Seafood" selected="@(ViewData["CategoryFilter"]?.ToString() == "Seafood")">Seafood</option>
+            <option value="Produce" selected="@(ViewData["CategoryFilter"]?.ToString() == "Produce")">Produce</option>
+            <option value="Grains" selected="@(ViewData["CategoryFilter"]?.ToString() == "Grains")">Grains</option>
+            <option value="Beverages" selected="@(ViewData["CategoryFilter"]?.ToString() == "Beverages")">Beverages</option>
+            <option value="Hardware & Linens" selected="@(ViewData["CategoryFilter"]?.ToString() == "Hardware & Linens")">Hardware & Linens</option>
+        </select>
+        <select name="stockStatus" class="filter-select">
+            <option value="All">All Stock Status</option>
+            <option value="Adequate" selected="@(ViewData["StockStatusFilter"]?.ToString() == "Adequate")">Adequate</option>
+            <option value="Low Stock" selected="@(ViewData["StockStatusFilter"]?.ToString() == "Low Stock")">Low Stock</option>
+            <option value="Out of Stock" selected="@(ViewData["StockStatusFilter"]?.ToString() == "Out of Stock")">Out of Stock</option>
+        </select>
+        <button type="submit" class="admin-btn-secondary">Filter</button>
+        <a href="/SuperAdmin/Inventory" class="admin-btn-secondary">Reset</a>
+    </div>
+</form>
 
 <div class="table-container-card">
     <table class="admin-data-table">
@@ -25,63 +70,76 @@
                 <th>Item Name</th>
                 <th>Category</th>
                 <th>Current Stock</th>
-                <th>Min Reorder Level</th>
+                <th>Min Reorder</th>
                 <th>Unit Cost</th>
                 <th>Supplier</th>
-                <th>Stock Status</th>
+                <th>Status</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td class="fw-semibold text-primary">INV-010</td>
-                <td class="fw-semibold">Pork Belly (Pork Liempo)</td>
-                <td>Meats & Poultry</td>
-                <td>12 kg</td>
-                <td>25 kg</td>
-                <td>₱320/kg</td>
-                <td>Monterey Meats PH</td>
-                <td><span class="status-pill low-stock">Low Stock</span></td>
-            </tr>
-            <tr>
-                <td class="fw-semibold text-primary">INV-014</td>
-                <td class="fw-semibold">Fresh Black Tiger Shrimp</td>
-                <td>Seafood</td>
-                <td>8 kg</td>
-                <td>15 kg</td>
-                <td>₱580/kg</td>
-                <td>Navotas Fresh Catch</td>
-                <td><span class="status-pill expiring">Expiring Soon</span></td>
-            </tr>
-            <tr>
-                <td class="fw-semibold text-primary">INV-022</td>
-                <td class="fw-semibold">Prime Beef Sirloin</td>
-                <td>Meats & Poultry</td>
-                <td>0 kg</td>
-                <td>30 kg</td>
-                <td>₱890/kg</td>
-                <td>Highland Prime Beef</td>
-                <td><span class="status-pill out-of-stock">Out of Stock</span></td>
-            </tr>
-            <tr>
-                <td class="fw-semibold text-primary">INV-031</td>
-                <td class="fw-semibold">Red Onions</td>
-                <td>Produce</td>
-                <td>4 kg</td>
-                <td>20 kg</td>
-                <td>₱95/kg</td>
-                <td>Baguio Growers Coop</td>
-                <td><span class="status-pill low-stock">Low Stock</span></td>
-            </tr>
-            <tr>
-                <td class="fw-semibold text-primary">INV-045</td>
-                <td class="fw-semibold">Jasmine Rice (25kg sack)</td>
-                <td>Grains</td>
-                <td>18 sacks</td>
-                <td>5 sacks</td>
-                <td>₱1,350/sack</td>
-                <td>Nueva Ecija Rice Mills</td>
-                <td><span class="status-pill completed">Adequate</span></td>
-            </tr>
+            @if (Model.Items.Count == 0)
+            {
+                <tr><td colspan="9" class="text-center text-muted py-4">No inventory items found.</td></tr>
+            }
+            @foreach (var i in Model.Items)
+            {
+                var stockClass = i.StockStatus switch
+                {
+                    "Adequate" => "completed",
+                    "Low Stock" => "low-stock",
+                    _ => "out-of-stock"
+                };
+                <tr>
+                    <td class="fw-semibold text-primary">@i.ItemCode</td>
+                    <td class="fw-semibold">@i.ItemName</td>
+                    <td>@i.Category</td>
+                    <td>@i.CurrentStock @i.Unit</td>
+                    <td>@i.MinReorderLevel @i.Unit</td>
+                    <td>₱@i.UnitCost.ToString("N0")</td>
+                    <td>@i.SupplierName</td>
+                    <td><span class="status-pill @stockClass">@i.StockStatus</span></td>
+                    <td class="d-flex gap-1">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" title="Edit"
+                                data-id="@i.Id" data-code="@i.ItemCode" data-name="@i.ItemName"
+                                data-category="@i.Category" data-stock="@i.CurrentStock"
+                                data-reorder="@i.MinReorderLevel"
+                                data-unit="@i.Unit" data-cost="@i.UnitCost" data-supplier="@(i.SupplierId?.ToString() ?? "")"
+                                onclick="openEditInventoryModal(this)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <form asp-controller="Inventory" asp-action="Delete" asp-route-returnUrl="/SuperAdmin/Inventory"
+                              method="post" class="d-inline" onsubmit="return confirm('Delete item @i.ItemName?');">
+                            <input type="hidden" name="id" value="@i.Id" />
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            }
         </tbody>
     </table>
 </div>
+
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_Pagination.cshtml", Model)
+
+<!-- Inventory Modals Component -->
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_InventoryModals.cshtml")
+
+@section Scripts {
+    <script>
+        window.openEditInventoryModal = function (btn) {
+            const d = btn.dataset;
+            document.getElementById('editInventoryId').value = d.id;
+            document.getElementById('editInventoryCode').value = d.code;
+            document.getElementById('editInventoryName').value = d.name;
+            document.getElementById('editInventoryCategory').value = d.category;
+            document.getElementById('editInventoryStock').value = d.stock;
+            document.getElementById('editInventoryReorder').value = d.reorder;
+            document.getElementById('editInventoryUnit').value = d.unit;
+            document.getElementById('editInventoryCost').value = d.cost;
+            document.getElementById('editInventorySupplier').value = d.supplier;
+            openAdminModal('editInventoryModal');
+        };
+    </script>
+}

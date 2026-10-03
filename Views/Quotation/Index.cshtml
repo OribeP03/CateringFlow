@@ -1,4 +1,4 @@
-@model IEnumerable<QuotationModel>
+@model PagedResult<QuotationModel>
 @{
     Layout = "~/Views/SuperAdmin/_SuperAdminLayout.cshtml";
     ViewData["Title"] = "Quotations";
@@ -8,7 +8,7 @@
 <div class="page-header-row">
     <div>
         <h1 class="page-header-title">Quotations</h1>
-        <div class="page-header-sub">@Model.Count() total quotations</div>
+        <div class="page-header-sub">@Model.TotalItems total quotations</div>
     </div>
     <div>
         <a asp-action="Create" class="admin-btn-primary">
@@ -22,29 +22,24 @@
     <div class="alert alert-success d-flex align-items-center gap-2"><i class="bi bi-check-circle-fill"></i> @TempData["Success"]</div>
 }
 
-<!-- Quotation Status KPI Cards -->
-<div class="kpi-cards-grid">
-    <div class="kpi-card">
-        <div class="kpi-value" style="font-size: 1.8rem;">@Model.Count()</div>
-        <div class="kpi-title">Total</div>
-    </div>
-    <div class="kpi-card" style="background: #f8fafc;">
-        <div class="kpi-value text-secondary" style="font-size: 1.8rem;">@Model.Count(q => q.Status == "Draft")</div>
-        <div class="kpi-title text-secondary">Draft</div>
-    </div>
-    <div class="kpi-card" style="background: #eff6ff; border-color: #bfdbfe;">
-        <div class="kpi-value text-primary" style="font-size: 1.8rem;">@Model.Count(q => q.Status == "Sent")</div>
-        <div class="kpi-title text-primary">Sent</div>
-    </div>
-    <div class="kpi-card" style="background: #ecfdf5; border-color: #a7f3d0;">
-        <div class="kpi-value text-success" style="font-size: 1.8rem;">@Model.Count(q => q.Status == "Approved")</div>
-        <div class="kpi-title text-success">Approved</div>
-    </div>
-    <div class="kpi-card" style="background: #fef2f2; border-color: #fecaca;">
-        <div class="kpi-value text-danger" style="font-size: 1.8rem;">@Model.Count(q => q.Status == "Rejected")</div>
-        <div class="kpi-title text-danger">Rejected</div>
-    </div>
-</div>
+<!-- Quotation Status KPI Cards (incremental, largest value on right) -->
+@{
+    var totalDraft = (ViewData["TotalDraft"] as int?) ?? 0;
+    var totalRejected = (ViewData["TotalRejected"] as int?) ?? 0;
+    var totalSent = (ViewData["TotalSent"] as int?) ?? 0;
+    var totalApproved = (ViewData["TotalApproved"] as int?) ?? 0;
+    var totalQuotations = (ViewData["TotalQuotations"] as int?) ?? 0;
+    ViewData["KpiGridClass"] = "";
+    var quotationCards = new List<KpiCardModel>
+    {
+        new() { Label = "Draft", Value = @totalDraft.ToString(), SortValue = @totalDraft, ValueFirst = true, FontSize = "1.8rem", Background = "#f8fafc", Foreground = "#6c757d" },
+        new() { Label = "Rejected", Value = @totalRejected.ToString(), SortValue = @totalRejected, ValueFirst = true, FontSize = "1.8rem", Background = "#fef2f2", BorderColor = "#fecaca", Foreground = "#dc3545" },
+        new() { Label = "Sent", Value = @totalSent.ToString(), SortValue = @totalSent, ValueFirst = true, FontSize = "1.8rem", Background = "#eff6ff", BorderColor = "#bfdbfe", Foreground = "#0d6efd" },
+        new() { Label = "Approved", Value = @totalApproved.ToString(), SortValue = @totalApproved, ValueFirst = true, FontSize = "1.8rem", Background = "#ecfdf5", BorderColor = "#a7f3d0", Foreground = "#198754" },
+        new() { Label = "Total", Value = @totalQuotations.ToString(), SortValue = @totalQuotations, ValueFirst = true, FontSize = "1.8rem" }
+    };
+}
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_KpiCards.cshtml", quotationCards)
 
 <form method="get" class="filter-toolbar">
     <div class="filter-search-wrap">
@@ -70,11 +65,11 @@
             <tr><th>Number</th><th>Customer</th><th>Pax</th><th>Total</th><th>Status</th><th>Valid Until</th><th>Created</th><th>Actions</th></tr>
         </thead>
         <tbody>
-            @if (!Model.Any())
+            @if (Model.Items.Count == 0)
             {
                 <tr><td colspan="8" class="text-center text-muted py-4">No quotations found.</td></tr>
             }
-            @foreach (var q in Model)
+            @foreach (var q in Model.Items)
             {
                 <tr>
                     <td class="fw-semibold text-primary">@q.QuotationNumber</td>
@@ -95,3 +90,5 @@
         </tbody>
     </table>
 </div>
+
+@await Html.PartialAsync("~/Views/SuperAdmin/Components/_Pagination.cshtml", Model)
