@@ -675,3 +675,20 @@ reports how many leads turned into quotes.
 **Status - BUILT & verified.** `dotnet build` clean (0 warnings / 0 errors); A27 tests **33 passed**, full suite
 **349 passed, 0 failed, 0 skipped**; migration `AddQuotationInquiryLink` applied (inquiry->quotation 1-1);
 seeded quoted inquiry linked to a draft quotation (idempotent). Committed as `f0ddef3` and pushed to `origin/main`.
+
+## Phase 28 - CRM Pipeline Quick-Quote Integration Test
+
+**Goal**: lock in the "quote from CRM" path with a regression test and close the loop end-to-end.
+
+### Implementation (Phase 28)
+
+1. Add an integration test that simulates quoting from the CRM pipeline (ConvertFromInquiry via POST) and asserts the redirect to the new quotation, linking, stage sync, and activity/notification.
+2. Ensure the CRM view's Quote button is wired (already present) and the test covers the round trip.
+3. Run full suite, update Phase.md status, commit and push.
+
+### Test Phase A28 (CrmQuickQuoteFromPipelineTests.cs) - mirror of Phase 28
+
+- POST /Quotation/ConvertFromInquiry from CRM flow creates quotation linked to inquiry+lead, inquiry -> Quoted, lead -> Proposal, activity + notification logged.
+- Button renders for leads with inquiry; conversion rate/quoted value update on reload.
+
+**Status - PENDING.**
